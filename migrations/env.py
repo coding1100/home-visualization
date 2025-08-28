@@ -14,7 +14,8 @@ from app.core.config import settings
 from app.db.base import Base  # Base must import your models
 from app.modules.signupflow.models.user import User
 from app.modules.billing.models.payment import Payment
-
+from app.modules.contact.models.contact_request import ContactRequest
+from app.modules.files.models.file_upload import FileUpload
 
 # Alembic Config
 config = context.config
