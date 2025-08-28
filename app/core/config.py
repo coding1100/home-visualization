@@ -28,7 +28,14 @@ class Settings:
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
     STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
     STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+
+    CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME")
+    CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+    CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
     PASSWORD_RESET_TOKEN_MINUTES: int = 30
+
+    UPLOAD_MAX_MB = int(os.getenv("UPLOAD_MAX_MB", "30"))
+    UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR", "uploads/tmp")
 
     @property
     def db_url(self) -> str:
