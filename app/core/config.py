@@ -1,8 +1,20 @@
 # app/core/config.py
 import os
+from urllib.parse import urlsplit
+
 from dotenv import load_dotenv
 
-load_dotenv()  # reads .env at project root
+load_dotenv(override=False)  # reads .env at project root
+# load_dotenv()
+def _mask_url(url: str) -> str:
+    try:
+        u = urlsplit(url)
+        if "@" in u.netloc and ":" in u.netloc.split("@", 1)[0]:
+            user = u.username or ""
+            return url.replace(f"{user}:{u.password}", f"{user}:********")
+    except Exception:
+        pass
+    return url
 
 class Settings:
     # app
@@ -18,7 +30,8 @@ class Settings:
     POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432"))
 
     # full URLs (optional)
-    DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
+    # DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI")
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
     # auth
     SECRET_KEY = os.getenv("SECRET_KEY", "")
@@ -36,17 +49,27 @@ class Settings:
 
     UPLOAD_MAX_MB = int(os.getenv("UPLOAD_MAX_MB", "30"))
     UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR", "uploads/tmp")
+    print(f"DATABASE_URL: {DATABASE_URL}")
 
     @property
     def db_url(self) -> str:
         """Async SQLAlchemy URL for our engine."""
         if self.DATABASE_URL:
+            print(f"data base url in if condition: {self.DATABASE_URL}")
             return self.DATABASE_URL
         if all([self.POSTGRES_USER, self.POSTGRES_PASSWORD, self.POSTGRES_DB]):
+            print(f"data base url in if all condition: {self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}")
             return (
                 f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
                 f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
             )
         raise RuntimeError("Set DATABASE_URL or the POSTGRES_* pieces in .env")
 
+    @property
+    def masked_db_url(self) -> str:
+        return _mask_url(self.db_url)
+
 settings = Settings()
+
+
+print(f"DATABASE_URL (masked): {settings.masked_db_url}")

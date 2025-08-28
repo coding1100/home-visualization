@@ -6,6 +6,8 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.session import engine
+from app.db.base import Base  # <-- add this import
+
 from app.modules.signupflow.controllers.auth_controller import auth_router
 from app.modules.billing.controllers.billing_controller import billing_router
 from app.modules.contact.controllers.contact_controller import contact_router
@@ -18,9 +20,22 @@ async def lifespan(app: FastAPI):
     try:
         async with engine.begin() as conn:
             await conn.execute(text("SELECT 1"))
-    except Exception:
+            # Detailed info (won't leak password)
+            res = await conn.execute(text("""
+                            select
+                              inet_server_addr() as server_addr,
+                              inet_server_port() as server_port,
+                              inet_client_addr() as client_addr,
+                              current_database() as db,
+                              current_user as usr
+                        """))
+            print("DB CONNECTED TO:", res.mappings().first())
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
         # Don't crash the app if DB isn't reachable; log only.
-        pass
+        print("DB connectivity check failed:", repr(e))
+
+        # pass
     yield
     await engine.dispose()
 
@@ -34,12 +49,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# (Optional) Debug: log the routes on startup so you can see what's registered
-from fastapi.routing import APIRoute
-for r in app.routes:
-    if isinstance(r, APIRoute):
-        methods = ",".join(sorted(r.methods))
-        print(f"[ROUTE] {methods:10s} {r.path}")
 
 api_router = APIRouter(prefix=settings.API_PREFIX)   # -> /api/v1/*
 api_router.include_router(auth_router)               # -> /api/v1/auth/*
