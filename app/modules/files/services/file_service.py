@@ -13,8 +13,27 @@ from app.core.config import settings
 from app.modules.files.models.file_upload import FileUpload
 from app.modules.signupflow.models.user import User
 
-TMP_DIR = Path(settings.UPLOAD_TMP_DIR)
-TMP_DIR.mkdir(parents=True, exist_ok=True)
+# TMP_DIR = Path(settings.UPLOAD_TMP_DIR)
+# TMP_DIR.mkdir(parents=True, exist_ok=True)
+
+from pathlib import Path
+from app.core.config import settings
+
+# Normalize the path from .env
+TMP_DIR = Path(settings.UPLOAD_TMP_DIR).expanduser()
+if not TMP_DIR.is_absolute():
+    # if someone sets a relative path, anchor it to the working dir
+    TMP_DIR = (Path.cwd() / TMP_DIR).resolve()
+
+# Create it (or fail with a clear message)
+try:
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+except PermissionError as e:
+    raise RuntimeError(
+        f"Cannot create temp dir {TMP_DIR}. "
+        "Set UPLOAD_TMP_DIR to a writable absolute path and ensure the service user has permission."
+    ) from e
+
 
 MAX_BYTES = settings.UPLOAD_MAX_MB * 1024 * 1024
 
