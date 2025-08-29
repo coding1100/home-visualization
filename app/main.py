@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
                               current_user as usr
                         """))
             print("DB CONNECTED TO:", res.mappings().first())
-            await conn.run_sync(Base.metadata.create_all)
+            # await conn.run_sync(Base.metadata.create_all)
     except Exception as e:
         # Don't crash the app if DB isn't reachable; log only.
         print("DB connectivity check failed:", repr(e))

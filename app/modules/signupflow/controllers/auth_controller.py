@@ -17,7 +17,18 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 @auth_router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def signup(payload: UserCreate, db: AsyncSession = Depends(get_db)):
     user = await UserService(db).create_user(
-        email=str(payload.email), password=payload.password, full_name=payload.full_name
+        email=str(payload.email),
+        password=payload.password,
+        role=payload.role,
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        company_name=payload.company_name,
+        contractor_builder_name=payload.contractor_builder_name,
+        phone=payload.phone,
+        address=payload.address,
+        postal_code=payload.postal_code,
+        product_interest=payload.product_interest,
+        comments=payload.comments,
     )
     return user
 
