@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class UserCreate(BaseModel):
@@ -26,7 +28,7 @@ class UserCreate(BaseModel):
         return v
 
 class UserOut(BaseModel):
-    id: str
+    id: uuid.UUID
     email: EmailStr
     role: str | None = None
     first_name: str | None = None
