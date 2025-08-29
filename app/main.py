@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.session import engine
 from app.db.base import Base  # <-- add this import
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.modules.signupflow.controllers.auth_controller import auth_router
 from app.modules.billing.controllers.billing_controller import billing_router
@@ -49,6 +50,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],     # allow any origin
+    allow_methods=["*"],     # allow any method (includes OPTIONS)
+    allow_headers=["*"],     # allow any request headers
+    allow_credentials=False, # must be False when allow_origins=["*"]
+)
 
 api_router = APIRouter(prefix=settings.API_PREFIX)   # -> /api/v1/*
 api_router.include_router(auth_router)               # -> /api/v1/auth/*
