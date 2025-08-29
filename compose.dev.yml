@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    image: homeviz-dev:latest
+    container_name: homeviz-api
+    env_file: .env            # points to your existing Supabase dev DB URL etc.
+    ports:
+      - "5009:8000"            # nginx will reverse-proxy to 8080
+    restart: unless-stopped
+    volumes:
+      - homeviz_tmp:/data/tmp # matches UPLOAD_TMP_DIR
+
+volumes:
+  homeviz_tmp:
