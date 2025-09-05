@@ -14,7 +14,7 @@ from app.modules.billing.controllers.billing_controller import billing_router
 from app.modules.contact.controllers.contact_controller import contact_router
 from app.modules.files.controllers.file_controller import files_router
 from app.modules.catalog.controllers.palette_controller import catalog_router
-
+from app.modules.catalog.controllers.product_controller import products_simple_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
@@ -65,4 +65,5 @@ api_router.include_router(billing_router)
 api_router.include_router(contact_router)
 api_router.include_router(files_router)
 api_router.include_router(catalog_router)
+api_router.include_router(products_simple_router)
 app.include_router(api_router)
