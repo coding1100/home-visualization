@@ -49,8 +49,9 @@ class Settings:
 
     UPLOAD_MAX_MB = int(os.getenv("UPLOAD_MAX_MB", "30"))
     UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR", "uploads/tmp")
-    print(f"DATABASE_URL: {DATABASE_URL}")
-
+    HF_TOKEN = os.getenv("HF_TOKEN")
+    RF_API_KEY = os.getenv("RF_API_KEY")
+    COMFYUI_SERVER = os.getenv("COMFYUI_SERVER")
     @property
     def db_url(self) -> str:
         """Async SQLAlchemy URL for our engine."""
