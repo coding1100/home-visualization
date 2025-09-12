@@ -45,7 +45,7 @@ async def replace_material(
         return HTTPException(status_code=500, detail=str(e))
 
 
-@masking_router.post("/replace_material")
+@masking_router.post("/replace_material_advanced")
 async def advanced_replace_material(
     original_image: str = Form(...),
     mask_image: str = Form(None),
@@ -69,14 +69,24 @@ async def advanced_replace_material(
     - elements_json: JSON string of house elements (optional, use with element_type)
     - element_type: Type of element to replace (optional, use with elements_json)
     - material_image: Uploaded material texture (optional)
-    - material_id: ID of material from library (optional, e.g., "wall_1", "garage_2")
+    - material_id: Material ID from product catalog (optional, e.g., "Wall/categories/Brick/Red")
     - method: Replacement method (default: "cv_poisson")
     - scale: Scale factor for texture (default: 1.0)
     - angle_bias_deg: Angle bias for texture orientation (default: 90.0)
     - color_match: Color matching method ("reinhard" or None)
     - preserve_shading: Whether to preserve original shading (1=True, 0=False)
+    
+    Note: material_id will download the material image from the product catalog.
+    Available material IDs include Wall, Accent, and Masonry categories with various materials.
     """
     try:
+        # Validate that either material_image or material_id is provided, but not both
+        if material_image is not None and material_id is not None:
+            raise HTTPException(status_code=400, detail="Provide either material_image or material_id, not both")
+        
+        if material_image is None and material_id is None:
+            raise HTTPException(status_code=400, detail="Provide either material_image or material_id")
+        
         return model_advanced_replace_material(
             original_image=original_image,
             mask_image=mask_image,

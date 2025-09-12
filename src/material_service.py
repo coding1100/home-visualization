@@ -5,11 +5,13 @@ import json
 import base64
 import numpy as np
 import cv2
+import requests
 from typing import List, Dict, Any, Optional
 from fastapi import HTTPException, UploadFile
 
 from src.logger import logger
 from src.constants import UPLOAD_DIR
+from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP
 
 # ====== MATERIAL LIBRARY ======
 MATERIALS = {
@@ -193,6 +195,62 @@ def save_tmp_png(bgr_img):
     cv2.imwrite(out_path, bgr_img, [cv2.IMWRITE_PNG_COMPRESSION, 1])
     return out_path
 
+def download_material_image(material_id: str) -> str:
+    """
+    Download material image from URL and return temporary file path.
+    
+    Args:
+        material_id: Material ID from PRODUCT_IMAGE_MAP
+        
+    Returns:
+        str: Path to downloaded temporary material image
+        
+    Raises:
+        HTTPException: If material_id not found or download fails
+    """
+    # Check if material_id exists in PRODUCT_IMAGE_MAP
+    if material_id not in PRODUCT_IMAGE_MAP:
+        available_ids = list(PRODUCT_IMAGE_MAP.keys())[:10]  # Show first 10 for reference
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Material ID '{material_id}' not found in catalog. Available IDs include: {available_ids}"
+        )
+    
+    # Get the image URL
+    image_url = PRODUCT_IMAGE_MAP[material_id]
+    
+    try:
+        # Create tmp directory if it doesn't exist
+        tmp_dir = os.path.join(UPLOAD_DIR, "tmp")
+        os.makedirs(tmp_dir, exist_ok=True)
+        
+        # Generate temporary filename
+        file_extension = image_url.split('.')[-1].split('?')[0]  # Handle URLs with query params
+        if file_extension not in ['jpg', 'jpeg', 'png', 'webp']:
+            file_extension = 'jpg'  # Default fallback
+        
+        temp_filename = f"{uuid.uuid4()}_material.{file_extension}"
+        temp_path = os.path.join(tmp_dir, temp_filename)
+        
+        # Download the image
+        logger.info(f"Downloading material image from: {image_url}")
+        response = requests.get(image_url, timeout=30)
+        response.raise_for_status()
+        
+        # Save to temporary file
+        with open(temp_path, 'wb') as f:
+            f.write(response.content)
+        
+        logger.info(f"Material image downloaded to: {temp_path}")
+        return temp_path
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to download material image from {image_url}: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to download material image: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error downloading material image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error downloading material image: {str(e)}")
+
 def advanced_material_replacement(
     original_image: str,
     mask_image: Optional[str] = None,
@@ -236,13 +294,17 @@ def advanced_material_replacement(
 
         # --- choose material texture ---
         texture_cv = None
+        temp_material_path = None
+        
         if material_image is not None:
+            # Use uploaded material image
             content = material_image.read()
             texture_cv = cv2.imdecode(np.frombuffer(content, np.uint8), cv2.IMREAD_COLOR)
         elif material_id:
-            tex_path = MATERIALS.get(material_id)
-            if tex_path and os.path.exists(tex_path):
-                texture_cv = cv2.imread(tex_path, cv2.IMREAD_COLOR)
+            # Download material image from PRODUCT_IMAGE_MAP
+            temp_material_path = download_material_image(material_id)
+            texture_cv = cv2.imread(temp_material_path, cv2.IMREAD_COLOR)
+            
         if method == "cv_poisson" and texture_cv is None:
             raise HTTPException(status_code=400, detail="No material texture: provide material_image or valid material_id")
 
@@ -286,6 +348,15 @@ def advanced_material_replacement(
                 preserve_shading=bool(int(preserve_shading)),
             )
             out_b64 = base64.b64encode(cv2.imencode('.png', out)[1]).decode('utf-8')
+            
+            # Clean up temporary material file if it was downloaded
+            if temp_material_path and os.path.exists(temp_material_path):
+                try:
+                    os.remove(temp_material_path)
+                    logger.info(f"Cleaned up temporary material file: {temp_material_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(e)}")
+            
             return {
                 "success": True,
                 "method": method,
@@ -298,7 +369,21 @@ def advanced_material_replacement(
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
 
     except HTTPException:
+        # Clean up temporary material file if it was downloaded
+        if 'temp_material_path' in locals() and temp_material_path and os.path.exists(temp_material_path):
+            try:
+                os.remove(temp_material_path)
+                logger.info(f"Cleaned up temporary material file after error: {temp_material_path}")
+            except Exception as cleanup_e:
+                logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(cleanup_e)}")
         raise
     except Exception as e:
+        # Clean up temporary material file if it was downloaded
+        if 'temp_material_path' in locals() and temp_material_path and os.path.exists(temp_material_path):
+            try:
+                os.remove(temp_material_path)
+                logger.info(f"Cleaned up temporary material file after error: {temp_material_path}")
+            except Exception as cleanup_e:
+                logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(cleanup_e)}")
         logger.exception("advanced_material_replacement failed")
         raise HTTPException(status_code=500, detail=str(e))
