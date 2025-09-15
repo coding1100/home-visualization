@@ -24,6 +24,7 @@ from src.utils import (
     set_global_seed,
     cleanup_temp_files
 )
+from src.material_service import advanced_material_replacement
 
 def model_generate_mask(
     original_image: str ,
@@ -302,3 +303,38 @@ def model_segment_image(
             "raw_predictions": result["predictions"],
             "processing_time": f"{end_time - start_time:.2f}s"
         }
+
+def model_advanced_replace_material(
+    original_image: str,
+    mask_image: str = None,
+    elements_json: str = None,
+    element_type: str = None,
+    material_image: UploadFile = None,
+    material_id: str = None,
+    method: str = "cv_poisson",
+    scale: float = 1.0,
+    angle_bias_deg: float = 90.0,
+    color_match: str = None,
+    preserve_shading: int = 1
+):
+    """
+    Advanced material replacement with cv_poisson method.
+    Supports both mask-based and element-based replacement.
+    """
+    try:
+        return advanced_material_replacement(
+            original_image=original_image,
+            mask_image=mask_image,
+            elements_json=elements_json,
+            element_type=element_type,
+            material_image=material_image,
+            material_id=material_id,
+            method=method,
+            scale=scale,
+            angle_bias_deg=angle_bias_deg,
+            color_match=color_match,
+            preserve_shading=preserve_shading
+        )
+    except Exception as e:
+        logger.error(f"Error in advanced material replacement: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
