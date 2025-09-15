@@ -16,7 +16,6 @@ from app.modules.files.controllers.file_controller import files_router
 from app.modules.catalog.controllers.palette_controller import catalog_router
 from app.modules.catalog.controllers.product_controller import products_simple_router
 from app.modules.masking.controllers.masking_controller import masking_router
-# from app.modules.test.controllers.test_controller import test_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
@@ -69,5 +68,4 @@ api_router.include_router(files_router)
 api_router.include_router(catalog_router)
 api_router.include_router(products_simple_router)
 api_router.include_router(masking_router)
-# api_router.include_router(test_router)
 app.include_router(api_router)
