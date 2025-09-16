@@ -256,6 +256,7 @@ def advanced_material_replacement(
     mask_image: Optional[str] = None,
     elements_json: Optional[str] = None,
     element_type: Optional[str] = None,
+    element_id: Optional[str] = None,
     material_image: Optional[UploadFile] = None,
     material_id: Optional[str] = None,
     method: str = "cv_poisson",
@@ -311,7 +312,42 @@ def advanced_material_replacement(
         # --- build refined mask ---
         refined_mask = None
 
-        if elements_json and element_type:
+        if element_id and elements_json:
+            # Build a refined mask for a single element using the same approach
+            # as the element_type path: subtract expanded exclude regions and clean.
+            try:
+                elements = json.loads(elements_json)
+            except Exception:
+                raise HTTPException(status_code=400, detail="elements_json must be a JSON-encoded list")
+
+            # Locate the target element by id
+            target_elem = None
+            for e in elements or []:
+                if str(e.get("id")) == str(element_id):
+                    target_elem = e
+                    break
+            if target_elem is None:
+                raise HTTPException(status_code=400, detail=f"element_id '{element_id}' not found in elements_json")
+
+            coords = target_elem.get("coordinates") or target_elem.get("polygon")
+            if not coords:
+                raise HTTPException(status_code=400, detail=f"element_id '{element_id}' has no coordinates")
+
+            # Include mask is just the target element polygon
+            inc = _poly_to_mask(coords, H, W)
+
+            # Exclude common non-wall features to avoid bleeding (same defaults)
+            default_excludes = {"window","door","garage","garage door","frame","trim","pillar","column","stone","foundation","fence","shutter","railing"}
+            exc = _union_mask(elements, default_excludes, H, W)
+
+            # Expand exclude slightly and subtract from the include
+            k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*2+1, 2*2+1))  # edge_margin_px=2
+            exc = cv2.dilate(exc, k, 1)
+            refined = cv2.bitwise_and(inc, cv2.bitwise_not(exc))
+            refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
+            refined_mask = refined
+            
+        elif elements_json and element_type:
             try:
                 elements = json.loads(elements_json)
             except Exception:
@@ -326,6 +362,7 @@ def advanced_material_replacement(
 
             refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=2)
 
+            
         elif mask_image:
             refined_mask = cv2.imdecode(np.frombuffer(base64.b64decode(mask_image), np.uint8), cv2.IMREAD_GRAYSCALE)
 
@@ -333,7 +370,7 @@ def advanced_material_replacement(
             raise HTTPException(status_code=400, detail="Provide either (elements_json + element_type) or mask_image")
 
         if refined_mask is None or np.count_nonzero(refined_mask) == 0:
-            raise HTTPException(status_code=422, detail="Refined mask is empty for the requested element_type")
+            raise HTTPException(status_code=422, detail="Refined mask is empty for the requested target")
 
         # --- apply cv_poisson method ---
         if method == "cv_poisson":
