@@ -24,6 +24,34 @@ MATERIALS = {
 }
 
 # ====== GEOMETRY / MASK HELPERS ======
+DEFAULT_EXCLUDE_TYPES = {
+    "window",
+    "window frame",
+    "window trim",
+    "glass",
+    "door",
+    "garage",
+    "garage door",
+    "light",
+    "lamp",
+    "frame",
+    "trim",
+    "pillar",
+    "column",
+    "post",
+    "stone",
+    "foundation",
+    "fence",
+    "shutter",
+    "railing",
+    "gutter",
+    "downspout",
+    "soffit",
+    "sofit",
+    "fascia",
+    "roof",
+    "awning",
+}
 def _normalize_poly(coords):
     """Normalize polygon coordinates to a consistent format."""
     out = []
@@ -53,6 +81,83 @@ def _union_mask(elements, match_types, H, W):
             if coords:
                 m = cv2.bitwise_or(m, _poly_to_mask(coords, H, W))
     return m
+
+def _union_mask_except(elements, target_ids, target_types, H, W):
+    """Mask union of all elements except the provided ids/types."""
+    m = np.zeros((H, W), np.uint8)
+    id_set = {str(i) for i in (target_ids or []) if i is not None}
+    type_set = {t for t in (target_types or []) if t}
+    for e in elements or []:
+        eid = e.get("id")
+        etype = (e.get("type") or e.get("class") or "").lower().strip()
+        if id_set and str(eid) in id_set:
+            continue
+        if type_set and etype in type_set:
+            continue
+        coords = e.get("coordinates") or e.get("polygon")
+        if coords:
+            m = cv2.bitwise_or(m, _poly_to_mask(coords, H, W))
+    return m
+
+
+def _elements_to_mask(elements, H, W, include_ids=None, include_types=None):
+    """Build union mask for elements matching provided ids/types."""
+    id_set = {str(i) for i in (include_ids or []) if i is not None}
+    type_set = {t for t in (include_types or []) if t}
+    m = np.zeros((H, W), np.uint8)
+    for e in elements or []:
+        eid = e.get("id")
+        etype = (e.get("type") or e.get("class") or "").lower().strip()
+        if id_set and str(eid) not in id_set:
+            continue
+        if type_set and etype not in type_set:
+            continue
+        coords = e.get("coordinates") or e.get("polygon")
+        if coords:
+            m = cv2.bitwise_or(m, _poly_to_mask(coords, H, W))
+    return m
+
+
+def build_selection_mask(
+    elements,
+    H,
+    W,
+    include_ids=None,
+    include_types=None,
+    exclude_types=None,
+    exclude_ids=None,
+    edge_margin_px=3,
+    erosion_px=1,
+    remove_other_geometry=False,
+):
+    """Construct a stable mask for the requested selection."""
+    include_mask = _elements_to_mask(elements, H, W, include_ids, include_types)
+    if np.count_nonzero(include_mask) == 0:
+        return include_mask
+
+    exclude_mask = np.zeros((H, W), np.uint8)
+    if exclude_types:
+        exclude_mask = cv2.bitwise_or(exclude_mask, _union_mask(elements, exclude_types, H, W))
+    if exclude_ids:
+        exclude_mask = cv2.bitwise_or(exclude_mask, _elements_to_mask(elements, H, W, include_ids=exclude_ids))
+    if remove_other_geometry:
+        exclude_mask = cv2.bitwise_or(
+            exclude_mask,
+            _union_mask_except(elements, include_ids, include_types, H, W)
+        )
+
+    if edge_margin_px > 0 and np.count_nonzero(exclude_mask) > 0:
+        k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*edge_margin_px+1, 2*edge_margin_px+1))
+        exclude_mask = cv2.dilate(exclude_mask, k, 1)
+
+    refined = cv2.bitwise_and(include_mask, cv2.bitwise_not(exclude_mask))
+
+    if erosion_px > 0:
+        k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*erosion_px+1, 2*erosion_px+1))
+        refined = cv2.erode(refined, k, 1)
+
+    refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
+    return refined
 
 def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_px=2):
     """Build refined mask: (Union of target_types) minus (grown union of exclude_types)."""
@@ -314,7 +419,7 @@ def advanced_material_replacement(
 
         if element_id and elements_json:
             # Build a refined mask for a single element using the same approach
-            # as the element_type path: subtract expanded exclude regions and clean.
+            # as the element_type path but scoped to the selected element.
             try:
                 elements = json.loads(elements_json)
             except Exception:
@@ -323,7 +428,7 @@ def advanced_material_replacement(
             # Locate the target element by id
             target_elem = None
             for e in elements or []:
-                if str(e.get("id")) == str(element_id):
+                if str(e.get("id")).lower() == str(element_id).lower():
                     target_elem = e
                     break
             if target_elem is None:
@@ -333,20 +438,30 @@ def advanced_material_replacement(
             if not coords:
                 raise HTTPException(status_code=400, detail=f"element_id '{element_id}' has no coordinates")
 
-            # Include mask is just the target element polygon
-            inc = _poly_to_mask(coords, H, W)
+            target_type = (target_elem.get("type") or target_elem.get("class") or "").lower().strip()
+            include_ids = {str(target_elem.get("id"))}
+            include_types = {target_type} if target_type else None
 
-            # Exclude common non-wall features to avoid bleeding (same defaults)
-            default_excludes = {"window","door","garage","garage door","frame","trim","pillar","column","stone","foundation","fence","shutter","railing"}
-            exc = _union_mask(elements, default_excludes, H, W)
+            refined_mask = build_selection_mask(
+                elements,
+                H,
+                W,
+                include_ids=include_ids,
+                include_types=include_types,
+                exclude_types=DEFAULT_EXCLUDE_TYPES,
+                edge_margin_px=4,
+                erosion_px=1,
+                remove_other_geometry=True,
+            )
 
-            # Expand exclude slightly and subtract from the include
-            k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*2+1, 2*2+1))  # edge_margin_px=2
-            exc = cv2.dilate(exc, k, 1)
-            refined = cv2.bitwise_and(inc, cv2.bitwise_not(exc))
-            refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
-            refined_mask = refined
-            
+            if refined_mask is None or np.count_nonzero(refined_mask) == 0:
+                target_mask = _poly_to_mask(coords, H, W)
+                exc = _union_mask(elements, DEFAULT_EXCLUDE_TYPES, H, W)
+                k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*4+1, 2*4+1))
+                exc = cv2.dilate(exc, k, 1)
+                refined_mask = cv2.bitwise_and(target_mask, cv2.bitwise_not(exc))
+                refined_mask = cv2.morphologyEx(refined_mask, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
+
         elif elements_json and element_type:
             try:
                 elements = json.loads(elements_json)
@@ -356,13 +471,23 @@ def advanced_material_replacement(
             ttype = element_type.lower().strip()
             include_types = {ttype}
 
-            # default excludes so target never overlaps other facade parts
-            default_excludes = {"window","door","garage","garage door","frame","trim","pillar","column","stone","foundation","fence","shutter","railing"}
-            exclude_types = default_excludes - include_types
+            exclude_types = (DEFAULT_EXCLUDE_TYPES - include_types)
 
-            refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=2)
+            refined_mask = build_selection_mask(
+                elements,
+                H,
+                W,
+                include_types=include_types,
+                exclude_types=exclude_types,
+                edge_margin_px=4,
+                erosion_px=1,
+                remove_other_geometry=False,
+            )
 
-            
+            if refined_mask is None or np.count_nonzero(refined_mask) == 0:
+                refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=4)
+
+        
         elif mask_image:
             refined_mask = cv2.imdecode(np.frombuffer(base64.b64decode(mask_image), np.uint8), cv2.IMREAD_GRAYSCALE)
 
