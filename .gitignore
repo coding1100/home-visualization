@@ -176,3 +176,7 @@ secrets/
 debug.py
 
 migrations/versions/*
+
+
+*.jpg
+*.png
