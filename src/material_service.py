@@ -6,7 +6,7 @@ import base64
 import numpy as np
 import cv2
 import requests
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from fastapi import HTTPException, UploadFile
 
 from src.logger import logger
@@ -52,6 +52,20 @@ DEFAULT_EXCLUDE_TYPES = {
     "roof",
     "awning",
 }
+
+MAX_OUTPUT_IMAGE_MB = 2.0
+MIN_OUTPUT_DIMENSION_PX = 720
+_MB_DIVISOR = 1024 * 1024
+
+
+def _calc_edge_margin_px(H: int, W: int) -> int:
+    """Derive a dilation size that scales with image resolution."""
+    return max(4, int(round(min(H, W) * 0.006)))  # ~0.6% of shorter side
+
+
+def _calc_erosion_px(H: int, W: int) -> int:
+    """Derive an erosion size that scales with image resolution."""
+    return max(1, int(round(min(H, W) * 0.002)))  # ~0.2% of shorter side
 def _normalize_poly(coords):
     """Normalize polygon coordinates to a consistent format."""
     out = []
@@ -171,6 +185,89 @@ def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_
     refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
     return refined
 
+
+def _encode_output_image(
+    image: np.ndarray,
+    max_mb: float = MAX_OUTPUT_IMAGE_MB,
+    min_dimension_px: int = MIN_OUTPUT_DIMENSION_PX,
+    compression_levels: Tuple[int, int] = (3, 9),
+    downscale_factor: float = 0.85,
+) -> Tuple[str, float, Tuple[int, int], bool]:
+    """
+    Encode an image to base64 while trying to keep the encoded payload under max_mb.
+
+    Args:
+        image: BGR image to encode.
+        max_mb: Target maximum size in megabytes.
+        min_dimension_px: Smallest allowed dimension when downscaling.
+        compression_levels: (default_png_compression, high_png_compression).
+        downscale_factor: Factor applied when iteratively resizing the image.
+
+    Returns:
+        Tuple containing (base64 string, size in MB, (width, height), was_downscaled).
+
+    Raises:
+        HTTPException: If encoding fails at any stage.
+    """
+
+    if image is None or image.size == 0:
+        raise HTTPException(status_code=500, detail="Output image is empty")
+
+    default_comp, high_comp = compression_levels
+
+    def _encode(image_to_encode: np.ndarray, compression: int) -> bytes:
+        success, buffer = cv2.imencode('.png', image_to_encode, [cv2.IMWRITE_PNG_COMPRESSION, compression])
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to encode output image")
+        return buffer.tobytes()
+
+    encoded_bytes = _encode(image, default_comp)
+    size_mb = len(encoded_bytes) / _MB_DIVISOR
+    downscaled = False
+    current_image = image
+    compression_used = default_comp
+
+    if size_mb > max_mb:
+        # Try higher compression before resizing.
+        encoded_high = _encode(current_image, high_comp)
+        if len(encoded_high) < len(encoded_bytes):
+            encoded_bytes = encoded_high
+            size_mb = len(encoded_bytes) / _MB_DIVISOR
+            compression_used = high_comp
+
+        # Iteratively downscale the image until it fits under the limit or we hit the minimum size.
+        while size_mb > max_mb and min(current_image.shape[:2]) > min_dimension_px:
+            new_h = max(int(current_image.shape[0] * downscale_factor), min_dimension_px)
+            new_w = max(int(current_image.shape[1] * downscale_factor), min_dimension_px)
+
+            if new_h == current_image.shape[0] and new_w == current_image.shape[1]:
+                break
+
+            current_image = cv2.resize(current_image, (new_w, new_h), interpolation=cv2.INTER_AREA)
+            downscaled = True
+
+            encoded_bytes = _encode(current_image, high_comp)
+            size_mb = len(encoded_bytes) / _MB_DIVISOR
+            compression_used = high_comp
+
+        if size_mb > max_mb:
+            logger.warning(
+                "Output image remains above size limit: %.2fMB (limit %.2fMB)",
+                size_mb,
+                max_mb,
+            )
+
+    if compression_used != default_comp or downscaled:
+        logger.info(
+            "Output image adjustments applied (compression=%s, downscaled=%s, final_size=%.2fMB)",
+            compression_used,
+            downscaled,
+            size_mb,
+        )
+
+    b64_image = base64.b64encode(encoded_bytes).decode('utf-8')
+    return b64_image, size_mb, (current_image.shape[1], current_image.shape[0]), downscaled
+
 # ====== TEXTURE UTILS ======
 def reinhard_match(src_bgr, ref_bgr, mask=None):
     """Apply Reinhard color transfer in Lab color space."""
@@ -244,7 +341,15 @@ def apply_texture_cv_poisson(
     if preserve_shading:
         lab_o = cv2.cvtColor(original_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
         lab_s = cv2.cvtColor(src_warp,     cv2.COLOR_BGR2LAB).astype(np.float32)
-        L = lab_o[...,0]; a_s, b_s = lab_s[...,1], lab_s[...,2]
+        L_orig = lab_o[..., 0]
+        L_tex  = lab_s[..., 0]
+        a_s, b_s = lab_s[...,1], lab_s[...,2]
+
+        mask_f = (mask_bin.astype(np.float32) / 255.0)
+        shading_keep = 0.35  # keep a fraction of original luminance to retain lighting cues
+        L_mix = L_tex * (1.0 - shading_keep) + L_orig * shading_keep
+        L = L_orig * (1.0 - mask_f) + L_mix * mask_f
+
         src_warp = cv2.cvtColor(np.dstack([L, a_s, b_s]).astype(np.uint8), cv2.COLOR_LAB2BGR)
 
     # crop ROI + safe center
@@ -288,6 +393,8 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     for c in cnts:
         sub = np.zeros_like(union_mask); cv2.drawContours(sub, [c], -1, 255, -1)
+        # Reapply original mask to preserve interior holes (windows, doors, etc.)
+        sub = cv2.bitwise_and(sub, union_mask)
         a = _auto_angle_from_cnt(c) if angle_mode=="auto" else float(angle_mode)
         a = float(a) + float(angle_bias_deg)
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
@@ -442,6 +549,9 @@ def advanced_material_replacement(
             include_ids = {str(target_elem.get("id"))}
             include_types = {target_type} if target_type else None
 
+            edge_margin = _calc_edge_margin_px(H, W)
+            erosion = _calc_erosion_px(H, W)
+
             refined_mask = build_selection_mask(
                 elements,
                 H,
@@ -449,17 +559,20 @@ def advanced_material_replacement(
                 include_ids=include_ids,
                 include_types=include_types,
                 exclude_types=DEFAULT_EXCLUDE_TYPES,
-                edge_margin_px=4,
-                erosion_px=1,
+                edge_margin_px=edge_margin,
+                erosion_px=erosion,
                 remove_other_geometry=True,
             )
 
             if refined_mask is None or np.count_nonzero(refined_mask) == 0:
                 target_mask = _poly_to_mask(coords, H, W)
                 exc = _union_mask(elements, DEFAULT_EXCLUDE_TYPES, H, W)
-                k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*4+1, 2*4+1))
+                k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*edge_margin+1, 2*edge_margin+1))
                 exc = cv2.dilate(exc, k, 1)
                 refined_mask = cv2.bitwise_and(target_mask, cv2.bitwise_not(exc))
+                if erosion > 0:
+                    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*erosion+1, 2*erosion+1))
+                    refined_mask = cv2.erode(refined_mask, k, 1)
                 refined_mask = cv2.morphologyEx(refined_mask, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
 
         elif elements_json and element_type:
@@ -473,19 +586,22 @@ def advanced_material_replacement(
 
             exclude_types = (DEFAULT_EXCLUDE_TYPES - include_types)
 
+            edge_margin = _calc_edge_margin_px(H, W)
+            erosion = _calc_erosion_px(H, W)
+
             refined_mask = build_selection_mask(
                 elements,
                 H,
                 W,
                 include_types=include_types,
                 exclude_types=exclude_types,
-                edge_margin_px=4,
-                erosion_px=1,
+                edge_margin_px=edge_margin,
+                erosion_px=erosion,
                 remove_other_geometry=False,
             )
 
             if refined_mask is None or np.count_nonzero(refined_mask) == 0:
-                refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=4)
+                refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=edge_margin)
 
         
         elif mask_image:
@@ -509,7 +625,7 @@ def advanced_material_replacement(
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 preserve_shading=bool(int(preserve_shading)),
             )
-            out_b64 = base64.b64encode(cv2.imencode('.png', out)[1]).decode('utf-8')
+            out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
             
             # Clean up temporary material file if it was downloaded
             if temp_material_path and os.path.exists(temp_material_path):
@@ -525,7 +641,10 @@ def advanced_material_replacement(
                 "element_type": element_type,
                 "material_id": material_id,
                 "processing_time": f"{time.time()-t0:.2f}s",
-                "replaced_image": out_b64
+                "output_image_mb": round(out_size_mb, 3),
+                "output_image_dimensions": {"width": out_w, "height": out_h},
+                "output_image_downscaled": out_downscaled,
+                "replaced_image": out_b64,
             }
         else:
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
