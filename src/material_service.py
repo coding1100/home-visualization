@@ -3,27 +3,21 @@ import time
 import uuid
 import json
 import base64
-import numpy as np
+from typing import List, Dict, Any, Optional, Tuple
+
 import cv2
 import requests
-from typing import List, Dict, Any, Optional, Tuple
+import numpy as np
 from fastapi import HTTPException, UploadFile
 import cloudinary, cloudinary.uploader
 from src.logger import logger
 from src.constants import UPLOAD_DIR
 from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP
 
-# ====== MATERIAL LIBRARY ======
-MATERIALS = {
-    # "id": absolute_or_relative_path_to_texture_image
-    "wall_1": "materials/wall_1.jpg",
-    "wall_2": "materials/wall_2.jpg",
-    "garage_1": "materials/garage_1.jpg",
-    "garage_2": "materials/garage_2.jpg",
-    # add your catalog here…
-}
-
 # ====== GEOMETRY / MASK HELPERS ======
+MAX_OUTPUT_IMAGE_MB = 2.0
+MIN_OUTPUT_DIMENSION_PX = 720
+_MB_DIVISOR = 1024 * 1024
 DEFAULT_EXCLUDE_TYPES = {
     "window",
     "window frame",
@@ -53,19 +47,14 @@ DEFAULT_EXCLUDE_TYPES = {
     "awning",
 }
 
-MAX_OUTPUT_IMAGE_MB = 2.0
-MIN_OUTPUT_DIMENSION_PX = 720
-_MB_DIVISOR = 1024 * 1024
-
-
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
     return max(4, int(round(min(H, W) * 0.006)))  # ~0.6% of shorter side
 
-
 def _calc_erosion_px(H: int, W: int) -> int:
     """Derive an erosion size that scales with image resolution."""
     return max(1, int(round(min(H, W) * 0.002)))  # ~0.2% of shorter side
+
 def _normalize_poly(coords):
     """Normalize polygon coordinates to a consistent format."""
     out = []
@@ -113,7 +102,6 @@ def _union_mask_except(elements, target_ids, target_types, H, W):
             m = cv2.bitwise_or(m, _poly_to_mask(coords, H, W))
     return m
 
-
 def _elements_to_mask(elements, H, W, include_ids=None, include_types=None):
     """Build union mask for elements matching provided ids/types."""
     id_set = {str(i) for i in (include_ids or []) if i is not None}
@@ -130,7 +118,6 @@ def _elements_to_mask(elements, H, W, include_ids=None, include_types=None):
         if coords:
             m = cv2.bitwise_or(m, _poly_to_mask(coords, H, W))
     return m
-
 
 def build_selection_mask(
     elements,
@@ -184,7 +171,6 @@ def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_
     # small open to clean mask specks
     refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
     return refined
-
 
 def _encode_output_image(
     image: np.ndarray,
@@ -410,15 +396,6 @@ def save_tmp_png(bgr_img):
 def download_material_image(material_id: str) -> str:
     """
     Download material image from URL and return temporary file path.
-    
-    Args:
-        material_id: Material ID from PRODUCT_IMAGE_MAP
-        
-    Returns:
-        str: Path to downloaded temporary material image
-        
-    Raises:
-        HTTPException: If material_id not found or download fails
     """
     # Check if material_id exists in PRODUCT_IMAGE_MAP
     if material_id not in PRODUCT_IMAGE_MAP:
@@ -427,10 +404,8 @@ def download_material_image(material_id: str) -> str:
             status_code=400, 
             detail=f"Material ID '{material_id}' not found in catalog. Available IDs include: {available_ids}"
         )
-    
     # Get the image URL
-    image_url = PRODUCT_IMAGE_MAP[material_id]
-    
+    image_url = PRODUCT_IMAGE_MAP[material_id]    
     try:
         # Create tmp directory if it doesn't exist
         tmp_dir = os.path.join(UPLOAD_DIR, "tmp")
@@ -475,7 +450,7 @@ def advanced_material_replacement(
     scale: float = 1.0,
     angle_bias_deg: float = 90.0,
     color_match: Optional[str] = None,
-    preserve_shading: int = 1,
+    preserve_shading: int = 0,
     response_mode: str = "base64",
 
 ):
@@ -505,6 +480,7 @@ def advanced_material_replacement(
         original_cv = cv2.imdecode(np.frombuffer(base64.b64decode(original_image), np.uint8), cv2.IMREAD_COLOR)
         if original_cv is None:
             raise HTTPException(status_code=400, detail="Invalid original_image")
+ 
         H, W = original_cv.shape[:2]
 
         # --- choose material texture ---
@@ -543,7 +519,7 @@ def advanced_material_replacement(
             if target_elem is None:
                 raise HTTPException(status_code=400, detail=f"element_id '{element_id}' not found in elements_json")
 
-            coords = target_elem.get("coordinates") or target_elem.get("polygon")
+            coords = target_elem.get("coordinates")
             if not coords:
                 raise HTTPException(status_code=400, detail=f"element_id '{element_id}' has no coordinates")
 
@@ -604,7 +580,6 @@ def advanced_material_replacement(
 
             if refined_mask is None or np.count_nonzero(refined_mask) == 0:
                 refined_mask = build_refined_mask(elements, include_types, exclude_types, H, W, edge_margin_px=edge_margin)
-
         
         elif mask_image:
             refined_mask = cv2.imdecode(np.frombuffer(base64.b64decode(mask_image), np.uint8), cv2.IMREAD_GRAYSCALE)
@@ -702,46 +677,3 @@ def advanced_material_replacement(
         # ...
         raise HTTPException(status_code=500, detail=str(e))
 
-
-    #
-    #         # Clean up temporary material file if it was downloaded
-    #         if temp_material_path and os.path.exists(temp_material_path):
-    #             try:
-    #                 os.remove(temp_material_path)
-    #                 logger.info(f"Cleaned up temporary material file: {temp_material_path}")
-    #             except Exception as e:
-    #                 logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(e)}")
-    #
-    #         return {
-    #             "success": True,
-    #             "method": method,
-    #             "element_type": element_type,
-    #             "material_id": material_id,
-    #             "processing_time": f"{time.time()-t0:.2f}s",
-    #             "output_image_mb": round(out_size_mb, 3),
-    #             "output_image_dimensions": {"width": out_w, "height": out_h},
-    #             "output_image_downscaled": out_downscaled,
-    #             "replaced_image": out_b64,
-    #         }
-    #     else:
-    #         raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
-    #
-    # except HTTPException:
-    #     # Clean up temporary material file if it was downloaded
-    #     if 'temp_material_path' in locals() and temp_material_path and os.path.exists(temp_material_path):
-    #         try:
-    #             os.remove(temp_material_path)
-    #             logger.info(f"Cleaned up temporary material file after error: {temp_material_path}")
-    #         except Exception as cleanup_e:
-    #             logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(cleanup_e)}")
-    #     raise
-    # except Exception as e:
-    #     # Clean up temporary material file if it was downloaded
-    #     if 'temp_material_path' in locals() and temp_material_path and os.path.exists(temp_material_path):
-    #         try:
-    #             os.remove(temp_material_path)
-    #             logger.info(f"Cleaned up temporary material file after error: {temp_material_path}")
-    #         except Exception as cleanup_e:
-    #             logger.warning(f"Failed to clean up temporary material file {temp_material_path}: {str(cleanup_e)}")
-    #     logger.exception("advanced_material_replacement failed")
-    #     raise HTTPException(status_code=500, detail=str(e))
