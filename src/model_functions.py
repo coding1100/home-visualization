@@ -5,6 +5,7 @@ import shutil
 import base64
 import asyncio
 import json
+import cloudinary, cloudinary.uploader
 
 import torch
 import numpy as np
@@ -219,8 +220,9 @@ def model_replace_material(
 
 
 def model_segment_image(
-    file: UploadFile
-    ):
+    file: UploadFile,
+        response_mode: str = "base64"  # NEW (optional, keeps old behavior)
+):
 
         # Start timing for performance measurement
         start_time = time.time()
@@ -291,7 +293,56 @@ def model_segment_image(
                 "originalColor": get_color_for_class(pred["class"])
             }
             house_elements.append(element)
-        
+        mode = (response_mode or "base64").lower()
+        if mode == "url":
+            try:
+                # upload ORIGINAL
+                res_orig = cloudinary.uploader.upload(
+                    file_path,
+                    folder="segments/originals",
+                    resource_type="image",
+                    use_filename=True,
+                    unique_filename=True,
+                    overwrite=False,
+                )
+                # upload ANNOTATED
+                res_anno = cloudinary.uploader.upload(
+                    annotated_path,
+                    folder="segments/annotated",
+                    resource_type="image",
+                    use_filename=True,
+                    unique_filename=True,
+                    overwrite=False,
+                )
+                original_url = res_orig.get("secure_url")
+                annotated_url = res_anno.get("secure_url")
+            except Exception as e:
+                # same error style you’re already using elsewhere
+                raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
+
+            end_time = time.time()
+            logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+
+            # optional cleanup of local temp images (safe no-op if you want to keep them)
+            # try:
+            #     os.remove(file_path)
+            #     os.remove(annotated_path)
+            # except Exception:
+            #     pass
+
+            return {
+                "success": True,
+                "original_image_url": original_url,
+                "annotated_image_url": annotated_url,
+                "house_elements": house_elements,
+                "raw_predictions": result["predictions"],
+                "processing_time": f"{end_time - start_time:.2f}s",
+            }
+
+        # ---- default (unchanged): base64 payloads ----
+        original_base64 = image_to_base64(file_path)
+        annotated_base64 = image_to_base64(annotated_path)
+
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
 
@@ -301,8 +352,22 @@ def model_segment_image(
             "annotated_image": annotated_base64,
             "house_elements": house_elements,
             "raw_predictions": result["predictions"],
-            "processing_time": f"{end_time - start_time:.2f}s"
+            "processing_time": f"{end_time - start_time:.2f}s",
         }
+        
+        # end_time = time.time()
+
+
+        # logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+        #
+        # return {
+        #     "success": True,
+        #     "original_image": original_base64,
+        #     "annotated_image": annotated_base64,
+        #     "house_elements": house_elements,
+        #     "raw_predictions": result["predictions"],
+        #     "processing_time": f"{end_time - start_time:.2f}s"
+        # }
 
 def model_advanced_replace_material(
     original_image: str,
