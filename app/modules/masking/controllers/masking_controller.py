@@ -6,9 +6,11 @@ masking_router = APIRouter(prefix="/masking", tags=["masking"])
 
 
 @masking_router.post("/segment")
-async def segment_image(file: UploadFile = File(...)):
+async def segment_image(file: UploadFile = File(...),
+    response_mode: str = Form("base64")  # NEW (optional)
+):
     try:
-        return model_segment_image(file)
+        return model_segment_image(file, response_mode=response_mode)
 
     except Exception as e:
         return HTTPException(status_code=500, detail=str(e))
