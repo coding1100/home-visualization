@@ -316,7 +316,8 @@ def model_advanced_replace_material(
     scale: float = 1.0,
     angle_bias_deg: float = 90.0,
     color_match: str = None,
-    preserve_shading: int = 1
+    preserve_shading: int = 1,
+    response_mode: str = "base64"
 ):
     """
     Advanced material replacement with cv_poisson method.
@@ -335,7 +336,9 @@ def model_advanced_replace_material(
             scale=scale,
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
-            preserve_shading=preserve_shading
+            preserve_shading=preserve_shading,
+            response_mode=response_mode,
+
         )
     except Exception as e:
         logger.error(f"Error in advanced material replacement: {str(e)}")
