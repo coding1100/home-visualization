@@ -295,20 +295,25 @@ def model_segment_image(
             house_elements.append(element)
         mode = (response_mode or "base64").lower()
         if mode == "url":
+            # ---- SAME FOLDER PATTERN AS YOUR WORKING ENDPOINT ----
+            folder_parts = ["renders"]
+            # there is no element_type here; we keep it exactly like the working one
+            upload_folder = "/".join(folder_parts)
+
             try:
-                # upload ORIGINAL
+                # upload original
                 res_orig = cloudinary.uploader.upload(
                     file_path,
-                    folder="segments/originals",
+                    folder=upload_folder,
                     resource_type="image",
                     use_filename=True,
                     unique_filename=True,
                     overwrite=False,
                 )
-                # upload ANNOTATED
+                # upload annotated
                 res_anno = cloudinary.uploader.upload(
                     annotated_path,
-                    folder="segments/annotated",
+                    folder=upload_folder,
                     resource_type="image",
                     use_filename=True,
                     unique_filename=True,
