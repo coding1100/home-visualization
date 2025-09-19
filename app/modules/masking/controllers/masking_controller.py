@@ -6,9 +6,11 @@ masking_router = APIRouter(prefix="/masking", tags=["masking"])
 
 
 @masking_router.post("/segment")
-async def segment_image(file: UploadFile = File(...)):
+async def segment_image(file: UploadFile = File(...),
+    response_mode: str = Form("base64")  # NEW (optional)
+):
     try:
-        return model_segment_image(file)
+        return model_segment_image(file, response_mode=response_mode)
 
     except Exception as e:
         return HTTPException(status_code=500, detail=str(e))
@@ -58,7 +60,9 @@ async def advanced_replace_material(
     scale: float = Form(1.0),
     angle_bias_deg: float = Form(90.0),
     color_match: str = Form(None),
-    preserve_shading: int = Form(1)
+    preserve_shading: int = Form(1),
+    # NEW: keeps current default behavior
+    response_mode: str = Form("base64"),
 ):
     """
     Advanced material replacement with cv_poisson method.
@@ -100,7 +104,9 @@ async def advanced_replace_material(
             scale=scale,
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
-            preserve_shading=preserve_shading
+            preserve_shading=preserve_shading,
+            response_mode=response_mode,
+
         )
     except Exception as e:
         logger.error(f"Error in advanced material replacement: {str(e)}")
