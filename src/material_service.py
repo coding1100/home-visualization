@@ -47,6 +47,20 @@ DEFAULT_EXCLUDE_TYPES = {
     "awning",
 }
 
+import cloudinary
+from app.core.config import settings  # same place your FileService pulls config from
+
+def _ensure_cloudinary_config():
+    cfg = cloudinary.config()
+    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+            api_key=settings.CLOUDINARY_API_KEY,
+            api_secret=settings.CLOUDINARY_API_SECRET,
+            secure=True,
+        )
+
+
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
     return max(4, int(round(min(H, W) * 0.006)))  # ~0.6% of shorter side
@@ -605,6 +619,7 @@ def advanced_material_replacement(
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
             if str(response_mode).lower() == "url":
+                _ensure_cloudinary_config()
                 temp_out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_render.png")
                 try:
                     # write bytes from the already-encoded image (keeps size/quality identical)
@@ -620,7 +635,7 @@ def advanced_material_replacement(
                     res = cloudinary.uploader.upload(
                         temp_out_path,
                         folder=upload_folder,
-                        resource_type="image",
+                        resource_type="auto",
                         use_filename=True,
                         unique_filename=True,
                         overwrite=False,
