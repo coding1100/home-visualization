@@ -14,6 +14,7 @@ from PIL import Image
 import supervision as sv
 from fastapi import HTTPException, UploadFile
 
+from app.core.config import settings
 from src.constants import UPLOAD_DIR
 from src.comfyUI import process_with_comfyui
 from src.roboflow_model import model
@@ -26,6 +27,18 @@ from src.utils import (
     cleanup_temp_files
 )
 from src.material_service import advanced_material_replacement
+
+def _ensure_cloudinary_config():
+    cfg = cloudinary.config()
+    # If this module was imported before your app-wide config ran, fill it here.
+    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+            api_key=settings.CLOUDINARY_API_KEY,
+            api_secret=settings.CLOUDINARY_API_SECRET,
+            secure=True,
+        )
+
 
 def model_generate_mask(
     original_image: str ,
@@ -295,17 +308,18 @@ def model_segment_image(
             house_elements.append(element)
         mode = (response_mode or "base64").lower()
         if mode == "url":
-            # ---- SAME FOLDER PATTERN AS YOUR WORKING ENDPOINT ----
-            folder_parts = ["renders"]
-            # there is no element_type here; we keep it exactly like the working one
-            upload_folder = "/".join(folder_parts)
+            _ensure_cloudinary_config()  # <<< important
+
+            # Use the *same* style as your working uploader: resource_type="auto"
+            # Folder pattern matches what you used for renders (no surprises).
+            upload_folder = "renders"
 
             try:
                 # upload original
                 res_orig = cloudinary.uploader.upload(
                     file_path,
                     folder=upload_folder,
-                    resource_type="image",
+                    resource_type="auto",
                     use_filename=True,
                     unique_filename=True,
                     overwrite=False,
@@ -314,7 +328,7 @@ def model_segment_image(
                 res_anno = cloudinary.uploader.upload(
                     annotated_path,
                     folder=upload_folder,
-                    resource_type="image",
+                    resource_type="auto",
                     use_filename=True,
                     unique_filename=True,
                     overwrite=False,
