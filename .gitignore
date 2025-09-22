@@ -180,3 +180,4 @@ migrations/versions/*
 
 *.jpg
 *.png
+*.jpeg
