@@ -185,6 +185,70 @@ def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_
     refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
     return refined
 
+def _calculate_element_specific_scale(element: Dict, image_height: int, image_width: int) -> float:
+    """
+    Calculate element-specific scale based on element dimensions and type.
+    
+    Args:
+        element: Element dictionary with coordinates and type
+        image_height: Total image height in pixels
+        image_width: Total image width in pixels
+        
+    Returns:
+        Calculated scale factor for texture tiling
+    """
+    # Get element coordinates
+    coords = element.get("coordinates", [])
+    if not coords:
+        return 1.0  # Default scale if no coordinates
+    
+    # Calculate element bounding box
+    x_coords = [point["x"] for point in coords]
+    y_coords = [point["y"] for point in coords]
+    
+    min_x, max_x = min(x_coords), max(x_coords)
+    min_y, max_y = min(y_coords), max(y_coords)
+    
+    element_width = max_x - min_x
+    element_height = max_y - min_y
+    element_area = element_width * element_height
+    
+    # Calculate element area relative to total image area
+    total_area = image_width * image_height
+    element_area_ratio = element_area / total_area
+    
+    # Get element type for type-specific scaling
+    element_type = (element.get("type") or element.get("class") or "").lower().strip()
+    
+    # Type-specific scaling factors (smaller elements need smaller tiles)
+    type_scaling_factors = {
+        "window": 0.3,      # Windows are typically small, need fine detail
+        "door": 0.4,        # Doors are medium-small
+        "garage": 0.6,      # Garages are larger
+        "wall": 0.8,        # Walls are large
+        "roof": 1.0,        # Roofs can be very large
+        "trim": 0.2,        # Trim/moldings are very small
+        "siding": 0.7,      # Siding is medium-large
+    }
+    
+    # Get type-specific factor (default to 0.5 for unknown types)
+    type_factor = type_scaling_factors.get(element_type, 0.5)
+    
+    # Calculate scale based on element size and type
+    # Larger elements relative to image get larger scale values
+    size_factor = max(0.1, min(2.0, element_area_ratio * 10))  # Clamp between 0.1 and 2.0
+    
+    # Combine type and size factors
+    calculated_scale = type_factor * size_factor
+    
+    # Final bounds to prevent unrealistic scaling
+    final_scale = max(0.1, min(3.0, calculated_scale))
+    
+    logger.info(f"Element scale calculation: type={element_type}, area_ratio={element_area_ratio:.4f}, "
+                f"type_factor={type_factor}, size_factor={size_factor:.2f}, final_scale={final_scale:.2f}")
+    
+    return final_scale
+
 def _encode_output_image(
     image: np.ndarray,
     compression_levels: Tuple[int, int] = (3, 9),
@@ -239,19 +303,32 @@ def reinhard_match(src_bgr, ref_bgr, mask=None):
     return cv2.cvtColor(out, cv2.COLOR_LAB2BGR)
 
 def tile_texture(tex_bgr, canvas_hw, scale=1.0, angle_deg=0.0):
-    """Tile texture with scaling and rotation."""
+    """Tile texture with scaling and rotation for even distribution."""
     Hc, Wc = canvas_hw
     h, w = tex_bgr.shape[:2]
+    
+    # Ensure minimum tile size for consistent coverage
+    min_tile_size = 32
+    scale = max(scale, min_tile_size / min(h, w))
+    
     # scale
     new_w = max(1, int(w*scale)); new_h = max(1, int(h*scale))
     tex = cv2.resize(tex_bgr, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
+    
     # rotate
     M = cv2.getRotationMatrix2D((new_w/2, new_h/2), angle_deg, 1.0)
     tex = cv2.warpAffine(tex, M, (new_w, new_h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
-    # tile
-    tiles_x = int(np.ceil(Wc/new_w)) + 1
-    tiles_y = int(np.ceil(Hc/new_h)) + 1
-    tiled = np.tile(tex, (tiles_y, tiles_x, 1))[:Hc, :Wc]
+    
+    # tile with better edge handling for even distribution
+    tiles_x = int(np.ceil(Wc/new_w)) + 2  # Extra tiles for seamless coverage
+    tiles_y = int(np.ceil(Hc/new_h)) + 2
+    tiled = np.tile(tex, (tiles_y, tiles_x, 1))
+    
+    # Center the tiling to avoid edge artifacts
+    start_y = (tiles_y * new_h - Hc) // 2
+    start_x = (tiles_x * new_w - Wc) // 2
+    tiled = tiled[start_y:start_y+Hc, start_x:start_x+Wc]
+    
     return tiled
 
 def _auto_angle_from_cnt(cnt):
@@ -265,7 +342,7 @@ def apply_texture_cv_poisson(
     original_bgr, mask, texture_bgr,
     scale=1.0, angle_deg=0.0,
     color_match=None, preserve_shading=True,
-    pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
+    material_prominence=0.8, pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
 ):
     """Apply texture using OpenCV Poisson blending."""
     H, W = original_bgr.shape[:2]
@@ -278,17 +355,30 @@ def apply_texture_cv_poisson(
         region = original_bgr.copy(); region[mask_bin==0] = 0
         texture_bgr = reinhard_match(texture_bgr, region, mask=mask_bin)
 
-    # perspective-ish warp of tiled texture
+    # Create even texture coverage across the entire mask area
     canvas_size = (max(H,W), max(H,W))
     tiled = tile_texture(texture_bgr, canvas_size, scale=scale, angle_deg=angle_deg)
+    
+    # Use simpler, more even transformation for consistent coverage
     ys, xs = np.where(mask_bin>0)
-    pts = np.stack([xs, ys], axis=1).astype(np.float32).reshape(-1,1,2)
-    pts = cv2.approxPolyDP(pts, 2.0, True)
-    rect = cv2.minAreaRect(pts)
-    dst_quad = cv2.boxPoints(rect).astype(np.float32)
-    src_quad = np.array([[0,0],[canvas_size[1]-1,0],[canvas_size[1]-1,canvas_size[0]-1],[0,canvas_size[0]-1]], dtype=np.float32)
-    Hmat = cv2.getPerspectiveTransform(src_quad, dst_quad)
-    src_warp = cv2.warpPerspective(tiled, Hmat, (W,H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+    if len(xs) == 0:
+        return original_bgr
+        
+    # Get bounding box of mask for more even coverage
+    x_min, x_max = np.min(xs), np.max(xs)
+    y_min, y_max = np.min(ys), np.max(ys)
+    
+    # Create a more uniform texture mapping
+    # Use affine transformation instead of perspective for more even distribution
+    src_points = np.float32([[0, 0], [canvas_size[1]-1, 0], [canvas_size[1]-1, canvas_size[0]-1]])
+    dst_points = np.float32([[x_min, y_min], [x_max, y_min], [x_max, y_max]])
+    
+    try:
+        Hmat = cv2.getAffineTransform(src_points, dst_points)
+        src_warp = cv2.warpAffine(tiled, Hmat, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+    except cv2.error:
+        # Fallback to simple resize if affine fails
+        src_warp = cv2.resize(tiled, (W, H), interpolation=cv2.INTER_CUBIC)
 
     if preserve_shading:
         lab_o = cv2.cvtColor(original_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
@@ -298,7 +388,8 @@ def apply_texture_cv_poisson(
         a_s, b_s = lab_s[...,1], lab_s[...,2]
 
         mask_f = (mask_bin.astype(np.float32) / 255.0)
-        shading_keep = 0.35  # keep a fraction of original luminance to retain lighting cues
+        # Calculate shading_keep based on material_prominence (0.8 = 80% material, 20% original)
+        shading_keep = 1.0 - material_prominence  # material_prominence=0.8 -> shading_keep=0.2
         L_mix = L_tex * (1.0 - shading_keep) + L_orig * shading_keep
         L = L_orig * (1.0 - mask_f) + L_mix * mask_f
 
@@ -325,21 +416,21 @@ def apply_texture_cv_poisson(
         cx, cy = roi_dst.shape[1]//2, roi_dst.shape[0]//2
     cx = int(np.clip(cx, 0, roi_dst.shape[1]-1)); cy = int(np.clip(cy, 0, roi_dst.shape[0]-1))
 
-    try:
-        blended_roi = cv2.seamlessClone(roi_src, roi_dst, roi_mask_u8, (cx,cy), clone_mode)
-    except cv2.error:
-        try:
-            blended_roi = cv2.seamlessClone(roi_src, roi_dst, roi_mask_u8, (cx,cy), cv2.NORMAL_CLONE)
-        except cv2.error:
-            alpha = (roi_mask_u8.astype(np.float32)/255.0)[...,None]
-            blended_roi = (roi_src*alpha + roi_dst*(1.0-alpha)).astype(np.uint8)
+    # Use controlled alpha blending for more even results
+    alpha = (roi_mask_u8.astype(np.float32)/255.0)[...,None]
+    
+    # Apply material prominence to the alpha channel for more control
+    alpha_adjusted = alpha * material_prominence
+    
+    # Smooth blending with controlled opacity
+    blended_roi = (roi_src * alpha_adjusted + roi_dst * (1.0 - alpha_adjusted)).astype(np.uint8)
 
     out = original_bgr.copy()
     out[y0:y1, x0:x1] = blended_roi
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, color_match=None, preserve_shading=True):
+                             angle_bias_deg=90.0, color_match=None, preserve_shading=True, material_prominence=0.8):
     """Clone per connected wall (stable angles, avoids cross-bleed)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -350,7 +441,8 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
         a = _auto_angle_from_cnt(c) if angle_mode=="auto" else float(angle_mode)
         a = float(a) + float(angle_bias_deg)
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
-                                       color_match=color_match, preserve_shading=preserve_shading)
+                                       color_match=color_match, preserve_shading=preserve_shading,
+                                       material_prominence=material_prominence)
     return out
 
 def save_tmp_png(bgr_img):
@@ -417,6 +509,7 @@ def advanced_material_replacement(
     angle_bias_deg: float = 90.0,
     color_match: Optional[str] = None,
     preserve_shading: int = 0,
+    material_prominence: float = 0.7,
     response_mode: str = "base64",
 
 ):
@@ -435,6 +528,7 @@ def advanced_material_replacement(
         angle_bias_deg: Angle bias for texture orientation
         color_match: Color matching method ("reinhard" or None)
         preserve_shading: Whether to preserve original shading (1=True, 0=False)
+        material_prominence: Material overlay prominence (0.0-1.0, default 0.7 for 70% visibility)
     
     Returns:
         dict: Result with replaced image and metadata
@@ -565,15 +659,36 @@ def advanced_material_replacement(
 
         # --- apply cv_poisson method ---
         if method == "cv_poisson":
+            # Use element-specific scale for element_id, otherwise use provided scale
+            texture_scale = float(scale)
+            if element_id and elements_json:
+                # Calculate element-specific scale based on target element dimensions
+                try:
+                    elements = json.loads(elements_json)
+                    target_elem = None
+                    for e in elements or []:
+                        if str(e.get("id")).lower() == str(element_id).lower():
+                            target_elem = e
+                            break
+                    
+                    if target_elem:
+                        texture_scale = _calculate_element_specific_scale(target_elem, H, W)
+                        logger.info(f"Using element-specific scale: {texture_scale:.2f} for element_id: {element_id}")
+                    else:
+                        logger.warning(f"Could not find element {element_id} for scale calculation, using default scale: {texture_scale}")
+                except Exception as e:
+                    logger.warning(f"Error calculating element-specific scale: {e}, using default scale: {texture_scale}")
+            
             out = apply_texture_per_region(
                 original=original_cv,
                 union_mask=refined_mask,
                 texture=texture_cv,
-                scale=float(scale),
+                scale=texture_scale,
                 angle_mode="auto",
                 angle_bias_deg=float(angle_bias_deg),
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 preserve_shading=bool(int(preserve_shading)),
+                material_prominence=float(material_prominence),
             )
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
