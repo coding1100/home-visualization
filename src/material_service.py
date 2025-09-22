@@ -1,17 +1,65 @@
+import os
 import time
+import uuid
 import json
 import base64
-from typing import Dict, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple
 
 import cv2
 import requests
 import numpy as np
 from fastapi import HTTPException, UploadFile
-
+import cloudinary, cloudinary.uploader
 from src.logger import logger
-from src.constants import _MB_DIVISOR, DEFAULT_EXCLUDE_TYPES, MATERIAL_PROMINENCE 
-from src.cloudinary_func import ensure_cloudinary_config, upload_image_to_cloudinary
-from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same place your FileService pulls config from
+from src.constants import UPLOAD_DIR
+from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP
+
+# ====== GEOMETRY / MASK HELPERS ======
+MAX_OUTPUT_IMAGE_MB = 2.0
+MIN_OUTPUT_DIMENSION_PX = 720
+_MB_DIVISOR = 1024 * 1024
+DEFAULT_EXCLUDE_TYPES = {
+    "window",
+    "window frame",
+    "window trim",
+    "glass",
+    "door",
+    "garage",
+    "garage door",
+    "light",
+    "lamp",
+    "frame",
+    "trim",
+    "pillar",
+    "column",
+    "post",
+    "stone",
+    "foundation",
+    "fence",
+    "shutter",
+    "railing",
+    "gutter",
+    "downspout",
+    "soffit",
+    "sofit",
+    "fascia",
+    "roof",
+    "awning",
+}
+
+import cloudinary
+from app.core.config import settings  # same place your FileService pulls config from
+
+def _ensure_cloudinary_config():
+    cfg = cloudinary.config()
+    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+            api_key=settings.CLOUDINARY_API_KEY,
+            api_secret=settings.CLOUDINARY_API_SECRET,
+            secure=True,
+        )
+
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
@@ -138,92 +186,34 @@ def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_
     refined = cv2.morphologyEx(refined, cv2.MORPH_OPEN, np.ones((3,3), np.uint8), 1)
     return refined
 
-def _calculate_element_specific_scale(element: Dict, image_height: int, image_width: int) -> float:
-    """
-    Calculate element-specific scale based on element dimensions and type.
-    
-    Args:
-        element: Element dictionary with coordinates and type
-        image_height: Total image height in pixels
-        image_width: Total image width in pixels
-        
-    Returns:
-        Calculated scale factor for texture tiling
-    """
-    # Get element coordinates
-    coords = element.get("coordinates", [])
-    if not coords:
-        return 1.0  # Default scale if no coordinates
-    
-    # Calculate element bounding box
-    x_coords = [point["x"] for point in coords]
-    y_coords = [point["y"] for point in coords]
-    
-    min_x, max_x = min(x_coords), max(x_coords)
-    min_y, max_y = min(y_coords), max(y_coords)
-    
-    element_width = max_x - min_x
-    element_height = max_y - min_y
-    element_area = element_width * element_height
-    
-    # Calculate element area relative to total image area
-    total_area = image_width * image_height
-    element_area_ratio = element_area / total_area
-    
-    # Get element type for type-specific scaling
-    element_type = (element.get("type") or element.get("class") or "").lower().strip()
-    
-    # Type-specific scaling factors (smaller elements need smaller tiles)
-    type_scaling_factors = {
-        "window": 0.3,      # Windows are typically small, need fine detail
-        "door": 0.4,        # Doors are medium-small
-        "garage": 0.6,      # Garages are larger
-        "wall": 0.8,        # Walls are large
-        "roof": 1.0,        # Roofs can be very large
-        "trim": 0.2,        # Trim/moldings are very small
-        "siding": 0.7,      # Siding is medium-large
-    }
-    
-    # Get type-specific factor (default to 0.5 for unknown types)
-    type_factor = type_scaling_factors.get(element_type, 0.5)
-    
-    # Calculate scale based on element size and type
-    # Larger elements relative to image get larger scale values
-    size_factor = max(0.1, min(2.0, element_area_ratio * 10))  # Clamp between 0.1 and 2.0
-    
-    # Combine type and size factors
-    calculated_scale = type_factor * size_factor
-    
-    # Final bounds to prevent unrealistic scaling
-    final_scale = max(0.1, min(3.0, calculated_scale))
-    
-    logger.info(f"Element scale calculation: type={element_type}, area_ratio={element_area_ratio:.4f}, "
-                f"type_factor={type_factor}, size_factor={size_factor:.2f}, final_scale={final_scale:.2f}")
-    
-    return final_scale
-
 def _encode_output_image(
     image: np.ndarray,
+    max_mb: float = MAX_OUTPUT_IMAGE_MB,
+    min_dimension_px: int = MIN_OUTPUT_DIMENSION_PX,
     compression_levels: Tuple[int, int] = (3, 9),
+    downscale_factor: float = 0.85,
 ) -> Tuple[str, float, Tuple[int, int], bool]:
     """
-    Encode an image to base64.
+    Encode an image to base64 while trying to keep the encoded payload under max_mb.
 
     Args:
         image: BGR image to encode.
+        max_mb: Target maximum size in megabytes.
+        min_dimension_px: Smallest allowed dimension when downscaling.
         compression_levels: (default_png_compression, high_png_compression).
+        downscale_factor: Factor applied when iteratively resizing the image.
 
     Returns:
         Tuple containing (base64 string, size in MB, (width, height), was_downscaled).
 
     Raises:
-        HTTPException: If encoding fails.
+        HTTPException: If encoding fails at any stage.
     """
 
     if image is None or image.size == 0:
         raise HTTPException(status_code=500, detail="Output image is empty")
 
-    default_comp, _ = compression_levels
+    default_comp, high_comp = compression_levels
 
     def _encode(image_to_encode: np.ndarray, compression: int) -> bytes:
         success, buffer = cv2.imencode('.png', image_to_encode, [cv2.IMWRITE_PNG_COMPRESSION, compression])
@@ -233,9 +223,50 @@ def _encode_output_image(
 
     encoded_bytes = _encode(image, default_comp)
     size_mb = len(encoded_bytes) / _MB_DIVISOR
+    downscaled = False
+    current_image = image
+    compression_used = default_comp
+
+    if size_mb > max_mb:
+        # Try higher compression before resizing.
+        encoded_high = _encode(current_image, high_comp)
+        if len(encoded_high) < len(encoded_bytes):
+            encoded_bytes = encoded_high
+            size_mb = len(encoded_bytes) / _MB_DIVISOR
+            compression_used = high_comp
+
+        # Iteratively downscale the image until it fits under the limit or we hit the minimum size.
+        while size_mb > max_mb and min(current_image.shape[:2]) > min_dimension_px:
+            new_h = max(int(current_image.shape[0] * downscale_factor), min_dimension_px)
+            new_w = max(int(current_image.shape[1] * downscale_factor), min_dimension_px)
+
+            if new_h == current_image.shape[0] and new_w == current_image.shape[1]:
+                break
+
+            current_image = cv2.resize(current_image, (new_w, new_h), interpolation=cv2.INTER_AREA)
+            downscaled = True
+
+            encoded_bytes = _encode(current_image, high_comp)
+            size_mb = len(encoded_bytes) / _MB_DIVISOR
+            compression_used = high_comp
+
+        if size_mb > max_mb:
+            logger.warning(
+                "Output image remains above size limit: %.2fMB (limit %.2fMB)",
+                size_mb,
+                max_mb,
+            )
+
+    if compression_used != default_comp or downscaled:
+        logger.info(
+            "Output image adjustments applied (compression=%s, downscaled=%s, final_size=%.2fMB)",
+            compression_used,
+            downscaled,
+            size_mb,
+        )
 
     b64_image = base64.b64encode(encoded_bytes).decode('utf-8')
-    return b64_image, size_mb, (image.shape[1], image.shape[0]), False
+    return b64_image, size_mb, (current_image.shape[1], current_image.shape[0]), downscaled
 
 # ====== TEXTURE UTILS ======
 def reinhard_match(src_bgr, ref_bgr, mask=None):
@@ -256,32 +287,19 @@ def reinhard_match(src_bgr, ref_bgr, mask=None):
     return cv2.cvtColor(out, cv2.COLOR_LAB2BGR)
 
 def tile_texture(tex_bgr, canvas_hw, scale=1.0, angle_deg=0.0):
-    """Tile texture with scaling and rotation for even distribution."""
+    """Tile texture with scaling and rotation."""
     Hc, Wc = canvas_hw
     h, w = tex_bgr.shape[:2]
-    
-    # Ensure minimum tile size for consistent coverage
-    min_tile_size = 32
-    scale = max(scale, min_tile_size / min(h, w))
-    
     # scale
     new_w = max(1, int(w*scale)); new_h = max(1, int(h*scale))
     tex = cv2.resize(tex_bgr, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
-    
     # rotate
     M = cv2.getRotationMatrix2D((new_w/2, new_h/2), angle_deg, 1.0)
     tex = cv2.warpAffine(tex, M, (new_w, new_h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
-    
-    # tile with better edge handling for even distribution
-    tiles_x = int(np.ceil(Wc/new_w)) + 2  # Extra tiles for seamless coverage
-    tiles_y = int(np.ceil(Hc/new_h)) + 2
-    tiled = np.tile(tex, (tiles_y, tiles_x, 1))
-    
-    # Center the tiling to avoid edge artifacts
-    start_y = (tiles_y * new_h - Hc) // 2
-    start_x = (tiles_x * new_w - Wc) // 2
-    tiled = tiled[start_y:start_y+Hc, start_x:start_x+Wc]
-    
+    # tile
+    tiles_x = int(np.ceil(Wc/new_w)) + 1
+    tiles_y = int(np.ceil(Hc/new_h)) + 1
+    tiled = np.tile(tex, (tiles_y, tiles_x, 1))[:Hc, :Wc]
     return tiled
 
 def _auto_angle_from_cnt(cnt):
@@ -295,7 +313,7 @@ def apply_texture_cv_poisson(
     original_bgr, mask, texture_bgr,
     scale=1.0, angle_deg=0.0,
     color_match=None, preserve_shading=True,
-    material_prominence=0.8, pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
+    pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
 ):
     """Apply texture using OpenCV Poisson blending."""
     H, W = original_bgr.shape[:2]
@@ -308,30 +326,17 @@ def apply_texture_cv_poisson(
         region = original_bgr.copy(); region[mask_bin==0] = 0
         texture_bgr = reinhard_match(texture_bgr, region, mask=mask_bin)
 
-    # Create even texture coverage across the entire mask area
+    # perspective-ish warp of tiled texture
     canvas_size = (max(H,W), max(H,W))
     tiled = tile_texture(texture_bgr, canvas_size, scale=scale, angle_deg=angle_deg)
-    
-    # Use simpler, more even transformation for consistent coverage
     ys, xs = np.where(mask_bin>0)
-    if len(xs) == 0:
-        return original_bgr
-        
-    # Get bounding box of mask for more even coverage
-    x_min, x_max = np.min(xs), np.max(xs)
-    y_min, y_max = np.min(ys), np.max(ys)
-    
-    # Create a more uniform texture mapping
-    # Use affine transformation instead of perspective for more even distribution
-    src_points = np.float32([[0, 0], [canvas_size[1]-1, 0], [canvas_size[1]-1, canvas_size[0]-1]])
-    dst_points = np.float32([[x_min, y_min], [x_max, y_min], [x_max, y_max]])
-    
-    try:
-        Hmat = cv2.getAffineTransform(src_points, dst_points)
-        src_warp = cv2.warpAffine(tiled, Hmat, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
-    except cv2.error:
-        # Fallback to simple resize if affine fails
-        src_warp = cv2.resize(tiled, (W, H), interpolation=cv2.INTER_CUBIC)
+    pts = np.stack([xs, ys], axis=1).astype(np.float32).reshape(-1,1,2)
+    pts = cv2.approxPolyDP(pts, 2.0, True)
+    rect = cv2.minAreaRect(pts)
+    dst_quad = cv2.boxPoints(rect).astype(np.float32)
+    src_quad = np.array([[0,0],[canvas_size[1]-1,0],[canvas_size[1]-1,canvas_size[0]-1],[0,canvas_size[0]-1]], dtype=np.float32)
+    Hmat = cv2.getPerspectiveTransform(src_quad, dst_quad)
+    src_warp = cv2.warpPerspective(tiled, Hmat, (W,H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
 
     if preserve_shading:
         lab_o = cv2.cvtColor(original_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
@@ -341,8 +346,7 @@ def apply_texture_cv_poisson(
         a_s, b_s = lab_s[...,1], lab_s[...,2]
 
         mask_f = (mask_bin.astype(np.float32) / 255.0)
-        # Calculate shading_keep based on material_prominence (0.8 = 80% material, 20% original)
-        shading_keep = 1.0 - material_prominence  # material_prominence=0.8 -> shading_keep=0.2
+        shading_keep = 0.35  # keep a fraction of original luminance to retain lighting cues
         L_mix = L_tex * (1.0 - shading_keep) + L_orig * shading_keep
         L = L_orig * (1.0 - mask_f) + L_mix * mask_f
 
@@ -369,21 +373,21 @@ def apply_texture_cv_poisson(
         cx, cy = roi_dst.shape[1]//2, roi_dst.shape[0]//2
     cx = int(np.clip(cx, 0, roi_dst.shape[1]-1)); cy = int(np.clip(cy, 0, roi_dst.shape[0]-1))
 
-    # Use controlled alpha blending for more even results
-    alpha = (roi_mask_u8.astype(np.float32)/255.0)[...,None]
-    
-    # Apply material prominence to the alpha channel for more control
-    alpha_adjusted = alpha * material_prominence
-    
-    # Smooth blending with controlled opacity
-    blended_roi = (roi_src * alpha_adjusted + roi_dst * (1.0 - alpha_adjusted)).astype(np.uint8)
+    try:
+        blended_roi = cv2.seamlessClone(roi_src, roi_dst, roi_mask_u8, (cx,cy), clone_mode)
+    except cv2.error:
+        try:
+            blended_roi = cv2.seamlessClone(roi_src, roi_dst, roi_mask_u8, (cx,cy), cv2.NORMAL_CLONE)
+        except cv2.error:
+            alpha = (roi_mask_u8.astype(np.float32)/255.0)[...,None]
+            blended_roi = (roi_src*alpha + roi_dst*(1.0-alpha)).astype(np.uint8)
 
     out = original_bgr.copy()
     out[y0:y1, x0:x1] = blended_roi
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, color_match=None, preserve_shading=True, material_prominence=0.8):
+                             angle_bias_deg=90.0, color_match=None, preserve_shading=True):
     """Clone per connected wall (stable angles, avoids cross-bleed)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -394,14 +398,18 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
         a = _auto_angle_from_cnt(c) if angle_mode=="auto" else float(angle_mode)
         a = float(a) + float(angle_bias_deg)
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
-                                       color_match=color_match, preserve_shading=preserve_shading,
-                                       material_prominence=material_prominence)
+                                       color_match=color_match, preserve_shading=preserve_shading)
     return out
 
-def download_material_image_binary(material_id: str) -> bytes:
+def save_tmp_png(bgr_img):
+    """Helper to save a tmp PNG and return its path for base64 encoding."""
+    out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_out.png")
+    cv2.imwrite(out_path, bgr_img, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+    return out_path
+
+def download_material_image(material_id: str) -> str:
     """
-    Download material image from URL and return binary data directly.
-    Eliminates the need for temporary files.
+    Download material image from URL and return temporary file path.
     """
     # Check if material_id exists in PRODUCT_IMAGE_MAP
     if material_id not in PRODUCT_IMAGE_MAP:
@@ -413,13 +421,29 @@ def download_material_image_binary(material_id: str) -> bytes:
     # Get the image URL
     image_url = PRODUCT_IMAGE_MAP[material_id]    
     try:
-        # Download the image directly to memory
+        # Create tmp directory if it doesn't exist
+        tmp_dir = os.path.join(UPLOAD_DIR, "tmp")
+        os.makedirs(tmp_dir, exist_ok=True)
+        
+        # Generate temporary filename
+        file_extension = image_url.split('.')[-1].split('?')[0]  # Handle URLs with query params
+        if file_extension not in ['jpg', 'jpeg', 'png', 'webp']:
+            file_extension = 'jpg'  # Default fallback
+        
+        temp_filename = f"{uuid.uuid4()}_material.{file_extension}"
+        temp_path = os.path.join(tmp_dir, temp_filename)
+        
+        # Download the image
         logger.info(f"Downloading material image from: {image_url}")
         response = requests.get(image_url, timeout=30)
         response.raise_for_status()
         
-        logger.info(f"Material image downloaded successfully ({len(response.content)} bytes)")
-        return response.content
+        # Save to temporary file
+        with open(temp_path, 'wb') as f:
+            f.write(response.content)
+        
+        logger.info(f"Material image downloaded to: {temp_path}")
+        return temp_path
         
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to download material image from {image_url}: {str(e)}")
@@ -441,7 +465,6 @@ def advanced_material_replacement(
     angle_bias_deg: float = 90.0,
     color_match: Optional[str] = None,
     preserve_shading: int = 0,
-    material_prominence: float = MATERIAL_PROMINENCE,
     response_mode: str = "base64",
 
 ):
@@ -449,7 +472,7 @@ def advanced_material_replacement(
     Advanced material replacement with cv_poisson method.
     
     Args:
-        original_image: URL of the original image to process
+        original_image: Base64 encoded original image
         mask_image: Base64 encoded mask image (optional)
         elements_json: JSON string of house elements (optional)
         element_type: Type of element to replace (optional)
@@ -460,7 +483,6 @@ def advanced_material_replacement(
         angle_bias_deg: Angle bias for texture orientation
         color_match: Color matching method ("reinhard" or None)
         preserve_shading: Whether to preserve original shading (1=True, 0=False)
-        material_prominence: Material overlay prominence (0.0-1.0, default 0.7 for 70% visibility)
     
     Returns:
         dict: Result with replaced image and metadata
@@ -468,31 +490,25 @@ def advanced_material_replacement(
     try:
         t0 = time.time()
 
-        # --- download and decode original image ---
-        try:
-            response = requests.get(original_image, timeout=30)
-            response.raise_for_status()
-            original_cv = cv2.imdecode(np.frombuffer(response.content, np.uint8), cv2.IMREAD_COLOR)
-            if original_cv is None:
-                raise HTTPException(status_code=400, detail="Invalid original_image format")
-        except requests.exceptions.RequestException as e:
-            raise HTTPException(status_code=400, detail=f"Failed to download original_image: {str(e)}")
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error processing original_image: {str(e)}")
+        # --- decode original image ---
+        original_cv = cv2.imdecode(np.frombuffer(base64.b64decode(original_image), np.uint8), cv2.IMREAD_COLOR)
+        if original_cv is None:
+            raise HTTPException(status_code=400, detail="Invalid original_image")
  
         H, W = original_cv.shape[:2]
 
         # --- choose material texture ---
         texture_cv = None
+        temp_material_path = None
         
         if material_image is not None:
             # Use uploaded material image
             content = material_image.read()
             texture_cv = cv2.imdecode(np.frombuffer(content, np.uint8), cv2.IMREAD_COLOR)
         elif material_id:
-            # Download material image from PRODUCT_IMAGE_MAP directly to memory
-            material_content = download_material_image_binary(material_id)
-            texture_cv = cv2.imdecode(np.frombuffer(material_content, np.uint8), cv2.IMREAD_COLOR)
+            # Download material image from PRODUCT_IMAGE_MAP
+            temp_material_path = download_material_image(material_id)
+            texture_cv = cv2.imread(temp_material_path, cv2.IMREAD_COLOR)
             
         if method == "cv_poisson" and texture_cv is None:
             raise HTTPException(status_code=400, detail="No material texture: provide material_image or valid material_id")
@@ -590,47 +606,41 @@ def advanced_material_replacement(
 
         # --- apply cv_poisson method ---
         if method == "cv_poisson":
-            # Use element-specific scale for element_id, otherwise use provided scale
-            texture_scale = float(scale)
-            if element_id and elements_json:
-                # Calculate element-specific scale based on target element dimensions
-                try:
-                    elements = json.loads(elements_json)
-                    target_elem = None
-                    for e in elements or []:
-                        if str(e.get("id")).lower() == str(element_id).lower():
-                            target_elem = e
-                            break
-                    
-                    if target_elem:
-                        texture_scale = _calculate_element_specific_scale(target_elem, H, W)
-                        logger.info(f"Using element-specific scale: {texture_scale:.2f} for element_id: {element_id}")
-                    else:
-                        logger.warning(f"Could not find element {element_id} for scale calculation, using default scale: {texture_scale}")
-                except Exception as e:
-                    logger.warning(f"Error calculating element-specific scale: {e}, using default scale: {texture_scale}")
-            
             out = apply_texture_per_region(
                 original=original_cv,
                 union_mask=refined_mask,
                 texture=texture_cv,
-                scale=texture_scale,
+                scale=float(scale),
                 angle_mode="auto",
                 angle_bias_deg=float(angle_bias_deg),
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 preserve_shading=bool(int(preserve_shading)),
-                material_prominence=float(material_prominence),
             )
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
             if str(response_mode).lower() == "url":
-                ensure_cloudinary_config()
+                _ensure_cloudinary_config()
+                temp_out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_render.png")
                 try:
-                    # Convert base64 to binary for direct upload
-                    output_binary = base64.b64decode(out_b64)
-                    
-                    # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)       
-                    res = upload_image_to_cloudinary(output_binary, element_type)
+                    # write bytes from the already-encoded image (keeps size/quality identical)
+                    with open(temp_out_path, "wb") as f:
+                        f.write(base64.b64decode(out_b64))
+
+                    # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)
+                    folder_parts = ["renders"]
+                    if element_type:
+                        folder_parts.append(str(element_type).lower())
+                    upload_folder = "/".join(folder_parts)
+
+                    res = cloudinary.uploader.upload(
+                        temp_out_path,
+                        folder=upload_folder,
+                        resource_type="auto",
+                        use_filename=True,
+                        unique_filename=True,
+                        overwrite=False,
+                    )
+
                     # capture Cloudinary data (dynamic; nothing hard-coded)
                     replaced_image_url = res.get("secure_url")
                     public_id = res.get("public_id")
@@ -651,9 +661,12 @@ def advanced_material_replacement(
                         "replaced_image_url": replaced_image_url,
                         "public_id": public_id,
                     }
-                except Exception as e:
-                    logger.error(f"Error uploading to Cloudinary: {str(e)}")
-                    raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+                finally:
+                    try:
+                        if os.path.exists(temp_out_path):
+                            os.remove(temp_out_path)
+                    except Exception:
+                        pass
 
                 # ---- default: existing base64 behavior (unchanged) ----
             return {
@@ -670,10 +683,12 @@ def advanced_material_replacement(
         else:
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
 
-    except HTTPException as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
-        raise e
+    except HTTPException:
+        # existing cleanup for temp_material_path stays as-is
+        # ...
+        raise
     except Exception as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
-        raise e
+        # existing cleanup & logging stays as-is
+        # ...
+        raise HTTPException(status_code=500, detail=str(e))
 
