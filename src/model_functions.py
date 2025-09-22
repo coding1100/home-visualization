@@ -1,11 +1,8 @@
 import time
 import uuid
 import os
-import shutil
 import base64
-import asyncio
 import json
-import cloudinary, cloudinary.uploader
 
 import torch
 import numpy as np
@@ -14,30 +11,17 @@ from PIL import Image
 import supervision as sv
 from fastapi import HTTPException, UploadFile
 
-from app.core.config import settings
-from src.constants import UPLOAD_DIR
+from src. constants import UPLOAD_DIR
 from src.comfyUI import process_with_comfyui
 from src.roboflow_model import model
 from src.logger import logger
+from src.cloudinary_func import ensure_cloudinary_config, upload_image_to_cloudinary
 from src.utils import (
-    image_to_base64,
     get_color_for_class,
     get_material_for_class,
-    set_global_seed,
-    cleanup_temp_files
+    set_global_seed
 )
 from src.material_service import advanced_material_replacement
-
-def _ensure_cloudinary_config():
-    cfg = cloudinary.config()
-    # If this module was imported before your app-wide config ran, fill it here.
-    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
-        cloudinary.config(
-            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-            api_key=settings.CLOUDINARY_API_KEY,
-            api_secret=settings.CLOUDINARY_API_SECRET,
-            secure=True,
-        )
 
 
 def model_generate_mask(
@@ -121,16 +105,11 @@ def model_generate_mask(
     # Apply fast Gaussian blur for smoother edges
     mask = cv2.GaussianBlur(mask, (5, 5), 0)
     
-    # Save the mask image with optimized compression
-    mask_filename = f"{uuid.uuid4()}_mask.png"
-    mask_path = os.path.join(UPLOAD_DIR, mask_filename)
-    
-    # Use optimized PNG encoding parameters
-    compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 1]  # Faster compression
-    cv2.imwrite(mask_path, mask, compression_params)
-    
-    # Convert mask to base64
-    mask_base64 = image_to_base64(mask_path)
+    # Convert mask directly to base64 without saving to file
+    success, buffer = cv2.imencode('.png', mask, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to encode mask image")
+    mask_base64 = base64.b64encode(buffer.tobytes()).decode('utf-8')
     
     # Log performance metrics
     end_time = time.time()
@@ -187,36 +166,31 @@ def model_replace_material(
         
         logger.info(f"Processing material replacement for element type: {element_type}")
         
-        # Save images for ComfyUI processing with optimized compression
-        original_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_original.png")
-        mask_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_mask.png")
-        material_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_material.png")
+        # Convert images to base64 for ComfyUI processing (no temp files)
+        success_orig, buffer_orig = cv2.imencode('.png', original_cv, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+        success_mask, buffer_mask = cv2.imencode('.png', mask_cv, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+        success_mat, buffer_mat = cv2.imencode('.png', material_cv, [cv2.IMWRITE_PNG_COMPRESSION, 1])
         
-        # Use optimized saving
-        compression_params = [cv2.IMWRITE_PNG_COMPRESSION, 1]  # Faster compression
-        cv2.imwrite(original_path, original_cv, compression_params)
-        cv2.imwrite(mask_path, mask_cv, compression_params)
-        cv2.imwrite(material_path, material_cv, compression_params)
+        if not all([success_orig, success_mask, success_mat]):
+            raise HTTPException(status_code=500, detail="Failed to encode images for ComfyUI processing")
         
-        # Use ComfyUI API to process the images
+        original_base64 = base64.b64encode(buffer_orig.tobytes()).decode('utf-8')
+        mask_base64 = base64.b64encode(buffer_mask.tobytes()).decode('utf-8')
+        material_base64 = base64.b64encode(buffer_mat.tobytes()).decode('utf-8')
+        
+        # Use ComfyUI API to process the images directly from base64
         try:
-            output_path, seed_value =  process_with_comfyui(
-                original_path=original_path,
-                mask_path=mask_path,
-                material_path=material_path,
+            output_base64, seed_value = process_with_comfyui(
+                original_base64=original_base64,
+                mask_base64=mask_base64,
+                material_base64=material_base64,
                 prompt=prompt,
                 element_type=element_type
             )
             
-            # Convert output to base64
-            output_base64 = image_to_base64(output_path)
-            
             # Log performance metrics
             end_time = time.time()
             logger.info(f"Total material replacement for {element_type} completed in {end_time - start_time:.2f} seconds")
-            
-            # Clean up temporary files in background
-            asyncio.create_task(cleanup_temp_files([original_path, mask_path, material_path, output_path]))
             
             return {
                 "success": True,
@@ -240,26 +214,35 @@ def model_segment_image(
         # Start timing for performance measurement
         start_time = time.time()
         
-        # Generate a unique file name
+        # Read uploaded file content directly
+        file_content = file.file.read()
+        
+        # Convert to numpy array for processing
+        nparr = np.frombuffer(file_content, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        # Save temporarily only for Roboflow model (it requires file path)
         file_extension = file.filename.split(".")[-1]
         file_name = f"{uuid.uuid4()}.{file_extension}"
         file_path = os.path.join(UPLOAD_DIR, file_name)
         
-        # Save the uploaded file
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Save temporarily for Roboflow processing
+        cv2.imwrite(file_path, image)
         
         # Process the image with Roboflow model
         result = model.predict(file_path, confidence=25).json()
+        
+        # Clean up temp file immediately after Roboflow processing
+        try:
+            os.remove(file_path)
+        except Exception:
+            pass
         
         # Get the labels for each detection
         labels = [item["class"] for item in result["predictions"]]
         
         # Create detections object from inference result
         detections = sv.Detections.from_inference(result)
-        
-        # Read the original image
-        image = cv2.imread(file_path)
         
         # Create annotators
         label_annotator = sv.LabelAnnotator()
@@ -271,13 +254,15 @@ def model_segment_image(
         annotated_image = label_annotator.annotate(
             scene=annotated_image, detections=detections, labels=labels)
         
-        # Save the annotated image
-        annotated_path = os.path.join(UPLOAD_DIR, f"annotated_{file_name}")
-        cv2.imwrite(annotated_path, annotated_image)
+        # Convert images directly to base64 without saving to files
+        success_orig, buffer_orig = cv2.imencode('.png', image, [cv2.IMWRITE_PNG_COMPRESSION, 1])
+        success_anno, buffer_anno = cv2.imencode('.png', annotated_image, [cv2.IMWRITE_PNG_COMPRESSION, 1])
         
-        # Convert original and annotated images to base64
-        original_base64 = image_to_base64(file_path)
-        annotated_base64 = image_to_base64(annotated_path)
+        if not all([success_orig, success_anno]):
+            raise HTTPException(status_code=500, detail="Failed to encode images")
+        
+        original_base64 = base64.b64encode(buffer_orig.tobytes()).decode('utf-8')
+        annotated_base64 = base64.b64encode(buffer_anno.tobytes()).decode('utf-8')
         
         # Extract house elements data for the frontend
         house_elements = []
@@ -308,46 +293,24 @@ def model_segment_image(
             house_elements.append(element)
         mode = (response_mode or "base64").lower()
         if mode == "url":
-            _ensure_cloudinary_config()  # <<< important
-
-            # Use the *same* style as your working uploader: resource_type="auto"
-            # Folder pattern matches what you used for renders (no surprises).
-            upload_folder = "renders"
-
+            ensure_cloudinary_config()  # <<< important
             try:
+                # Convert base64 to binary for direct upload
+                original_binary = base64.b64decode(original_base64)
+                annotated_binary = base64.b64decode(annotated_base64)
+                
                 # upload original
-                res_orig = cloudinary.uploader.upload(
-                    file_path,
-                    folder=upload_folder,
-                    resource_type="auto",
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
+                res_orig = upload_image_to_cloudinary(original_binary)
                 # upload annotated
-                res_anno = cloudinary.uploader.upload(
-                    annotated_path,
-                    folder=upload_folder,
-                    resource_type="auto",
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
+                res_anno = upload_image_to_cloudinary(annotated_binary)
                 original_url = res_orig.get("secure_url")
                 annotated_url = res_anno.get("secure_url")
             except Exception as e:
-                # same error style you’re already using elsewhere
+                # same error style you're already using elsewhere
                 raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
 
             end_time = time.time()
             logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-
-            # optional cleanup of local temp images (safe no-op if you want to keep them)
-            # try:
-            #     os.remove(file_path)
-            #     os.remove(annotated_path)
-            # except Exception:
-            #     pass
 
             return {
                 "success": True,
@@ -358,9 +321,7 @@ def model_segment_image(
                 "processing_time": f"{end_time - start_time:.2f}s",
             }
 
-        # ---- default (unchanged): base64 payloads ----
-        original_base64 = image_to_base64(file_path)
-        annotated_base64 = image_to_base64(annotated_path)
+        # ---- default: base64 payloads (already computed above) ----
 
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
@@ -373,20 +334,6 @@ def model_segment_image(
             "raw_predictions": result["predictions"],
             "processing_time": f"{end_time - start_time:.2f}s",
         }
-        
-        # end_time = time.time()
-
-
-        # logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-        #
-        # return {
-        #     "success": True,
-        #     "original_image": original_base64,
-        #     "annotated_image": annotated_base64,
-        #     "house_elements": house_elements,
-        #     "raw_predictions": result["predictions"],
-        #     "processing_time": f"{end_time - start_time:.2f}s"
-        # }
 
 def model_advanced_replace_material(
     original_image: str,
