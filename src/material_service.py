@@ -1,64 +1,17 @@
-import os
 import time
-import uuid
 import json
 import base64
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import cv2
 import requests
 import numpy as np
 from fastapi import HTTPException, UploadFile
-import cloudinary, cloudinary.uploader
+
 from src.logger import logger
-from src.constants import UPLOAD_DIR
-from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP
-
-# ====== GEOMETRY / MASK HELPERS ======
-MAX_OUTPUT_IMAGE_MB = 2.0
-MIN_OUTPUT_DIMENSION_PX = 720
-_MB_DIVISOR = 1024 * 1024
-DEFAULT_EXCLUDE_TYPES = {
-    "window",
-    "window frame",
-    "window trim",
-    "glass",
-    "door",
-    "garage",
-    "garage door",
-    "light",
-    "lamp",
-    "frame",
-    "trim",
-    "pillar",
-    "column",
-    "post",
-    "stone",
-    "foundation",
-    "fence",
-    "shutter",
-    "railing",
-    "gutter",
-    "downspout",
-    "soffit",
-    "sofit",
-    "fascia",
-    "roof",
-    "awning",
-}
-
-import cloudinary
-from app.core.config import settings  # same place your FileService pulls config from
-
-def _ensure_cloudinary_config():
-    cfg = cloudinary.config()
-    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
-        cloudinary.config(
-            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-            api_key=settings.CLOUDINARY_API_KEY,
-            api_secret=settings.CLOUDINARY_API_SECRET,
-            secure=True,
-        )
+from src.constants import _MB_DIVISOR, DEFAULT_EXCLUDE_TYPES, MATERIAL_PROMINENCE 
+from src.cloudinary_func import ensure_cloudinary_config, upload_image_to_cloudinary
+from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same place your FileService pulls config from
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
@@ -445,15 +398,10 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
                                        material_prominence=material_prominence)
     return out
 
-def save_tmp_png(bgr_img):
-    """Helper to save a tmp PNG and return its path for base64 encoding."""
-    out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_out.png")
-    cv2.imwrite(out_path, bgr_img, [cv2.IMWRITE_PNG_COMPRESSION, 1])
-    return out_path
-
-def download_material_image(material_id: str) -> str:
+def download_material_image_binary(material_id: str) -> bytes:
     """
-    Download material image from URL and return temporary file path.
+    Download material image from URL and return binary data directly.
+    Eliminates the need for temporary files.
     """
     # Check if material_id exists in PRODUCT_IMAGE_MAP
     if material_id not in PRODUCT_IMAGE_MAP:
@@ -465,29 +413,13 @@ def download_material_image(material_id: str) -> str:
     # Get the image URL
     image_url = PRODUCT_IMAGE_MAP[material_id]    
     try:
-        # Create tmp directory if it doesn't exist
-        tmp_dir = os.path.join(UPLOAD_DIR, "tmp")
-        os.makedirs(tmp_dir, exist_ok=True)
-        
-        # Generate temporary filename
-        file_extension = image_url.split('.')[-1].split('?')[0]  # Handle URLs with query params
-        if file_extension not in ['jpg', 'jpeg', 'png', 'webp']:
-            file_extension = 'jpg'  # Default fallback
-        
-        temp_filename = f"{uuid.uuid4()}_material.{file_extension}"
-        temp_path = os.path.join(tmp_dir, temp_filename)
-        
-        # Download the image
+        # Download the image directly to memory
         logger.info(f"Downloading material image from: {image_url}")
         response = requests.get(image_url, timeout=30)
         response.raise_for_status()
         
-        # Save to temporary file
-        with open(temp_path, 'wb') as f:
-            f.write(response.content)
-        
-        logger.info(f"Material image downloaded to: {temp_path}")
-        return temp_path
+        logger.info(f"Material image downloaded successfully ({len(response.content)} bytes)")
+        return response.content
         
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to download material image from {image_url}: {str(e)}")
@@ -509,7 +441,7 @@ def advanced_material_replacement(
     angle_bias_deg: float = 90.0,
     color_match: Optional[str] = None,
     preserve_shading: int = 0,
-    material_prominence: float = 0.7,
+    material_prominence: float = MATERIAL_PROMINENCE,
     response_mode: str = "base64",
 
 ):
@@ -552,16 +484,15 @@ def advanced_material_replacement(
 
         # --- choose material texture ---
         texture_cv = None
-        temp_material_path = None
         
         if material_image is not None:
             # Use uploaded material image
             content = material_image.read()
             texture_cv = cv2.imdecode(np.frombuffer(content, np.uint8), cv2.IMREAD_COLOR)
         elif material_id:
-            # Download material image from PRODUCT_IMAGE_MAP
-            temp_material_path = download_material_image(material_id)
-            texture_cv = cv2.imread(temp_material_path, cv2.IMREAD_COLOR)
+            # Download material image from PRODUCT_IMAGE_MAP directly to memory
+            material_content = download_material_image_binary(material_id)
+            texture_cv = cv2.imdecode(np.frombuffer(material_content, np.uint8), cv2.IMREAD_COLOR)
             
         if method == "cv_poisson" and texture_cv is None:
             raise HTTPException(status_code=400, detail="No material texture: provide material_image or valid material_id")
@@ -693,28 +624,13 @@ def advanced_material_replacement(
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
             if str(response_mode).lower() == "url":
-                _ensure_cloudinary_config()
-                temp_out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_render.png")
+                ensure_cloudinary_config()
                 try:
-                    # write bytes from the already-encoded image (keeps size/quality identical)
-                    with open(temp_out_path, "wb") as f:
-                        f.write(base64.b64decode(out_b64))
-
-                    # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)
-                    folder_parts = ["renders"]
-                    if element_type:
-                        folder_parts.append(str(element_type).lower())
-                    upload_folder = "/".join(folder_parts)
-
-                    res = cloudinary.uploader.upload(
-                        temp_out_path,
-                        folder=upload_folder,
-                        resource_type="auto",
-                        use_filename=True,
-                        unique_filename=True,
-                        overwrite=False,
-                    )
-
+                    # Convert base64 to binary for direct upload
+                    output_binary = base64.b64decode(out_b64)
+                    
+                    # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)       
+                    res = upload_image_to_cloudinary(output_binary, element_type)
                     # capture Cloudinary data (dynamic; nothing hard-coded)
                     replaced_image_url = res.get("secure_url")
                     public_id = res.get("public_id")
@@ -735,12 +651,9 @@ def advanced_material_replacement(
                         "replaced_image_url": replaced_image_url,
                         "public_id": public_id,
                     }
-                finally:
-                    try:
-                        if os.path.exists(temp_out_path):
-                            os.remove(temp_out_path)
-                    except Exception:
-                        pass
+                except Exception as e:
+                    logger.error(f"Error uploading to Cloudinary: {str(e)}")
+                    raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
                 # ---- default: existing base64 behavior (unchanged) ----
             return {
@@ -757,12 +670,10 @@ def advanced_material_replacement(
         else:
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
 
-    except HTTPException:
-        # existing cleanup for temp_material_path stays as-is
-        # ...
-        raise
+    except HTTPException as e:
+        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        raise e
     except Exception as e:
-        # existing cleanup & logging stays as-is
-        # ...
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        raise e
 
