@@ -16,6 +16,7 @@ from app.modules.signupflow.models.user import User
 from app.modules.billing.models.payment import Payment
 from app.modules.contact.models.contact_request import ContactRequest
 from app.modules.files.models.file_upload import FileUpload
+from app.modules.files.models.gallery_images import GalleryImage
 
 # Alembic Config
 config = context.config
