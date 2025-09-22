@@ -1,16 +1,19 @@
 from src.model_functions import model_generate_mask, model_replace_material, model_segment_image, model_advanced_replace_material
 from src.logger import logger
-from fastapi import UploadFile, File, HTTPException, Form, APIRouter
-
+from fastapi import UploadFile, File, HTTPException, Form, APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.modules.deps import get_db
 masking_router = APIRouter(prefix="/masking", tags=["masking"])
 
 
 @masking_router.post("/segment")
-async def segment_image(file: UploadFile = File(...),
+async def segment_image(file: UploadFile = File(None),
+    image_id: str = Form(None),                   # <- NEW (optional)
+    db: AsyncSession = Depends(get_db),
     response_mode: str = Form("base64")  # NEW (optional)
 ):
     try:
-        return model_segment_image(file, response_mode=response_mode)
+        return await model_segment_image(file=file, image_id=image_id, db=db, response_mode=response_mode,)
 
     except Exception as e:
         return HTTPException(status_code=500, detail=str(e))
