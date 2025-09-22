@@ -1,10 +1,13 @@
 import time
+import urllib
 import uuid
 import os
 import shutil
 import base64
 import asyncio
 import json
+from typing import Optional
+
 import cloudinary, cloudinary.uploader
 
 import torch
@@ -13,8 +16,11 @@ import cv2
 from PIL import Image
 import supervision as sv
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.modules.files.models.gallery_images import GalleryImage
 from src.constants import UPLOAD_DIR
 from src.comfyUI import process_with_comfyui
 from src.roboflow_model import model
@@ -232,161 +238,163 @@ def model_replace_material(
             raise Exception(f"Failed to process {element_type} with ComfyUI: {str(comfy_error)}")
 
 
-def model_segment_image(
-    file: UploadFile,
-        response_mode: str = "base64"  # NEW (optional, keeps old behavior)
-):
+# def model_segment_image(
+#     file: UploadFile,
+#         response_mode: str = "base64"  # NEW (optional, keeps old behavior)
+# ):
+#
+#         # Start timing for performance measurement
+#         start_time = time.time()
+#
+#         # Generate a unique file name
+#         file_extension = file.filename.split(".")[-1]
+#         file_name = f"{uuid.uuid4()}.{file_extension}"
+#         file_path = os.path.join(UPLOAD_DIR, file_name)
+#
+#         # Save the uploaded file
+#         with open(file_path, "wb") as buffer:
+#             shutil.copyfileobj(file.file, buffer)
+#
+#         # Process the image with Roboflow model
+#         result = model.predict(file_path, confidence=25).json()
+#
+#         # Get the labels for each detection
+#         labels = [item["class"] for item in result["predictions"]]
+#
+#         # Create detections object from inference result
+#         detections = sv.Detections.from_inference(result)
+#
+#         # Read the original image
+#         image = cv2.imread(file_path)
+#
+#         # Create annotators
+#         label_annotator = sv.LabelAnnotator()
+#         mask_annotator = sv.MaskAnnotator()
+#
+#         # Annotate the image
+#         annotated_image = mask_annotator.annotate(
+#             scene=image, detections=detections)
+#         annotated_image = label_annotator.annotate(
+#             scene=annotated_image, detections=detections, labels=labels)
+#
+#         # Save the annotated image
+#         annotated_path = os.path.join(UPLOAD_DIR, f"annotated_{file_name}")
+#         cv2.imwrite(annotated_path, annotated_image)
+#
+#         # Convert original and annotated images to base64
+#         original_base64 = image_to_base64(file_path)
+#         annotated_base64 = image_to_base64(annotated_path)
+#
+#         # Extract house elements data for the frontend
+#         house_elements = []
+#         for i, pred in enumerate(result["predictions"]):
+#             points = []
+#             if "points" in pred:
+#                 points = pred["points"]
+#             elif "x" in pred and "y" in pred and "width" in pred and "height" in pred:
+#                 # Convert bounding box to polygon points
+#                 x, y, w, h = pred["x"], pred["y"], pred["width"], pred["height"]
+#                 points = [
+#                     [x - w/2, y - h/2],
+#                     [x + w/2, y - h/2],
+#                     [x + w/2, y + h/2],
+#                     [x - w/2, y + h/2]
+#                 ]
+#
+#             element = {
+#                 "id": f"{pred['class']}-{i}",
+#                 "name": f"{pred['class'].capitalize()} {i+1}",
+#                 "type": pred["class"],
+#                 "color": get_color_for_class(pred["class"]),
+#                 "material": get_material_for_class(pred["class"]),
+#                 "coordinates": points,
+#                 "confidence": pred["confidence"],
+#                 "originalColor": get_color_for_class(pred["class"])
+#             }
+#             house_elements.append(element)
+#         mode = (response_mode or "base64").lower()
+#         if mode == "url":
+#             _ensure_cloudinary_config()  # <<< important
+#
+#             # Use the *same* style as your working uploader: resource_type="auto"
+#             # Folder pattern matches what you used for renders (no surprises).
+#             upload_folder = "renders"
+#
+#             try:
+#                 # upload original
+#                 res_orig = cloudinary.uploader.upload(
+#                     file_path,
+#                     folder=upload_folder,
+#                     resource_type="auto",
+#                     use_filename=True,
+#                     unique_filename=True,
+#                     overwrite=False,
+#                 )
+#                 # upload annotated
+#                 res_anno = cloudinary.uploader.upload(
+#                     annotated_path,
+#                     folder=upload_folder,
+#                     resource_type="auto",
+#                     use_filename=True,
+#                     unique_filename=True,
+#                     overwrite=False,
+#                 )
+#                 original_url = res_orig.get("secure_url")
+#                 annotated_url = res_anno.get("secure_url")
+#             except Exception as e:
+#                 # same error style you’re already using elsewhere
+#                 raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
+#
+#             end_time = time.time()
+#             logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+#
+#             # optional cleanup of local temp images (safe no-op if you want to keep them)
+#             # try:
+#             #     os.remove(file_path)
+#             #     os.remove(annotated_path)
+#             # except Exception:
+#             #     pass
+#
+#             return {
+#                 "success": True,
+#                 "original_image_url": original_url,
+#                 "annotated_image_url": annotated_url,
+#                 "house_elements": house_elements,
+#                 "raw_predictions": result["predictions"],
+#                 "processing_time": f"{end_time - start_time:.2f}s",
+#             }
+#
+#         # ---- default (unchanged): base64 payloads ----
+#         original_base64 = image_to_base64(file_path)
+#         annotated_base64 = image_to_base64(annotated_path)
+#
+#         end_time = time.time()
+#         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+#
+#         return {
+#             "success": True,
+#             "original_image": original_base64,
+#             "annotated_image": annotated_base64,
+#             "house_elements": house_elements,
+#             "raw_predictions": result["predictions"],
+#             "processing_time": f"{end_time - start_time:.2f}s",
+#         }
+#
+#         # end_time = time.time()
+#
+#
+#         # logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+#         #
+#         # return {
+#         #     "success": True,
+#         #     "original_image": original_base64,
+#         #     "annotated_image": annotated_base64,
+#         #     "house_elements": house_elements,
+#         #     "raw_predictions": result["predictions"],
+#         #     "processing_time": f"{end_time - start_time:.2f}s"
+#         # }
 
-        # Start timing for performance measurement
-        start_time = time.time()
-        
-        # Generate a unique file name
-        file_extension = file.filename.split(".")[-1]
-        file_name = f"{uuid.uuid4()}.{file_extension}"
-        file_path = os.path.join(UPLOAD_DIR, file_name)
-        
-        # Save the uploaded file
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        # Process the image with Roboflow model
-        result = model.predict(file_path, confidence=25).json()
-        
-        # Get the labels for each detection
-        labels = [item["class"] for item in result["predictions"]]
-        
-        # Create detections object from inference result
-        detections = sv.Detections.from_inference(result)
-        
-        # Read the original image
-        image = cv2.imread(file_path)
-        
-        # Create annotators
-        label_annotator = sv.LabelAnnotator()
-        mask_annotator = sv.MaskAnnotator()
-        
-        # Annotate the image
-        annotated_image = mask_annotator.annotate(
-            scene=image, detections=detections)
-        annotated_image = label_annotator.annotate(
-            scene=annotated_image, detections=detections, labels=labels)
-        
-        # Save the annotated image
-        annotated_path = os.path.join(UPLOAD_DIR, f"annotated_{file_name}")
-        cv2.imwrite(annotated_path, annotated_image)
-        
-        # Convert original and annotated images to base64
-        original_base64 = image_to_base64(file_path)
-        annotated_base64 = image_to_base64(annotated_path)
-        
-        # Extract house elements data for the frontend
-        house_elements = []
-        for i, pred in enumerate(result["predictions"]):
-            points = []
-            if "points" in pred:
-                points = pred["points"]
-            elif "x" in pred and "y" in pred and "width" in pred and "height" in pred:
-                # Convert bounding box to polygon points
-                x, y, w, h = pred["x"], pred["y"], pred["width"], pred["height"]
-                points = [
-                    [x - w/2, y - h/2], 
-                    [x + w/2, y - h/2], 
-                    [x + w/2, y + h/2], 
-                    [x - w/2, y + h/2]
-                ]
-            
-            element = {
-                "id": f"{pred['class']}-{i}",
-                "name": f"{pred['class'].capitalize()} {i+1}",
-                "type": pred["class"],
-                "color": get_color_for_class(pred["class"]),
-                "material": get_material_for_class(pred["class"]),
-                "coordinates": points,
-                "confidence": pred["confidence"],
-                "originalColor": get_color_for_class(pred["class"])
-            }
-            house_elements.append(element)
-        mode = (response_mode or "base64").lower()
-        if mode == "url":
-            _ensure_cloudinary_config()  # <<< important
 
-            # Use the *same* style as your working uploader: resource_type="auto"
-            # Folder pattern matches what you used for renders (no surprises).
-            upload_folder = "renders"
-
-            try:
-                # upload original
-                res_orig = cloudinary.uploader.upload(
-                    file_path,
-                    folder=upload_folder,
-                    resource_type="auto",
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
-                # upload annotated
-                res_anno = cloudinary.uploader.upload(
-                    annotated_path,
-                    folder=upload_folder,
-                    resource_type="auto",
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
-                original_url = res_orig.get("secure_url")
-                annotated_url = res_anno.get("secure_url")
-            except Exception as e:
-                # same error style you’re already using elsewhere
-                raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
-
-            end_time = time.time()
-            logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-
-            # optional cleanup of local temp images (safe no-op if you want to keep them)
-            # try:
-            #     os.remove(file_path)
-            #     os.remove(annotated_path)
-            # except Exception:
-            #     pass
-
-            return {
-                "success": True,
-                "original_image_url": original_url,
-                "annotated_image_url": annotated_url,
-                "house_elements": house_elements,
-                "raw_predictions": result["predictions"],
-                "processing_time": f"{end_time - start_time:.2f}s",
-            }
-
-        # ---- default (unchanged): base64 payloads ----
-        original_base64 = image_to_base64(file_path)
-        annotated_base64 = image_to_base64(annotated_path)
-
-        end_time = time.time()
-        logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-
-        return {
-            "success": True,
-            "original_image": original_base64,
-            "annotated_image": annotated_base64,
-            "house_elements": house_elements,
-            "raw_predictions": result["predictions"],
-            "processing_time": f"{end_time - start_time:.2f}s",
-        }
-        
-        # end_time = time.time()
-
-
-        # logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
-        #
-        # return {
-        #     "success": True,
-        #     "original_image": original_base64,
-        #     "annotated_image": annotated_base64,
-        #     "house_elements": house_elements,
-        #     "raw_predictions": result["predictions"],
-        #     "processing_time": f"{end_time - start_time:.2f}s"
-        # }
 
 def model_advanced_replace_material(
     original_image: str,
@@ -427,3 +435,182 @@ def model_advanced_replace_material(
     except Exception as e:
         logger.error(f"Error in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+async def model_segment_image(
+    file: Optional[UploadFile],
+    image_id: Optional[str] = None,
+    db: Optional[AsyncSession] = None,
+    response_mode: str = "base64",
+):
+    """
+    When image_id is provided:
+      - Fetch the already-uploaded image (gallery_images) and use it as the input.
+      - Add source image details to the response under 'source_image'.
+    When image_id is not provided:
+      - Use the uploaded file exactly like before.
+    Response behavior:
+      - response_mode == "url": upload original & annotated to Cloudinary (original_url comes from DB if image_id was used)
+      - response_mode == "base64": same as before (original_image & annotated_image base64)
+    """
+    start_time = time.time()
+
+    # ---------- Resolve input image (either from DB via image_id OR from uploaded file) ----------
+    used_gallery = False
+    source_info = None
+
+    if image_id:
+        if db is None:
+            raise HTTPException(status_code=400, detail="DB session is required when image_id is provided")
+
+        # Look up the gallery image (id can be UUID or string)
+        res = await db.execute(select(GalleryImage).where(GalleryImage.id == image_id))
+        gi = res.scalar_one_or_none()
+        if gi is None:
+            raise HTTPException(status_code=404, detail=f"Gallery image not found for id: {image_id}")
+
+        # Prefer secure_url, fallback to url if your model uses that field name
+        src_url = getattr(gi, "secure_url", None) or getattr(gi, "url", None)
+        if not src_url:
+            raise HTTPException(status_code=500, detail="Gallery image record has no URL")
+
+        # Download the image to local path (so the rest of the pipeline stays unchanged)
+        # Derive name from DB or URL; fallback to a UUID-based name
+        file_ext = os.path.splitext(src_url.split("?")[0].split("#")[0])[-1] or ".jpg"
+        file_name = f"{uuid.uuid4()}{file_ext}"
+        file_path = os.path.join(UPLOAD_DIR, file_name)
+        try:
+            with urllib.request.urlopen(src_url) as r, open(file_path, "wb") as out:
+                shutil.copyfileobj(r, out)
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Failed to download source image: {e}")
+
+        used_gallery = True
+        source_info = {
+            "image_id": str(getattr(gi, "id", image_id)),
+            "name": getattr(gi, "name", None),
+            "public_id": getattr(gi, "public_id", None),
+            "secure_url": src_url,
+        }
+
+    else:
+        # Original behavior: save the uploaded file locally (unchanged)
+        if file is None:
+            raise HTTPException(status_code=400, detail="Form-data part 'file' is required")
+        file_extension = file.filename.split(".")[-1]
+        file_name = f"{uuid.uuid4()}.{file_extension}"
+        file_path = os.path.join(UPLOAD_DIR, file_name)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+    # ---------- Roboflow inference (unchanged) ----------
+    result = model.predict(file_path, confidence=25).json()
+    labels = [item["class"] for item in result["predictions"]]
+    detections = sv.Detections.from_inference(result)
+
+    image = cv2.imread(file_path)
+    label_annotator = sv.LabelAnnotator()
+    mask_annotator = sv.MaskAnnotator()
+
+    annotated_image = mask_annotator.annotate(scene=image, detections=detections)
+    annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+
+    annotated_path = os.path.join(UPLOAD_DIR, f"annotated_{file_name}")
+    cv2.imwrite(annotated_path, annotated_image)
+
+    # ---------- Build house elements (unchanged) ----------
+    house_elements = []
+    for i, pred in enumerate(result["predictions"]):
+        points = []
+        if "points" in pred:
+            points = pred["points"]
+        elif "x" in pred and "y" in pred and "width" in pred and "height" in pred:
+            x, y, w, h = pred["x"], pred["y"], pred["width"], pred["height"]
+            points = [
+                [x - w / 2, y - h / 2],
+                [x + w / 2, y - h / 2],
+                [x + w / 2, y + h / 2],
+                [x - w / 2, y + h / 2],
+            ]
+
+        element = {
+            "id": f"{pred['class']}-{i}",
+            "name": f"{pred['class'].capitalize()} {i + 1}",
+            "type": pred["class"],
+            "color": get_color_for_class(pred["class"]),
+            "material": get_material_for_class(pred["class"]),
+            "coordinates": points,
+            "confidence": pred["confidence"],
+            "originalColor": get_color_for_class(pred["class"]),
+        }
+        house_elements.append(element)
+
+    mode = (response_mode or "base64").lower()
+
+    # ---------- URL mode: upload to Cloudinary (same pattern you already use) ----------
+    if mode == "url":
+        # Only upload the original if it *didn’t* come from gallery DB (avoid duplicate uploads)
+        original_url: Optional[str] = None
+        if used_gallery:
+            original_url = source_info["secure_url"]
+        else:
+            try:
+                res_orig = cloudinary.uploader.upload(
+                    file_path,
+                    folder="renders",
+                    resource_type="auto",
+                    use_filename=True,
+                    unique_filename=True,
+                    overwrite=False,
+                )
+                original_url = res_orig.get("secure_url")
+            except Exception as e:
+                raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (original): {e}")
+
+        # Always upload the annotated image (it’s newly generated)
+        try:
+            res_anno = cloudinary.uploader.upload(
+                annotated_path,
+                folder="renders",
+                resource_type="auto",
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False,
+            )
+            annotated_url = res_anno.get("secure_url")
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (annotated): {e}")
+
+        end_time = time.time()
+        logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+
+        resp = {
+            "success": True,
+            "original_image_url": original_url,
+            "annotated_image_url": annotated_url,
+            "house_elements": house_elements,
+            "raw_predictions": result["predictions"],
+            "processing_time": f"{end_time - start_time:.2f}s",
+        }
+        # Include source image details ONLY when image_id was used
+        if used_gallery and source_info:
+            resp["source_image"] = source_info
+        return resp
+
+    # ---------- Default (unchanged): base64 payloads ----------
+    original_base64 = image_to_base64(file_path)
+    annotated_base64 = image_to_base64(annotated_path)
+
+    end_time = time.time()
+    logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+
+    resp = {
+        "success": True,
+        "original_image": original_base64,
+        "annotated_image": annotated_base64,
+        "house_elements": house_elements,
+        "raw_predictions": result["predictions"],
+        "processing_time": f"{end_time - start_time:.2f}s",
+    }
+    if used_gallery and source_info:
+        resp["source_image"] = source_info
+    return resp
