@@ -60,7 +60,6 @@ def _ensure_cloudinary_config():
             secure=True,
         )
 
-
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
     return max(4, int(round(min(H, W) * 0.006)))  # ~0.6% of shorter side
@@ -188,32 +187,26 @@ def build_refined_mask(elements, target_types, exclude_types, H, W, edge_margin_
 
 def _encode_output_image(
     image: np.ndarray,
-    max_mb: float = MAX_OUTPUT_IMAGE_MB,
-    min_dimension_px: int = MIN_OUTPUT_DIMENSION_PX,
     compression_levels: Tuple[int, int] = (3, 9),
-    downscale_factor: float = 0.85,
 ) -> Tuple[str, float, Tuple[int, int], bool]:
     """
-    Encode an image to base64 while trying to keep the encoded payload under max_mb.
+    Encode an image to base64.
 
     Args:
         image: BGR image to encode.
-        max_mb: Target maximum size in megabytes.
-        min_dimension_px: Smallest allowed dimension when downscaling.
         compression_levels: (default_png_compression, high_png_compression).
-        downscale_factor: Factor applied when iteratively resizing the image.
 
     Returns:
         Tuple containing (base64 string, size in MB, (width, height), was_downscaled).
 
     Raises:
-        HTTPException: If encoding fails at any stage.
+        HTTPException: If encoding fails.
     """
 
     if image is None or image.size == 0:
         raise HTTPException(status_code=500, detail="Output image is empty")
 
-    default_comp, high_comp = compression_levels
+    default_comp, _ = compression_levels
 
     def _encode(image_to_encode: np.ndarray, compression: int) -> bytes:
         success, buffer = cv2.imencode('.png', image_to_encode, [cv2.IMWRITE_PNG_COMPRESSION, compression])
@@ -223,50 +216,9 @@ def _encode_output_image(
 
     encoded_bytes = _encode(image, default_comp)
     size_mb = len(encoded_bytes) / _MB_DIVISOR
-    downscaled = False
-    current_image = image
-    compression_used = default_comp
-
-    if size_mb > max_mb:
-        # Try higher compression before resizing.
-        encoded_high = _encode(current_image, high_comp)
-        if len(encoded_high) < len(encoded_bytes):
-            encoded_bytes = encoded_high
-            size_mb = len(encoded_bytes) / _MB_DIVISOR
-            compression_used = high_comp
-
-        # Iteratively downscale the image until it fits under the limit or we hit the minimum size.
-        while size_mb > max_mb and min(current_image.shape[:2]) > min_dimension_px:
-            new_h = max(int(current_image.shape[0] * downscale_factor), min_dimension_px)
-            new_w = max(int(current_image.shape[1] * downscale_factor), min_dimension_px)
-
-            if new_h == current_image.shape[0] and new_w == current_image.shape[1]:
-                break
-
-            current_image = cv2.resize(current_image, (new_w, new_h), interpolation=cv2.INTER_AREA)
-            downscaled = True
-
-            encoded_bytes = _encode(current_image, high_comp)
-            size_mb = len(encoded_bytes) / _MB_DIVISOR
-            compression_used = high_comp
-
-        if size_mb > max_mb:
-            logger.warning(
-                "Output image remains above size limit: %.2fMB (limit %.2fMB)",
-                size_mb,
-                max_mb,
-            )
-
-    if compression_used != default_comp or downscaled:
-        logger.info(
-            "Output image adjustments applied (compression=%s, downscaled=%s, final_size=%.2fMB)",
-            compression_used,
-            downscaled,
-            size_mb,
-        )
 
     b64_image = base64.b64encode(encoded_bytes).decode('utf-8')
-    return b64_image, size_mb, (current_image.shape[1], current_image.shape[0]), downscaled
+    return b64_image, size_mb, (image.shape[1], image.shape[0]), False
 
 # ====== TEXTURE UTILS ======
 def reinhard_match(src_bgr, ref_bgr, mask=None):
@@ -472,7 +424,7 @@ def advanced_material_replacement(
     Advanced material replacement with cv_poisson method.
     
     Args:
-        original_image: Base64 encoded original image
+        original_image: URL of the original image to process
         mask_image: Base64 encoded mask image (optional)
         elements_json: JSON string of house elements (optional)
         element_type: Type of element to replace (optional)
@@ -490,10 +442,17 @@ def advanced_material_replacement(
     try:
         t0 = time.time()
 
-        # --- decode original image ---
-        original_cv = cv2.imdecode(np.frombuffer(base64.b64decode(original_image), np.uint8), cv2.IMREAD_COLOR)
-        if original_cv is None:
-            raise HTTPException(status_code=400, detail="Invalid original_image")
+        # --- download and decode original image ---
+        try:
+            response = requests.get(original_image, timeout=30)
+            response.raise_for_status()
+            original_cv = cv2.imdecode(np.frombuffer(response.content, np.uint8), cv2.IMREAD_COLOR)
+            if original_cv is None:
+                raise HTTPException(status_code=400, detail="Invalid original_image format")
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=400, detail=f"Failed to download original_image: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Error processing original_image: {str(e)}")
  
         H, W = original_cv.shape[:2]
 
