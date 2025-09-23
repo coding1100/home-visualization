@@ -16,7 +16,7 @@ MATERIAL_PROMINENCE = os.getenv("MATERIAL_PROMINENCE", 0.7)
 # Cache for workflow to avoid repeated loading
 cached_workflow = None
 # ====== GEOMETRY / MASK HELPERS ======
-MAX_OUTPUT_IMAGE_MB = 2.0
+MAX_OUTPUT_IMAGE_MB = 27.0
 MIN_OUTPUT_DIMENSION_PX = 720
 _MB_DIVISOR = 1024 * 1024
 DEFAULT_EXCLUDE_TYPES = {
