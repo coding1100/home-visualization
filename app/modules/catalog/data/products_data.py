@@ -346,7 +346,6 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     # 4) ROOFING
     "Roof": {
         "categories": {
-            "GAF": {
                 "Timberline Roofing Shingles": {
                     "Timberline AH": [
                         "Amber Wheat", "Appalachian Sky", "Golden Harvest", "Cedar Falls",
@@ -433,7 +432,6 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Golden Cedar", "Nickel Gray", "Russet Red", "Sandrift", "Desert Sand",
                     ],
                 },
-            }
         }
     },
 
