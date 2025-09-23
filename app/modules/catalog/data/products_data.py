@@ -344,7 +344,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     },
 
     # 4) ROOFING
-    "Roofing": {
+    "Roof": {
         "categories": {
             "GAF": {
                 "Timberline Roofing Shingles": {
@@ -439,7 +439,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
 
     # 5) TRIM
     "Trim": {
-        "Paint and Trim": {  # if your FE expects a different label, adjust this key only
+        "categories": {  # if your FE expects a different label, adjust this key only
             "Aluminum Trim and Accessories": [
                 "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
                 "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
@@ -475,7 +475,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
 
     # 6) WINDOW AND DOOR TRIM
     "Window and Door Trim": {
-        "Paint and Trim": {  # if your FE expects a different label, adjust this key only
+        "categories": {  # if your FE expects a different label, adjust this key only
             "Aluminum Trim and Accessories": [
                 "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
                 "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
