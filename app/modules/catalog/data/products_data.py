@@ -352,34 +352,34 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Midnight Blush", "Adobe Sunset", "Brandywine Dusk",
                         "Nantucket Morning", "Saddlewood Ranch",
                     ],
-                    "Timberline® AS II": [
+                    "Timberline AS II": [
                         "Charcoal", "Barkwood", "Hickory", "Pewter Gray",
                         "Shakewood", "Slate", "Weathered Wood",
                     ],
-                    "Timberline® CS": [
+                    "Timberline CS": [
                         "Antique Slate", "Barkwood", "Weathered Wood",
                     ],
-                    "Timberline® HD": [
+                    "Timberline HD": [
                         "Barkwood", "Charcoal", "Hunter Green", "Mission Brown", "Hickory",
                         "Oyster Gray", "Patriot Red", "Shakewood", "Pewter Gray", "Slate",
                         "Sunset Brick", "Weathered Wood", "Birchwood", "White",
                         "Williamsburg Slate", "Biscayne Blue", "Canadian Driftwood",
                         "Copper Canyon", "Driftwood", "Golden Amber", "Fox Hollow Gray",
                     ],
-                    "Timberline® HDZ": [
+                    "Timberline HDZ": [
                         "Birchwood", "Barkwood", "Charcoal", "Driftwood", "Hickory",
                         "Hunter Green", "Mission Brown", "Oyster Gray", "Pewter Gray",
                         "Shakewood", "Slate", "Weathered Wood",
                     ],
-                    "Timberline® HDZ RS": [
+                    "Timberline HDZ RS": [
                         "Stone Gray", "Charcoal", "Hickory", "Copper Canyon", "Aged Chestnut",
                         "Coastal Slate", "Sagewood", "Birchwood", "Sandalwood", "Golden Amber",
                     ],
-                    "Timberline® NS": [
+                    "Timberline NS": [
                         "Barkwood", "Charcoal", "Arctic White", "Hickory", "Pewter Gray",
                         "Shakewood", "Slate", "Hunter Green", "Weathered Wood",
                     ],
-                    "Timberline® UHD": [
+                    "Timberline UHD": [
                         "Barkwood", "Birchwood", "Charcoal", "Fox Hollow Gray", "Hickory",
                         "Hunter Green", "Pewter Gray", "Patriot Red", "Shakewood", "Slate",
                         "Weathered Wood", "Biscayne Blue", "Oyster Gray", "Sunset Brick", "White",
@@ -391,7 +391,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Barkwood", "Weathered Timber", "Charcoal",
                         "Antique Slate", "Royal Slate", "Weathered Wood",
                     ],
-                    "Glenwood®": [
+                    "Glenwood": [
                         "Weathered Wood", "Golden Prairie", "Autumn Harvest",
                         "Dusky Gray", "Adobe Clay", "Chelsea Gray",
                     ],
@@ -399,20 +399,20 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Stonewood", "Black Oak", "Mission Brown",
                         "Storm Cloud", "Sedona Sunset",
                     ],
-                    "Grand Sequoia®": [
+                    "Grand Sequoia": [
                         "Autumn Brown", "Cedar", "Charcoal", "Mesa Brown",
                         "Slate", "Weathered Timber", "Weathered Wood",
                     ],
-                    "Grand Sequoia® AS": [
+                    "Grand Sequoia AS": [
                         "Adobe Sunset", "Charcoal", "Dusky Gray", "Weathered Wood",
                     ],
-                    "Grand Sequoia® RS": [
+                    "Grand Sequoia RS": [
                         "Charcoal", "Forest Brown", "Ocean Gray", "Sagewood", "Sandalwood",
                     ],
-                    "Grand Sequoia® RS+": [
+                    "Grand Sequoia RS+": [
                         "Charcoal", "Forest Brown",
                     ],
-                    "Slateline®": [
+                    "Slateline": [
                         "Antique Slate", "Emerald Green", "English Gray",
                         "Royal Slate", "Weathered Slate",
                     ],
@@ -423,10 +423,10 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 },
 
                 "3-Tab": {
-                    "Marquis Weathermax®": [
+                    "Marquis Weathermax": [
                         "Autumn Brown", "Charcoal", "Weathered Gray",
                     ],
-                    "Royal Sovereign®": [
+                    "Royal Sovereign": [
                         "Ash Brown", "Silver Lining", "Slate", "Summer Sage", "White",
                         "Weathered Gray", "Autumn Brown", "Charcoal", "Cypress Tan",
                         "Golden Cedar", "Nickel Gray", "Russet Red", "Sandrift", "Desert Sand",
