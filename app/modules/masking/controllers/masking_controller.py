@@ -16,7 +16,7 @@ async def segment_image(file: UploadFile = File(None),
         return await model_segment_image(file=file, image_id=image_id, db=db, response_mode=response_mode,)
 
     except Exception as e:
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @masking_router.post("/generate_mask")
@@ -31,7 +31,7 @@ async def generate_mask(
 
     except Exception as e:
         logger.error(f"Error generating mask: {str(e)}")
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @masking_router.post("/replace_material")
@@ -47,7 +47,7 @@ async def replace_material(
         return model_replace_material(original_image, mask_image, material_image, element_type, prompt, seed)
     except Exception as e:
         logger.error(f"Error replacing material for {element_type}: {str(e)}")
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @masking_router.post("/replace_material_advanced")
@@ -113,4 +113,4 @@ async def advanced_replace_material(
         )
     except Exception as e:
         logger.error(f"Error in advanced material replacement: {str(e)}")
-        return HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
