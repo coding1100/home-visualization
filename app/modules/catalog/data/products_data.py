@@ -27,6 +27,13 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 "Crimson",
             ],
 
+
+            "Premium Composite Siding": [
+                "Board and batten",
+                "Lap",
+
+            ],
+
             # --- Siding (with sub-families)
             "Siding": {
                 "Align": [

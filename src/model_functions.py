@@ -34,6 +34,106 @@ from src.utils import (
 )
 from src.material_service import advanced_material_replacement
 
+# Cloudinary image cap (10 MB on your account right now)
+
+CLOUDINARY_MAX_IMAGE_BYTES = 30 * 1024 * 1024
+
+
+
+def _prepare_for_cloudinary_upload(path: str, max_bytes: int = CLOUDINARY_MAX_IMAGE_BYTES) -> tuple[str, bool]:
+
+    """
+
+    Ensure 'path' is under Cloudinary image size cap.
+
+    Returns (upload_path, temp_created). If temp_created is True, caller should delete it.
+
+    """
+
+    try:
+
+        if os.path.getsize(path) <= max_bytes:
+
+            return path, False
+
+
+
+        img = cv2.imread(path)
+
+        if img is None:
+
+            return path, False
+
+
+
+        h, w = img.shape[:2]
+
+        scale = 1.0
+
+        quality = 90
+
+        tmp_out = None
+
+        buf = None
+
+
+
+        # Reduce JPEG quality first, then downscale if still too big
+
+        for _ in range(8):
+
+            resized = img if scale >= 0.999 else cv2.resize(img, (max(1, int(w * scale)), max(1, int(h * scale))), interpolation=cv2.INTER_AREA)
+
+            ok, buf = cv2.imencode(".jpg", resized, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
+
+            if not ok:
+
+                break
+
+            if len(buf) <= max_bytes:
+
+                tmp_out = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_cld.jpg")
+
+                with open(tmp_out, "wb") as f:
+
+                    f.write(buf.tobytes())
+
+                return tmp_out, True
+
+            # tighten knobs
+
+            if quality > 65:
+
+                quality -= 10
+
+            else:
+
+                scale *= 0.85
+
+
+
+        # Final attempt with whatever we have
+
+        if buf is not None:
+
+            tmp_out = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_cld.jpg")
+
+            with open(tmp_out, "wb") as f:
+
+                f.write(buf.tobytes())
+
+            return tmp_out, True
+
+
+
+        return path, False
+
+    except Exception:
+
+        # If anything fails, fall back to original path (Cloudinary may still reject it)
+
+        return path, False
+
 def _ensure_cloudinary_config():
     cfg = cloudinary.config()
     # If this module was imported before your app-wide config ran, fill it here.
@@ -501,12 +601,20 @@ async def model_segment_image(
         file_path = os.path.join(UPLOAD_DIR, file_name)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-
+        print(f"File Successfully Saved:")
+    try:
+        with Image.open(file_path) as pil_img:
+            if pil_img.mode == "RGBA":
+                pil_img = pil_img.convert("RGB")
+                pil_img.save(file_path, format="JPEG")  # overwrite as RGB JPEG
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image preprocessing failed: {e}")
     # ---------- Roboflow inference (unchanged) ----------
     result = model.predict(file_path, confidence=25).json()
+    print(f"Model Successfully Predicted:")
     labels = [item["class"] for item in result["predictions"]]
     detections = sv.Detections.from_inference(result)
-
+    print(f"Detections Successfully Saved:")
     image = cv2.imread(file_path)
     label_annotator = sv.LabelAnnotator()
     mask_annotator = sv.MaskAnnotator()
@@ -516,7 +624,7 @@ async def model_segment_image(
 
     annotated_path = os.path.join(UPLOAD_DIR, f"annotated_{file_name}")
     cv2.imwrite(annotated_path, annotated_image)
-
+    print(f"Annotated Image Successfully Saved:")
     # ---------- Build house elements (unchanged) ----------
     house_elements = []
     for i, pred in enumerate(result["predictions"]):
@@ -553,9 +661,10 @@ async def model_segment_image(
         if used_gallery:
             original_url = source_info["secure_url"]
         else:
+            upload_path, tmp1 = _prepare_for_cloudinary_upload(file_path)
             try:
                 res_orig = cloudinary.uploader.upload(
-                    file_path,
+                    upload_path,
                     folder="renders",
                     resource_type="auto",
                     use_filename=True,
@@ -565,11 +674,14 @@ async def model_segment_image(
                 original_url = res_orig.get("secure_url")
             except Exception as e:
                 raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (original): {e}")
+            finally:
+                if tmp1:
+                    os.remove(upload_path)
 
-        # Always upload the annotated image (it’s newly generated)
+        upload_anno_path, tmp2 = _prepare_for_cloudinary_upload(annotated_path)
         try:
             res_anno = cloudinary.uploader.upload(
-                annotated_path,
+                upload_anno_path,
                 folder="renders",
                 resource_type="auto",
                 use_filename=True,
@@ -579,6 +691,10 @@ async def model_segment_image(
             annotated_url = res_anno.get("secure_url")
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (annotated): {e}")
+        finally:
+            if tmp2:
+                try: os.remove(upload_anno_path)
+                except Exception: pass
 
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
