@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.modules.files.models.file_upload import FileUpload
+from app.modules.files.s3utils.s3_utils import s3_upload_file
 from app.modules.signupflow.models.user import User
 
 # TMP_DIR = Path(settings.UPLOAD_TMP_DIR)
@@ -89,23 +90,49 @@ class FileService:
             return rec
 
         # authenticated: push to Cloudinary and finalize
+        # try:
+        #     res = cloudinary.uploader.upload(
+        #         str(temp_path),
+        #         folder=f"users/{user.id}",
+        #         resource_type="auto",
+        #         use_filename=True,
+        #         unique_filename=True,
+        #         overwrite=False,
+        #     )
+        # finally:
+        #     try:
+        #         temp_path.unlink(missing_ok=True)
+        #     except Exception:
+        #         pass
+
+        # rec.public_id = res.get("public_id")
+        # rec.secure_url = res.get("secure_url")
+        # rec.storage = "cloudinary"
+        # rec.status = "uploaded"
+        # await self.db.commit()
+        # await self.db.refresh(rec)
+        # return rec
+
+            # authenticated: push to S3 and finalize
+        key = url = None
         try:
-            res = cloudinary.uploader.upload(
-                str(temp_path),
-                folder=f"users/{user.id}",
-                resource_type="auto",
-                use_filename=True,
-                unique_filename=True,
-                overwrite=False,
-            )
+            key, url = s3_upload_file(str(temp_path), key_prefix=f"users/{user.id}")
+        except Exception as e:
+            # keep the same error surface as your cloudinary path used to
+            raise HTTPException(status_code=502, detail=f"S3 upload failed: {e}")
         finally:
             try:
                 temp_path.unlink(missing_ok=True)
             except Exception:
                 pass
 
-        rec.public_id = res.get("public_id")
-        rec.secure_url = res.get("secure_url")
+        if not key or not url:
+            # extra guard to satisfy linters and avoid accidental None usage
+            raise HTTPException(status_code=502, detail="S3 upload failed")
+
+        rec.public_id = key          # S3 object key
+        rec.secure_url = url         # public HTTPS url (or CloudFront)
+        # keep the storage label unchanged for zero impact; switch to "s3" if desired
         rec.storage = "cloudinary"
         rec.status = "uploaded"
         await self.db.commit()
@@ -122,32 +149,57 @@ class FileService:
             # already uploaded or invalid state
             return rec
 
+        # try:
+        #     res = cloudinary.uploader.upload(
+        #         rec.temp_path,
+        #         folder=f"users/{user.id}",
+        #         resource_type="auto",
+        #         use_filename=True,
+        #         unique_filename=True,
+        #         overwrite=False,
+        #     )
+        #     # cleanup temp
+        #     try:
+        #         Path(rec.temp_path).unlink(missing_ok=True)
+        #     except Exception:
+        #         pass
+        #
+        #     rec.user_id = user.id
+        #     rec.public_id = res.get("public_id")
+        #     rec.secure_url = res.get("secure_url")
+        #     rec.storage = "cloudinary"
+        #     rec.status = "uploaded"
+        #     rec.temp_path = None
+        #     await self.db.commit()
+        #     await self.db.refresh(rec)
+        #     return rec
+        # except cloudinary.exceptions.Error as e:
+        #     raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
+
         try:
-            res = cloudinary.uploader.upload(
-                rec.temp_path,
-                folder=f"users/{user.id}",
-                resource_type="auto",
-                use_filename=True,
-                unique_filename=True,
-                overwrite=False,
-            )
+            key, url = s3_upload_file(rec.temp_path, key_prefix=f"users/{user.id}")
             # cleanup temp
             try:
                 Path(rec.temp_path).unlink(missing_ok=True)
             except Exception:
                 pass
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"S3 upload failed: {e}")
 
-            rec.user_id = user.id
-            rec.public_id = res.get("public_id")
-            rec.secure_url = res.get("secure_url")
-            rec.storage = "cloudinary"
-            rec.status = "uploaded"
-            rec.temp_path = None
-            await self.db.commit()
-            await self.db.refresh(rec)
-            return rec
-        except cloudinary.exceptions.Error as e:
-            raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
+        if not key or not url:
+            raise HTTPException(status_code=502, detail="S3 upload failed")
+
+        rec.user_id = user.id
+        rec.public_id = key
+        rec.secure_url = url
+        # keep the storage label unchanged for zero impact; switch to "s3" if desired
+        rec.storage = "cloudinary"
+        rec.status = "uploaded"
+        rec.temp_path = None
+        await self.db.commit()
+        await self.db.refresh(rec)
+        return rec
+
 
     async def commit_many(self, *, upload_ids: Iterable[uuid.UUID], session_id: str, user: User) -> list[FileUpload]:
         out: list[FileUpload] = []
