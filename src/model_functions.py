@@ -9,7 +9,7 @@ import json
 from typing import Optional
 
 import cloudinary, cloudinary.uploader
-
+from io import BytesIO
 import torch
 import numpy as np
 import cv2
@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.modules.files.models.gallery_images import GalleryImage
+from app.modules.files.s3utils.s3_utils import s3_upload_file
 from src.constants import UPLOAD_DIR
 from src.comfyUI import process_with_comfyui
 from src.roboflow_model import model
@@ -38,7 +39,36 @@ from src.material_service import advanced_material_replacement
 
 CLOUDINARY_MAX_IMAGE_BYTES = 30 * 1024 * 1024
 
+def _jpeg_bytes_for_quality(img: Image.Image, quality: int) -> bytes:
+    buf = BytesIO()
+    # strip metadata by not passing exif/icc; keep resolution; compress hard
+    img.save(buf, format="JPEG", quality=quality, optimize=True, progressive=True)
+    return buf.getvalue()
 
+def _compress_to_target_jpeg(src_path: str, dst_path: str, target_bytes: int, min_q: int = 20, max_q: int = 95) -> int:
+    """
+    Binary-search JPEG quality to fit under target_bytes (same resolution).
+    If even min_q can't get under target, we still return the smallest we got.
+    """
+    with Image.open(src_path) as im:
+        im = im.convert("RGB")
+        lo, hi = min_q, max_q
+        best_bytes = None
+        best_len = 1 << 60
+        while lo <= hi:
+            q = (lo + hi) // 2
+            data = _jpeg_bytes_for_quality(im, q)
+            n = len(data)
+            if n < best_len:
+                best_bytes, best_len = data, n
+            if n <= target_bytes:
+                lo = q + 1
+            else:
+                hi = q - 1
+
+    with open(dst_path, "wb") as f:
+        f.write(best_bytes)
+    return best_len
 
 def _prepare_for_cloudinary_upload(path: str, max_bytes: int = CLOUDINARY_MAX_IMAGE_BYTES) -> tuple[str, bool]:
 
@@ -395,6 +425,10 @@ async def model_segment_image(
     """
     start_time = time.time()
 
+        # threshold/target for Roboflow
+    THRESHOLD_BYTES = int(9.5 * 1024 * 1024)  # if > 9.5MB -> compress
+    TARGET_BYTES = int(8.5 * 1024 * 1024)  # compress to <= ~9MB
+
     # ---------- Resolve input image (either from DB via image_id OR from uploaded file) ----------
     used_gallery = False
     source_info = None
@@ -447,11 +481,50 @@ async def model_segment_image(
         with Image.open(file_path) as pil_img:
             if pil_img.mode == "RGBA":
                 pil_img = pil_img.convert("RGB")
-                pil_img.save(file_path, format="JPEG")  # overwrite as RGB JPEG
+
+                # if current path doesn't end with jpg/jpeg, rewrite to a .jpg path
+                base, ext = os.path.splitext(file_path)
+                new_path = base + ".jpg" if ext.lower() not in [".jpg", ".jpeg"] else file_path
+
+                pil_img.save(new_path, format="JPEG", quality=95, optimize=True, progressive=True)
+
+                if new_path != file_path:
+                    #remove old file if we changed the extension
+                    try:
+                        os.remove(file_path)
+                    except Exception:
+                        pass
+                file_path = new_path
+                file_name = os.path.basename(file_path)
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image preprocessing failed: {e}")
+
+        # ---------- Build inference input: compress only if > 9.5MB ----------
+    path_for_inference = file_path
+    try:
+        size_on_disk = os.path.getsize(file_path)
+    except Exception:
+        size_on_disk = 0
+
+    if size_on_disk > THRESHOLD_BYTES:
+        # Create a compressed copy for inference (same resolution)
+        base, _ = os.path.splitext(file_path)
+        infer_path = base + "_infer.jpg"
+        try:
+            final_len = _compress_to_target_jpeg(file_path, infer_path, TARGET_BYTES, min_q=15, max_q=95)
+            # double-check: if still too big (rare), re-run with smaller target
+            if final_len > TARGET_BYTES:
+                final_len = _compress_to_target_jpeg(file_path, infer_path, int(8.0 * 1024 * 1024), min_q=10, max_q=90)
+            path_for_inference = infer_path
+        except Exception:
+            path_for_inference = file_path
+
+
     # ---------- Roboflow inference (unchanged) ----------
-    result = model.predict(file_path, confidence=25).json()
+    # result = model.predict(file_path, confidence=25).json()
+    result = model.predict(path_for_inference, confidence=25).json()
+
     print(f"Model Successfully Predicted:")
     labels = [item["class"] for item in result["predictions"]]
     detections = sv.Detections.from_inference(result)
@@ -502,40 +575,23 @@ async def model_segment_image(
         if used_gallery:
             original_url = source_info["secure_url"]
         else:
-            upload_path, tmp1 = _prepare_for_cloudinary_upload(file_path)
             try:
-                res_orig = cloudinary.uploader.upload(
-                    upload_path,
-                    folder="renders",
-                    resource_type="auto",
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
-                original_url = res_orig.get("secure_url")
+                _key_o, original_url = s3_upload_file(file_path, key_prefix="renders")
             except Exception as e:
-                raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (original): {e}")
-            finally:
-                if tmp1:
-                    os.remove(upload_path)
+                raise HTTPException(status_code=502, detail=f"S3 upload failed (original): {e}")
 
-        upload_anno_path, tmp2 = _prepare_for_cloudinary_upload(annotated_path)
+            # Always upload the annotated image (it’s newly generated)
         try:
-            res_anno = cloudinary.uploader.upload(
-                upload_anno_path,
-                folder="renders",
-                resource_type="auto",
-                use_filename=True,
-                unique_filename=True,
-                overwrite=False,
-            )
-            annotated_url = res_anno.get("secure_url")
+            _key_a, annotated_url = s3_upload_file(annotated_path, key_prefix="renders")
         except Exception as e:
-            raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (annotated): {e}")
-        finally:
-            if tmp2:
-                try: os.remove(upload_anno_path)
-                except Exception: pass
+            raise HTTPException(status_code=502, detail=f"S3 upload failed (annotated): {e}")
+
+        # cleanup compressed copy if we created one
+        if path_for_inference != file_path:
+            try:
+                os.remove(path_for_inference)
+            except Exception:
+                pass
 
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
@@ -548,10 +604,61 @@ async def model_segment_image(
             "raw_predictions": result["predictions"],
             "processing_time": f"{end_time - start_time:.2f}s",
         }
-        # Include source image details ONLY when image_id was used
         if used_gallery and source_info:
             resp["source_image"] = source_info
         return resp
+
+        # else:
+        #     upload_path, tmp1 = _prepare_for_cloudinary_upload(file_path)
+        #     try:
+        #         res_orig = cloudinary.uploader.upload(
+        #             upload_path,
+        #             folder="renders",
+        #             resource_type="auto",
+        #             use_filename=True,
+        #             unique_filename=True,
+        #             overwrite=False,
+        #         )
+        #         original_url = res_orig.get("secure_url")
+        #     except Exception as e:
+        #         raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (original): {e}")
+        #     finally:
+        #         if tmp1:
+        #             os.remove(upload_path)
+        #
+        # upload_anno_path, tmp2 = _prepare_for_cloudinary_upload(annotated_path)
+        # try:
+        #     res_anno = cloudinary.uploader.upload(
+        #         upload_anno_path,
+        #         folder="renders",
+        #         resource_type="auto",
+        #         use_filename=True,
+        #         unique_filename=True,
+        #         overwrite=False,
+        #     )
+        #     annotated_url = res_anno.get("secure_url")
+        # except Exception as e:
+        #     raise HTTPException(status_code=502, detail=f"Cloudinary upload failed (annotated): {e}")
+        # finally:
+        #     if tmp2:
+        #         try: os.remove(upload_anno_path)
+        #         except Exception: pass
+        #
+        # end_time = time.time()
+        # logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+        #
+        # resp = {
+        #     "success": True,
+        #     "original_image_url": original_url,
+        #     "annotated_image_url": annotated_url,
+        #     "house_elements": house_elements,
+        #     "raw_predictions": result["predictions"],
+        #     "processing_time": f"{end_time - start_time:.2f}s",
+        # }
+        # # Include source image details ONLY when image_id was used
+        # if used_gallery and source_info:
+        #     resp["source_image"] = source_info
+        # return resp
 
     # ---------- Default (unchanged): base64 payloads ----------
     original_base64 = image_to_base64(file_path)
