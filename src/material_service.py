@@ -1,6 +1,8 @@
+import os
 import time
 import json
 import base64
+import uuid
 from typing import Dict, Optional, Tuple
 
 import cv2
@@ -8,8 +10,9 @@ import requests
 import numpy as np
 from fastapi import HTTPException, UploadFile
 
+from app.modules.files.s3utils.s3_utils import s3_upload_file
 from src.logger import logger
-from src.constants import _MB_DIVISOR, DEFAULT_EXCLUDE_TYPES, MATERIAL_PROMINENCE 
+from src.constants import _MB_DIVISOR, DEFAULT_EXCLUDE_TYPES, MATERIAL_PROMINENCE, UPLOAD_DIR
 from src.cloudinary_func import ensure_cloudinary_config, upload_image_to_cloudinary
 from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same place your FileService pulls config from
 
@@ -624,33 +627,63 @@ def advanced_material_replacement(
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
             if str(response_mode).lower() == "url":
-                ensure_cloudinary_config()
+                temp_out_path = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_render.png")
                 try:
-                    # Convert base64 to binary for direct upload
-                    output_binary = base64.b64decode(out_b64)
-                    
-                    # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)       
-                    res = upload_image_to_cloudinary(output_binary, element_type)
-                    # capture Cloudinary data (dynamic; nothing hard-coded)
-                    replaced_image_url = res.get("secure_url")
-                    public_id = res.get("public_id")
-                    width = res.get("width", out_w)
-                    height = res.get("height", out_h)
-                    bytes_on_cloud = res.get("bytes")  # might be present
+                    # write the already-encoded image to disk
+                    with open(temp_out_path, "wb") as f:
+                        f.write(base64.b64decode(out_b64))
 
+                    # folder prefix mirrors your old structure: renders[/<element_type>]
+                    key_prefix = "renders"
+                    if element_type:
+                        key_prefix = f"{key_prefix}/{str(element_type).lower()}"
+
+                    s3_key, s3_url = s3_upload_file(temp_out_path, key_prefix=key_prefix)
+
+                    replaced_image_url = s3_url
+                    public_id = s3_key  # keep field name; now it's the S3 object key
+                    width = out_w
+                    height = out_h
                     return {
                         "success": True,
                         "method": method,
                         "element_type": element_type,
                         "material_id": material_id,
                         "processing_time": f"{time.time() - t0:.2f}s",
-                        "output_image_mb": round((bytes_on_cloud or (out_size_mb * 1024 * 1024)) / (1024 * 1024),
-                                                 3) if bytes_on_cloud else round(out_size_mb, 3),
+                        "output_image_mb": round(out_size_mb, 3),
                         "output_image_dimensions": {"width": int(width), "height": int(height)},
                         "output_image_downscaled": out_downscaled,
                         "replaced_image_url": replaced_image_url,
                         "public_id": public_id,
                     }
+                    # ensure_cloudinary_config()
+                    # try:
+                    #     # Convert base64 to binary for direct upload
+                    #     output_binary = base64.b64decode(out_b64)
+                    #
+                    #     # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)
+                    #     res = upload_image_to_cloudinary(output_binary, element_type)
+                    #     # capture Cloudinary data (dynamic; nothing hard-coded)
+                    #     replaced_image_url = res.get("secure_url")
+                    #     public_id = res.get("public_id")
+                    #     width = res.get("width", out_w)
+                    #     height = res.get("height", out_h)
+                    #     bytes_on_cloud = res.get("bytes")  # might be present
+
+
+                    # return {
+                    #     "success": True,
+                    #     "method": method,
+                    #     "element_type": element_type,
+                    #     "material_id": material_id,
+                    #     "processing_time": f"{time.time() - t0:.2f}s",
+                    #     "output_image_mb": round((bytes_on_cloud or (out_size_mb * 1024 * 1024)) / (1024 * 1024),
+                    #                              3) if bytes_on_cloud else round(out_size_mb, 3),
+                    #     "output_image_dimensions": {"width": int(width), "height": int(height)},
+                    #     "output_image_downscaled": out_downscaled,
+                    #     "replaced_image_url": replaced_image_url,
+                    #     "public_id": public_id,
+                    # }
                 except Exception as e:
                     logger.error(f"Error uploading to Cloudinary: {str(e)}")
                     raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
