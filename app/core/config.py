@@ -52,6 +52,10 @@ class Settings:
     HF_TOKEN = os.getenv("HF_TOKEN")
     RF_API_KEY = os.getenv("RF_API_KEY")
     COMFYUI_SERVER = os.getenv("COMFYUI_SERVER")
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_REGION = os.getenv("AWS_REGION")
+    S3_BUCKET = os.getenv("S3_BUCKET")
     @property
     def db_url(self) -> str:
         """Async SQLAlchemy URL for our engine."""
