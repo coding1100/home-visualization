@@ -504,25 +504,6 @@ async def model_segment_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image preprocessing failed: {e}")
 
-        # ---------- Build inference input: compress only if > 9.5MB ----------
-    # path_for_inference = file_path
-    # try:
-    #     size_on_disk = os.path.getsize(file_path)
-    # except Exception:
-    #     size_on_disk = 0
-    #
-    # if size_on_disk > THRESHOLD_BYTES:
-    #     # Create a compressed copy for inference (same resolution)
-    #     base, _ = os.path.splitext(file_path)
-    #     infer_path = base + "_infer.jpg"
-    #     try:
-    #         final_len = _compress_to_target_jpeg(file_path, infer_path, TARGET_BYTES, min_q=15, max_q=95)
-    #         # double-check: if still too big (rare), re-run with smaller target
-    #         if final_len > TARGET_BYTES:
-    #             final_len = _compress_to_target_jpeg(file_path, infer_path, int(8.0 * 1024 * 1024), min_q=10, max_q=90)
-    #         path_for_inference = infer_path
-    #     except Exception:
-    #         path_for_inference = file_path
 
         # Start with original local file
     path_for_inference = file_path
@@ -561,7 +542,7 @@ async def model_segment_image(
         try:
             final_len = _compress_to_target_jpeg(path_for_inference, infer_path, TARGET_BYTES, min_q=15, max_q=95)
             if final_len > TARGET_BYTES:
-                final_len = _compress_to_target_jpeg(path_for_inference, infer_path, int(8.0 * 1024 * 1024), min_q=10,
+                _ = _compress_to_target_jpeg(path_for_inference, infer_path, int(8.0 * 1024 * 1024), min_q=10,
                                                      max_q=90)
             path_for_inference = infer_path
             tmp_paths.append(infer_path)
@@ -623,6 +604,8 @@ async def model_segment_image(
     if mode == "url":
         # Only upload the original if it *didn’t* come from gallery DB (avoid duplicate uploads)
         original_url: Optional[str] = None
+        inference_url: Optional[str] = None
+
         if used_gallery:
             original_url = source_info["secure_url"]
         else:
@@ -630,6 +613,15 @@ async def model_segment_image(
                 _key_o, original_url = s3_upload_file(file_path, key_prefix="renders")
             except Exception as e:
                 raise HTTPException(status_code=502, detail=f"S3 upload failed (original): {e}")
+        # inference: upload only if different path
+        if path_for_inference != file_path:
+            try:
+                _key_p, inference_url = s3_upload_file(path_for_inference, key_prefix="renders")
+            except Exception:
+                # do not fail the whole call if this optional upload has an issue
+                inference_url = None
+        else:
+            inference_url = original_url
 
             # Always upload the annotated image (it’s newly generated)
         try:
@@ -646,10 +638,11 @@ async def model_segment_image(
 
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+        original_url_for_response = inference_url or original_url
 
         resp = {
             "success": True,
-            "original_image_url": original_url,
+            "original_image_url": original_url_for_response,
             "annotated_image_url": annotated_url,
             "house_elements": house_elements,
             "raw_predictions": result["predictions"],
