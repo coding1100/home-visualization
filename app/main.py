@@ -1,4 +1,5 @@
 # app/main.py
+import utils.session
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from sqlalchemy import text
