@@ -764,4 +764,410 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
     "Roof/categories/Timberline Roofing Shingles/Timberline UHD/Sunset Brick": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FRoofing%2FGAF%2FTimberline%20Roofing%20Shingles%2F~TimberlineUHD%2F~swatch13-400.jpg",
     "Roof/categories/Timberline Roofing Shingles/Timberline UHD/White": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FRoofing%2FGAF%2FTimberline%20Roofing%20Shingles%2F~TimberlineUHD%2F~swatch14-400.jpg",
 
+
+    "Door/categories/Steel Doors": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2Flogo.pngDoors",
+
+    "Door/categories/Steel Doors/Configuration/L Door": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FDoor.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/R Door": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FDoor.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/S - Door": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSide_Door.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/Door - S": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FDoor_Side.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/S - L Door - S": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSide_Door_Side.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/S - R Door - S": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSide_Door_Side.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/Double Door": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FDoor_Door.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/S - Double Door - S": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSide_Door_Door_Side.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Configuration/Side": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSide.jpg.thumbnail.png",
+
+
+    "Door/categories/Steel Doors/Panel/Full Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FES-686-STL_Full-Lite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/3/4 Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCTA-607-STL_3_4_Lite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/684": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FGD-684-STL_1_2_Lite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/637": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-637CL-STL_Half_View.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/640": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FFS-640-STL_9-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/648": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-648-STL_4-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/659": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-659CL-STL_4-Panel_Sunburst.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/692": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-692CL-STL_Twin_Lite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/422": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-422CL-STL_Twin_Lite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/911": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FES-919-STL_Flush_Full_Oval.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/CT-22 - 2 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-22_2-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/CT-24 - 2 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-24_2-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/3 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-30-STL_3-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/8 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-80-STL_8-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/9 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-90-STL_9-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/4 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FES-40-STL_4-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/Flush": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FES-100-STL_Flush.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/6 Panel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCT-60-STL_6-Panel.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/Craftsman": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSteel-Craftsman-Door.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/814": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSteel-814.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/817": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSteel-817.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Panel/818": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FSteel-818.jpg.thumbnail.png",
+
+
+    "Door/categories/Steel Doors/Glass/Aragon": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686AGGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Avant": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686AVGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Avalon": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686ANGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Bellflower": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686BLF_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Beveled Elegance (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686BEBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Bristol (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686BTBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Bristol (Satin Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686BTSNGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Casablanca": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686CSB_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Catalina": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686CAGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Cut Crystal": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686CCGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Cadence": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686CDGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Cirrus": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686CRGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Entropy": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686ENGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Expression (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686EXBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Expression (Satin Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686EXSNGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Greenfield": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686GRF_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Heirlooms (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686HMBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Heirlooms (Satin Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686HMSNGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Jacinto": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686JAGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Oak Park": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686KPGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Impression": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686LIGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Legacy Master (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686LMBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Legacy Master (Pewter Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686LMPGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Mediteranian": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MDGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Majestic (Brass Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MEBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Majestic (Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MENGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Majestic (Pewter Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MEPGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Madison": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MIGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Nouveau": "(Brass Caming) https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MNBGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Nouveau (Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MNNGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Monterey (Satin Nickel Caming)": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686MOSNGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Prairie Bevel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686PRGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Paris": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686PSGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Radiant Hues": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686RAGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Simplicity": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686SMGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Teton": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686TEGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Tilt and Raise Blinds": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686RBLGO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Topaz": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686TPZ_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Trace": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686TRC_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Verdana": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686VR_GO.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Clear": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686_CL_DoorLite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Clear Colonial 2x5": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686_628_CL_DoorLite.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Clear Colonial 3x5": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686_FullView.jpg.thumbnail.png",
+    "Door/categories/Steel Doors/Glass/Clear Prairie": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2F686_701_CL_DoorLite.jpg.thumbnail.png",
+
+    "Door/categories/Steel Doors/Side" :" ",
+    "Door/categories/Steel Doors/Side Glass":"",
+
+
+    "Door/categories/Steel Doors/Handles/Amherst Satin Chrome": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FAmherst_Satin_Chrome_thumb.png",
+    "Door/categories/Steel Doors/Handles/Ashfield Venetian Bronze": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FAshfield_Venetian_Bronze_thumb.png",
+    "Door/categories/Steel Doors/Handles/Wellington Satin Chrome": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FWellington_Satin_Chrome_thumb.png",
+    "Door/categories/Steel Doors/Handles/Commonwealth Bright Brass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCommonwealth_Lever_BrightBrass.png.thumbnail.png",
+    "Door/categories/Steel Doors/Handles/Commonwealth Satin Nickel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCommon_Satin_Nickel_thumb.png",
+    "Door/categories/Steel Doors/Handles/Commonwealth Venetian Bronze": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FCommon_Venetian_Bronze_thumb.png",
+    "Door/categories/Steel Doors/Handles/Dorian Antique Brass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FEntry%20Doors%2F~SteelDoors%2F~grid%2FDorian_Antique_Brass_thumb.png",
+
+
+
+
+
+
+
+    "Window/categories/Regency": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2Flogo.png",
+    "Window/Regency 400": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2Flogo.png",
+
+
+
+    "Window/categories/Regency/Regency Awning":  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2Flogo.png",
+    "Window/categories/Regency/Regency Casement": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2Flogo.png",
+    "Window/categories/Regency/Regency Hung": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2Flogo.png",
+    "Window/categories/Regency/Regency Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2Flogo.png",
+    "Window/categories/Regency/Regency Slider": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2Flogo.png",
+
+
+    "Window/categories/Regency/Regency Awning/Configuration/Single": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fawning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Awning/Configuration/Picture over Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FFixed%20Frame%20over%20Awning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Awning/Configuration/Double Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2F2-High_Awning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Awning/Configuration/Awning/Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2F2-Wide_Awning.jpg.thumbnail.png",
+
+
+    "Window/categories/Regency/Regency Awning/Exterior Finish": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+    "Window/categories/Regency/Regency Awning/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency/Regency Awning/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FClassic.png",
+    "Window/categories/Regency/Regency Awning/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Awning/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency/Regency Awning/Grille Type/Simulated Divided Lites 1 1/4":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Awning/Grille Type/Simulated Divided Lites 2":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Awning/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FVGrooveCutGlassthumb.png",
+
+    "Window/categories/Regency/Regency Awning/Grille Style/Colonial": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FColonial.png",
+    "Window/categories/Regency/Regency Awning/Grille Style/Diamond": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FDiamond.png",
+    "Window/categories/Regency/Regency Awning/Grille Style/Prairie": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FPrairie.png",
+    "Window/categories/Regency/Regency Awning/Grille Style/Double Prairie": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2FDouble-Prairie.png",
+
+
+    "Window/categories/Regency/Regency Awning/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency/Regency Awning/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency/Regency Awning/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency/Regency Awning/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency/Regency Awning/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency/Regency Awning/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+
+    "Window/categories/Regency/Regency Casement/Configuration/Single Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-L.png",
+    "Window/categories/Regency/Regency Casement/Configuration/Single Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-R.png",
+    "Window/categories/Regency/Regency Casement/Configuration/2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-LO.png",
+    "Window/categories/Regency/Regency Casement/Configuration/2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-OR.png",
+    "Window/categories/Regency/Regency Casement/Configuration/3 Lite - L/Picture/R": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-LPR.png",
+    "Window/categories/Regency/Regency Casement/Configuration/4 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-4Lite.png",
+    "Window/categories/Regency/Regency Casement/Configuration/4 Lite - L/P/P/R": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-4Lite-LPPR.png",
+    "Window/categories/Regency/Regency Casement/Configuration/5 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-5Lite.png",
+
+
+    "Window/categories/Regency/Regency Casement/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+    "Window/categories/Regency/Regency Casement/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency/Regency Casement/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency/Regency Casement/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Casement/Grille Type/Simulated Divided Lites 1 1/4": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Casement/Grille Type/Simulated Divided Lites 2": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Casement/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency/Regency Casement/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency/Regency Casement/Grille Style": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency/Regency Casement/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency/Regency Casement/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency/Regency Casement/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency/Regency Casement/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency/Regency Casement/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency/Regency Casement/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+    "Window/categories/Regency/Regency Hung/Configuration/1 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_W.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Configuration/2 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_WW.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Configuration/3 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_WWW.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Configuration/4 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fhung-4-Lite.png",
+    "Window/categories/Regency/Regency Hung/Configuration/Hung/Picture/Hung": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fhung-picture-hung.jpg",
+
+
+    "Window/categories/Regency/Regency Hung/Configuration/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F20Series_DH.png.thumbnail.png",
+
+
+
+    "Window/categories/Regency/Regency Hung/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency/Regency Hung/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency/Regency Hung/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Hung/Grille Type/Simulated Divided Lites 1 1/4":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Hung/Grille Type/Simulated Divided Lites 2": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Hung/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency/Regency Hung/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency/Regency Hung/Grille Style/No Grilles Selected": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency/Regency Hung/Glass/Light Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2FDouble_Pane.jpg",
+    "Window/categories/Regency/Regency Hung/Glass/Dark Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2FDouble_Pane.jpg",
+    "Window/categories/Regency/Regency Hung/Glass/Beveled-Leaded St. Joseph": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0003_St.-Joseph.png.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Glass/Beveled-Leaded Jackson": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0002_Jackson.png.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Glass/Beveled-Leaded Hanna": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0001_Hanna.png.thumbnail.png",
+    "Window/categories/Regency/Regency Hung/Glass/Beveled-Leaded Vicksburg": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0000_Vicksburg.png.thumbnail.png",
+
+
+    "Window/categories/Regency/Regency Picture/Configuration/Single": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2F~grid%2Fawning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Picture/Configuration/Picture over Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2F~grid%2FFixed%20Frame%20over%20Awning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Picture/Configuration/Double Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2F~grid%2F2-High_Awning.jpg.thumbnail.png",
+    "Window/categories/Regency/Regency Picture/Configuration/Awning/Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2F~grid%2F2-Wide_Awning.jpg.thumbnail.png",
+
+    "Window/categories/Regency/Regency Picture/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Picture%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+    "Window/categories/Regency/Regency Picture/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency/Regency Picture/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency/Regency Picture/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency/Regency Picture/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categoriesRegency/Regency Picture/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categoriesRegency/Regency Picture/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+    "Window/categories/Regency/Regency Slider/Configuration/2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FOX.png.thumbnail.png",
+    "Window/categories/Regency/Regency Slider/Configuration/2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FXO.png.thumbnail.png",
+    "Window/categories/Regency/Regency Slider/Configuration/Picture over 2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FP-OX.png.thumbnail.png",
+    "Window/categories/Regency/Regency Slider/Configuration/Picture over 2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FP-XO.png.thumbnail.png",
+
+    "Window/categories/Regency/Regency Slider/Exterior Finish/Definity Vinyl": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2F20Series_DH.png.thumbnail.png",
+
+    "Window/categories/Regency/Regency Slider/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency/Regency Slider/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency/Regency Slider/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Slider/Grille Type/Simulated Divided Lites 1 1/4": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Slider/Grille Type/Simulated Divided Lites 2" :"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency/Regency Slider/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency/Regency Slider/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+    "Window/categories/Regency/Regency Slider/Grille Style/No Grids Selected": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2F0-NONE_thumb.jpg",
+
+    "Window/categories/Regency/Regency Slider/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency/Regency Slider/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency/Regency Slider/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency/Regency Slider/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency/Regency Slider/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency/Regency Slider/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2Flogo.png",
+    "Window/categories/Regency 400/Regency 400 Casement": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Casement%2Flogo.png",
+    "Window/categories/Regency 400/Regency 400 Hung": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Hung%2Flogo.png",
+    "Window/categories/Regency 400/Regency 400 Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Picture%2Flogo.png",
+    "Window/categories/Regency 400/Regency 400 Slider": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Sliding%2Flogo.png",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Awning/Configuration/Single": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2Fawning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Configuration/Picture over Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2FFixed%20Frame%20over%20Awning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Configuration/Double Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2F2-High_Awning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Configuration/Awning/Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2F2-Wide_Awning.jpg.thumbnail.png",
+
+    "Window/categories/Regency 400/Regency 400 Awning/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/": "",
+
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/Simulated Divided Lites 1 1/4": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/Simulated Divided Lites 2" :"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Awning/Grille Style/No Grilles Selected": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency 400/Regency 400 Awning/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/Single Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-L.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/Single Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-R.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-LO.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-OR.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/3 Lite - L/Picture/R": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-LPR.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/4 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-4Lite.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/4 Lite - L/P/P/R": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-4Lite-LPPR.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Configuration/5 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FCasement-5Lite.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Casement/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Casement%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/Simulated Divided Lites 1 1/4" :"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/Simulated Divided Lites 2" :"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Casement/Grille Style/No Grilles Selected": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Casement%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency 400/Regency 400 Casement/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Hung/Configuration/1 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_W.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Configuration/2 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_WW.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Configuration/3 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fdouble_hung_config_WWW.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Configuration/4 Lite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fhung-4-Lite.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Configuration/Hung/Picture/Hung": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2Fhung-picture-hung.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Hung/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Hung%2F~grid%2F20Series_DH.png.thumbnail.png",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/Simulated Divided Lites 1 1/4":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/Simulated Divided Lites 2":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Hung/Grille Style/No Grilles Selected": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Hung%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Light Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2FDouble_Pane.jpg",
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Dark Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2FDouble_Pane.jpg",
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Beveled-Leaded St. Joseph": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0003_St.-Joseph.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Beveled-Leaded Jackson": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0002_Jackson.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Beveled-Leaded Hanna": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0001_Hanna.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Hung/Glass/Beveled-Leaded Vicksburg": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Hung%2F~grid%2F_0000_Vicksburg.png.thumbnail.png",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Picture/Configuration/Single": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2Fawning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Picture/Configuration/Picture over Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2FFixed%20Frame%20over%20Awning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Picture/Configuration/Double Awning": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2F2-High_Awning.jpg.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Picture/Configuration/Awning/Picture": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Awning%2F~grid%2F2-Wide_Awning.jpg.thumbnail.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Picture/Exterior Finish/Frame Colour": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Picture%2F~grid%2FGWD_260A.png.thumbnail.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency 400/Regency 400 Picture/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+
+    "Window/categories/Regency 400/Regency 400 Slider/Configuration/2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FOX.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Configuration/2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FXO.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Configuration/Picture over 2 Lite - Left Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FP-OX.png.thumbnail.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Configuration/Picture over 2 Lite - Right Operating": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Sliding%2F~grid%2FP-XO.png.thumbnail.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Slider/Exterior Finish/Definity Vinyl": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Sliding%2F~grid%2F20Series_DH.png.thumbnail.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/No Grilles": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNONE_thumb.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/Flat": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FClassic.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/Euro Contoured": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/Simulated Divided Lites 1 1/4":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/Simulated Divided Lites 2": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FContoured.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/Rectangular Pewter": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FNarrow-Brass.png",
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Type/V-Grooved Cut Glass": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Casement%2F~grid%2FVGrooveCutGlassthumb.png",
+
+
+    "Window/categories/Regency 400/Regency 400 Slider/Grille Style": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2F~Regency400_Sliding%2F~grid%2F0-NONE_thumb.jpg",
+
+
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Obscure": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fobscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Niagara": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Frain-obscure.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Glue Chip": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fglue-chip.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Satin": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fsatin-etched.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Bronze Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fbronze.jpg",
+    "Window/categories/Regency 400/Regency 400 Slider/Glass/Gray Tint": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2F~Regency_Awning%2F~grid%2Fgray.jpg",
+
+
+
+
 }
