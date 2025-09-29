@@ -866,7 +866,7 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
 
 
     "Window/categories/Regency": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%2Flogo.png",
-    "Window/Regency 400": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2Flogo.png",
+    "Window/categories/Regency 400": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FWindows%2FRegency%20400%2Flogo.png",
 
 
 

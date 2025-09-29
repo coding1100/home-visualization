@@ -515,8 +515,312 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     },
 
     # 7) WINDOWS
-    "Window": {"categories": {}},
+    "Window": {
+    "categories": {
+        "Regency": {
+            "Regency Awning": {
+                "Configuration": [
+                    "Single",
+                    "Picture over Awning",
+                    "Double Awning",
+                    "Awning/Picture"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": [
+                    "Colonial",
+                    "Diamond",
+                    "Prairie",
+                    "Double Prairie"
+                ],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency Casement": {
+                "Configuration": [
+                    "Single Lite - Left Operating",
+                    "Single Lite - Right Operating",
+                    "2 Lite - Left Operating",
+                    "2 Lite - Right Operating",
+                    "3 Lite - L/Picture/R",
+                    "4 Lite",
+                    "4 Lite - L/P/P/R",
+                    "5 Lite"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": [],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency Hung": {
+                "Configuration": [
+                    "1 Lite",
+                    "2 Lite",
+                    "3 Lite",
+                    "4 Lite",
+                    "Hung/Picture/Hung"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": ["No Grilles Selected"],
+                "Glass": [
+                    "Light Glass",
+                    "Dark Glass",
+                    "Beveled-Leaded St. Joseph",
+                    "Beveled-Leaded Jackson",
+                    "Beveled-Leaded Hanna",
+                    "Beveled-Leaded Vicksburg"
+                ]
+            },
+            "Regency Picture": {
+                "Configuration": [
+                    "Single",
+                    "Picture over Awning",
+                    "Double Awning",
+                    "Awning/Picture"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [],
+                "Grille Style": [],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency Slider": {
+                "Configuration": [
+                    "2 Lite - Left Operating",
+                    "2 Lite - Right Operating",
+                    "Picture over 2 Lite - Left Operating",
+                    "Picture over 2 Lite - Right Operating"
+                ],
+                "Exterior Finish": ["Definity Vinyl"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": ["No Grids Selected"],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            }
+        },
+        "Regency 400": {
+            "Regency 400 Awning": {
+                "Configuration": [
+                    "Single",
+                    "Picture over Awning",
+                    "Double Awning",
+                    "Awning/Picture"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": ["No Grilles Selected"],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency 400 Casement": {
+                "Configuration": [
+                    "Single Lite - Left Operating",
+                    "Single Lite - Right Operating",
+                    "2 Lite - Left Operating",
+                    "2 Lite - Right Operating",
+                    "3 Lite - L/Picture/R",
+                    "4 Lite",
+                    "4 Lite - L/P/P/R",
+                    "5 Lite"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": ["No Grilles Selected"],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency 400 Hung": {
+                "Configuration": [
+                    "1 Lite",
+                    "2 Lite",
+                    "3 Lite",
+                    "4 Lite",
+                    "Hung/Picture/Hung"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": ["No Grilles Selected"],
+                "Glass": [
+                    "Light Glass",
+                    "Dark Glass",
+                    "Beveled-Leaded St. Joseph",
+                    "Beveled-Leaded Jackson",
+                    "Beveled-Leaded Hanna",
+                    "Beveled-Leaded Vicksburg"
+                ]
+            },
+            "Regency 400 Picture": {
+                "Configuration": [
+                    "Single",
+                    "Picture over Awning",
+                    "Double Awning",
+                    "Awning/Picture"
+                ],
+                "Exterior Finish": ["Frame Colour"],
+                "Grille Type": [],
+                "Grille Style": [],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            },
+            "Regency 400 Slider": {
+                "Configuration": [
+                    "2 Lite - Left Operating",
+                    "2 Lite - Right Operating",
+                    "Picture over 2 Lite - Left Operating",
+                    "Picture over 2 Lite - Right Operating"
+                ],
+                "Exterior Finish": ["Definity Vinyl"],
+                "Grille Type": [
+                    "No Grilles",
+                    "Flat",
+                    "Euro Contoured",
+                    "Rectangular Pewter",
+                    "Simulated Divided Lites 1 1/4",
+                    "Simulated Divided Lites 2",
+                    "V-Grooved Cut Glass"
+                ],
+                "Grille Style": [],
+                "Glass": [
+                    "Obscure",
+                    "Niagara",
+                    "Glue Chip",
+                    "Satin",
+                    "Bronze Tint",
+                    "Gray Tint"
+                ]
+            }
+        }
+    }
+},
+
 
     # 8) ENTRY DOOR
-    "Door": {"categories": {}},
+    "Door": {
+        "categories": {
+            "Steel Doors": {
+                "Configuration": [
+                    "R Door", "S - Door", "Door - S",
+                    "S - L Door - S", "S - R Door - S",
+                    "Double Door", "S - Double Door - S", "Side"
+                ],
+                "Panel": [
+                    "Full Glass", "3/4 Glass", "684"
+                ],
+                "Glass": [
+                    "Tilt and Raise Blinds", "Topaz", "Trace",
+                    "Verdana", "Clear", "Clear Colonial 2x5",
+                    "Clear Colonial 3x5", "Clear Prairie",
+                    "Bristol (Satin Nickel Caming)", "Casablanca",
+                    "Catalina", "Cut Crystal", "Cadence",
+                    "Cirrus", "Entropy", "Expression (Brass Caming)",
+                    "Expression (Satin Nickel Caming)", "Greenfield",
+                    "Heirlooms (Brass Caming)"
+                ],
+                "Handles": [
+                    "Amherst Satin Chrome",
+                    "Ashfield Venetian Bronze"
+                ]
+            }
+        }
+    },
 }
