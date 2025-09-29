@@ -345,9 +345,9 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
     "Masonry/categories/Stone/Gentek Canada/Carved Block/Sea Salt": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch1-400.jpg",
 
     # Aluminum Trim & Accessories (logo)
-    "Trim/categories/Aluminum Trim and Accessories": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FTrim%2FAluminum%20Trim%20and%20Accessories%2Flogo.png",
-    "Trim/categories/Vinyl Trim and Accessories": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FTrim%2FVinyl%20Trim%20and%20Accessories%2Flogo.png",
-    "Trim/categories/Gentek Performance G8 Piece": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FTrim%2FGentek%20Performance%20G8%20Piece%2Flogo.png",
+    "Trim/categories/Aluminum Trim and Accessories": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2Flogo.png",
+    "Trim/categories/Vinyl Trim and Accessories": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2Flogo.png",
+    "Trim/categories/Gentek Performance G8 Piece": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2Flogo.png",
 
 
     # Aluminum Trim & Accessories
