@@ -515,8 +515,8 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     },
 
     # 7) WINDOWS
-    "Windows": {"categories": {}},
+    "Window": {"categories": {}},
 
     # 8) ENTRY DOOR
-    "Entry Door": {"categories": {}},
+    "Door": {"categories": {}},
 }
