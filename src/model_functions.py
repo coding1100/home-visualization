@@ -22,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.modules.files.models.gallery_images import GalleryImage
 from app.modules.files.s3utils.s3_utils import s3_upload_file
+from app.modules.history.services.history_service import HistoryService
 from src.constants import UPLOAD_DIR
 from src.comfyUI import process_with_comfyui
 from src.roboflow_model import model
@@ -638,6 +639,8 @@ async def model_segment_image(
 
         end_time = time.time()
         logger.info(f"Segmentation completed in {end_time - start_time:.2f} seconds")
+        # This is what FE should render (compressed/inference if it exists, else original)
+
         original_url_for_response = inference_url or original_url
 
         resp = {
@@ -648,6 +651,35 @@ async def model_segment_image(
             "raw_predictions": result["predictions"],
             "processing_time": f"{end_time - start_time:.2f}s",
         }
+
+        # ---- History logging (safe/optional; won’t break the API) ----
+        try:
+
+            base_img_id = None
+            if used_gallery and source_info and source_info.get("image_id"):
+                try:
+                    base_img_id = uuid.UUID(str(source_info["image_id"]))
+                except Exception:
+                    base_img_id = None
+
+            # base image URL the FE is actually using
+            base_img_url = original_url_for_response
+
+            if db is not None:
+                await HistoryService(db).record_event(
+                    session_id=None,  # pass session header if you capture it here
+                    user_id=None,  # or user id if available
+                    base_image_id=base_img_id,
+                    base_image_url=base_img_url,
+                    tool="segment",
+                    result_url=original_url_for_response,
+                    annotated_url=annotated_url,
+                    params={"response_mode": "url"},
+                )
+        except Exception:
+            # never fail the API because history logging failed
+            pass
+
         if used_gallery and source_info:
             resp["source_image"] = source_info
         return resp
