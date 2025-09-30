@@ -1,3 +1,4 @@
+from app.modules.history.services.history_service import HistoryService
 from src.model_functions import model_generate_mask, model_replace_material, model_segment_image, model_advanced_replace_material
 from src.logger import logger
 from fastapi import UploadFile, File, HTTPException, Form, APIRouter, Depends
@@ -66,6 +67,7 @@ async def advanced_replace_material(
     preserve_shading: int = Form(1),
     # NEW: keeps current default behavior
     response_mode: str = Form("base64"),
+    db: AsyncSession =Depends(get_db),
 ):
     """
     Advanced material replacement with cv_poisson method.
@@ -95,7 +97,7 @@ async def advanced_replace_material(
         if material_image is None and material_id is None:
             raise HTTPException(status_code=400, detail="Provide either material_image or material_id")
         
-        return model_advanced_replace_material(
+        res = model_advanced_replace_material(
             original_image=original_image,
             mask_image=mask_image,
             elements_json=elements_json,
@@ -111,6 +113,39 @@ async def advanced_replace_material(
             response_mode=response_mode,
 
         )
+        if (
+                isinstance(res, dict)
+                and res.get("success") is True
+                and str(response_mode).lower() == "url"
+                and method == "cv_poisson"
+        ):
+            replaced_image_url = res.get("replaced_image_url") or res.get("result_url")
+            if replaced_image_url:
+                try:
+                    await HistoryService(db).record_event(
+                        session_id=None,  # pass session id if you have it
+                        user_id=None,  # pass user id if you have it
+                        base_image_id=None,  # if you know the gallery image id, set it; else None
+                        base_image_url=original_image,  # controller receives the original image URL
+                        tool="replace",
+                        element_type=(element_type or None),
+                        material_slug=None,  # set if you can build e.g. "Wall/categories/Brick/Red"
+                        material_id=material_id,
+                        material_name=None,
+                        result_url=replaced_image_url,
+                        params={
+                            "scale": scale,
+                            "angle_bias_deg": angle_bias_deg,
+                            "color_match": color_match,
+                            "preserve_shading": bool(int(preserve_shading)),
+                            "method": method,
+                        },
+                    )
+                except Exception:
+                    # do not break the API if history write fails
+                    pass
+
+        return res
     except Exception as e:
         logger.error(f"Error in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

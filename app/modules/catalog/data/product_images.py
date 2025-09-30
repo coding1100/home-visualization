@@ -7,7 +7,7 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
     "Wall/categories/Stone":  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2Flogo.png",
 
     "Wall/categories/Premium Composite Siding":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
-    "Wall/categories/Premium Composite Siding/Board and batten":"https://res.cloudinary.com/x-nabeel-x/image/upload/v1758714944/users/a203d682-0b66-4b4a-949a-59fe6209cee9/562f7e31-0f70-46cc-847a-168a430ab96f_image_1_usvhtp.png ",
+    "Wall/categories/Premium Composite Siding/Board and batten":"https://res.cloudinary.com/x-nabeel-x/image/upload/v1758714944/users/a203d682-0b66-4b4a-949a-59fe6209cee9/562f7e31-0f70-46cc-847a-168a430ab96f_image_1_usvhtp.png",
     "Wall/categories/Premium Composite Siding/Lap":"https://res.cloudinary.com/x-nabeel-x/image/upload/v1758715074/users/a203d682-0b66-4b4a-949a-59fe6209cee9/6d59f056-d8ad-4c54-9982-df6a1d66d643_image_cs2rvi.png",
 
 
