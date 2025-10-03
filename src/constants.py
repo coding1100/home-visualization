@@ -11,7 +11,7 @@ RF_API_KEY = os.getenv("RF_API_KEY")
 hf_token = os.getenv("HF_TOKEN")
 FIXED_SEED = int(os.environ.get("FIXED_SEED", "-1"))
 CLOUDINARY_FOLDER = "renders"
-MATERIAL_PROMINENCE = os.getenv("MATERIAL_PROMINENCE", 0.7)
+MATERIAL_PROMINENCE = os.getenv("MATERIAL_PROMINENCE", 0.9)
 
 # Cache for workflow to avoid repeated loading
 cached_workflow = None
