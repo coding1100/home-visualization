@@ -51,6 +51,8 @@ class Settings:
     UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR", "uploads/tmp")
     HF_TOKEN = os.getenv("HF_TOKEN")
     RF_API_KEY = os.getenv("RF_API_KEY")
+    RF_MODEL_PROJECT = os.getenv("RF_MODEL_PROJECT", "correctannotation")
+    RF_MODEL_PROJECT_VERSION = int(os.getenv("RF_MODEL_PROJECT_VERSION", 3))
     COMFYUI_SERVER = os.getenv("COMFYUI_SERVER")
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
