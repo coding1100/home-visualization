@@ -405,7 +405,7 @@ def model_advanced_replace_material(
 
         )
     except Exception as e:
-        logger.error(f"Error in advanced material replacement: {str(e)}")
+        logger.error(f"model func Error in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 async def model_segment_image(
