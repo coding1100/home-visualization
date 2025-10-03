@@ -34,5 +34,5 @@ init_huggingface()
 # Initialize Roboflow model
 # rf = Roboflow(api_key = os.getenv("RF_API_KEY"))
 rf = Roboflow(api_key = settings.RF_API_KEY)
-project = rf.workspace().project("correctannotation")
-model = project.version(3).model
+project = rf.workspace().project(settings.RF_MODEL_PROJECT)
+model = project.version(settings.RF_MODEL_PROJECT_VERSION).model
