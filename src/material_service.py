@@ -18,7 +18,7 @@ from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same pl
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
-    return max(4, int(round(min(H, W) * 0.006)))  # ~0.6% of shorter side
+    return max(1, int(round(min(H, W) * 0.001)))  # ~0.3% of shorter side (reduced from 0.6%)
 
 def _calc_erosion_px(H: int, W: int) -> int:
     """Derive an erosion size that scales with image resolution."""
