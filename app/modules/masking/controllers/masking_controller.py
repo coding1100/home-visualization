@@ -91,9 +91,6 @@ async def advanced_replace_material(
     """
     try:
         # Validate that either material_image or material_id is provided, but not both
-        if material_image is not None and material_id is not None:
-            raise HTTPException(status_code=400, detail="Provide either material_image or material_id, not both")
-        
         if material_image is None and material_id is None:
             raise HTTPException(status_code=400, detail="Provide either material_image or material_id")
         
@@ -147,5 +144,5 @@ async def advanced_replace_material(
 
         return res
     except Exception as e:
-        logger.error(f"Error in advanced material replacement: {str(e)}")
+        logger.error(f"ControllerError in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

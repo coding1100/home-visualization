@@ -18,7 +18,7 @@ from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same pl
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
-    return max(1, int(round(min(H, W) * 0.001)))  # ~0.6% of shorter side
+    return max(0, int(round(min(H, W) * 0.000)))  # ~0.6% of shorter side
 
 def _calc_erosion_px(H: int, W: int) -> int:
     """Derive an erosion size that scales with image resolution."""
@@ -73,11 +73,11 @@ def _union_mask_except(elements, target_ids, target_types, H, W):
 
 def _elements_to_mask(elements, H, W, include_ids=None, include_types=None):
     """Build union mask for elements matching provided ids/types."""
-    id_set = {str(i) for i in (include_ids or []) if i is not None}
-    type_set = {t for t in (include_types or []) if t}
+    id_set = {str(i).lower() for i in (include_ids or []) if i is not None}
+    type_set = {t.lower() for t in (include_types or []) if t}
     m = np.zeros((H, W), np.uint8)
     for e in elements or []:
-        eid = e.get("id")
+        eid = e.get("id").lower()
         etype = (e.get("type") or e.get("class") or "").lower().strip()
         if id_set and str(eid) not in id_set:
             continue
@@ -530,14 +530,13 @@ def advanced_material_replacement(
 
             edge_margin = _calc_edge_margin_px(H, W)
             erosion = _calc_erosion_px(H, W)
-
             refined_mask = build_selection_mask(
                 elements,
                 H,
                 W,
                 include_ids=include_ids,
                 include_types=include_types,
-                exclude_types=DEFAULT_EXCLUDE_TYPES,
+                exclude_types=(DEFAULT_EXCLUDE_TYPES - include_types),
                 edge_margin_px=edge_margin,
                 erosion_px=erosion,
                 remove_other_geometry=True,
@@ -656,34 +655,7 @@ def advanced_material_replacement(
                         "replaced_image_url": replaced_image_url,
                         "public_id": public_id,
                     }
-                    # ensure_cloudinary_config()
-                    # try:
-                    #     # Convert base64 to binary for direct upload
-                    #     output_binary = base64.b64decode(out_b64)
-                    #
-                    #     # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)
-                    #     res = upload_image_to_cloudinary(output_binary, element_type)
-                    #     # capture Cloudinary data (dynamic; nothing hard-coded)
-                    #     replaced_image_url = res.get("secure_url")
-                    #     public_id = res.get("public_id")
-                    #     width = res.get("width", out_w)
-                    #     height = res.get("height", out_h)
-                    #     bytes_on_cloud = res.get("bytes")  # might be present
 
-
-                    # return {
-                    #     "success": True,
-                    #     "method": method,
-                    #     "element_type": element_type,
-                    #     "material_id": material_id,
-                    #     "processing_time": f"{time.time() - t0:.2f}s",
-                    #     "output_image_mb": round((bytes_on_cloud or (out_size_mb * 1024 * 1024)) / (1024 * 1024),
-                    #                              3) if bytes_on_cloud else round(out_size_mb, 3),
-                    #     "output_image_dimensions": {"width": int(width), "height": int(height)},
-                    #     "output_image_downscaled": out_downscaled,
-                    #     "replaced_image_url": replaced_image_url,
-                    #     "public_id": public_id,
-                    # }
                 except Exception as e:
                     logger.error(f"Error uploading to Cloudinary: {str(e)}")
                     raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
@@ -704,9 +676,9 @@ def advanced_material_replacement(
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
 
     except HTTPException as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        logger.error(f"1st exception Error in advanced_material_replacement: {str(e)}")
         raise e
     except Exception as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        logger.error(f"2nd exception Error in advanced_material_replacement: {str(e)}")
         raise e
 
