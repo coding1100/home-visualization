@@ -9,7 +9,7 @@ Node = Union[List[str], Dict[str, "Node"]]
 PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     # 1) WALL
     "Wall": {
-        "categories": {
+        # "categories": {
             # --- Brick
             # "Brick": [
             #     "Red",
@@ -123,48 +123,48 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
             #         ],
             #     },
             # },
-"Premium Composite Siding": {
-      "Board and batten": [
-        "Artic Blue",
-        "Bourbon",
-        "Brickstone Red",
-        "Cashmere",
-        "Charcoal",
-        "Forest",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sage",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey"
-      ],
-      "Lap Siding": [
-        "Bourbon",
-        "Charcoal",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey",
-        "Artic Blue",
-        "Brickstone Red",
-        "Cashmere",
-        "Forest",
-        "Sage"
-      ]
-    }
-        }
+            # "Premium Composite Siding": {
+                  "Board and Batten": [
+                    "Artic Blue",
+                    "Bourbon",
+                    "Brickstone Red",
+                    "Cashmere",
+                    "Charcoal",
+                    "Forest",
+                    "Khaki",
+                    "Midnight",
+                    "Ocean Mist",
+                    "Polar White",
+                    "Saddle Brown",
+                    "Sage",
+                    "Sand Dune",
+                    "Sea Moss",
+                    "Smoke Grey"
+                  ],
+                  "Lap Siding": [
+                    "Bourbon",
+                    "Charcoal",
+                    "Khaki",
+                    "Midnight",
+                    "Ocean Mist",
+                    "Polar White",
+                    "Saddle Brown",
+                    "Sand Dune",
+                    "Sea Moss",
+                    "Smoke Grey",
+                    "Artic Blue",
+                    "Brickstone Red",
+                    "Cashmere",
+                    "Forest",
+                    "Sage"
+                  ]
+            # }
+        # }
     },
 
     # 2) ACCENT (placeholder for now)
     "Accent": {
-        "categories": {
+        # "categories": {
         #     # --- Brick
         #     "Brick": [
         #         "Red",
@@ -271,43 +271,43 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
         #             ],
         #         },
         #     },
-"Premium Composite Siding": {
-      "Board and batten": [
-        "Artic Blue",
-        "Bourbon",
-        "Brickstone Red",
-        "Cashmere",
-        "Charcoal",
-        "Forest",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sage",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey"
-      ],
-      "Lap Siding": [
-        "Bourbon",
-        "Charcoal",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey",
-        "Artic Blue",
-        "Brickstone Red",
-        "Cashmere",
-        "Forest",
-        "Sage"
-      ]
-    }
-        }
+        #         "Premium Composite Siding": {
+                      "Board and batten": [
+                        "Artic Blue",
+                        "Bourbon",
+                        "Brickstone Red",
+                        "Cashmere",
+                        "Charcoal",
+                        "Forest",
+                        "Khaki",
+                        "Midnight",
+                        "Ocean Mist",
+                        "Polar White",
+                        "Saddle Brown",
+                        "Sage",
+                        "Sand Dune",
+                        "Sea Moss",
+                        "Smoke Grey"
+                      ],
+                      "Lap Siding": [
+                        "Bourbon",
+                        "Charcoal",
+                        "Khaki",
+                        "Midnight",
+                        "Ocean Mist",
+                        "Polar White",
+                        "Saddle Brown",
+                        "Sand Dune",
+                        "Sea Moss",
+                        "Smoke Grey",
+                        "Artic Blue",
+                        "Brickstone Red",
+                        "Cashmere",
+                        "Forest",
+                        "Sage"
+                      ]
+                # }
+        # }
     },
 
     # 3) MASONRY
@@ -515,12 +515,11 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     # },
 
     # 5) TRIM
-    "Trim": {
-        "categories": {  # if your FE expects a different label, adjust this key only
-            "Aluminum Trim and Accessories": [
-                "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
-                "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
-                "Brownstone", "Dover Gray", "Metallic Gray", "Sage",
+    "Trim": [
+        # "categories": {  # if your FE expects a different label, adjust this key only
+        #     "Aluminum Trim and Accessories": [
+                "Canyon Clay", "Wicker", "Pebble",
+                "Metallic Gray", "Sage",
                 "Juniper Grove", "Storm", "Sable", "Windswept Smoke",
                 "Midnight Surf", "Wedgewood Blue", "Rockwell Blue",
                 "Coastal Blue", "Ivy Green", "Slate", "Dark Drift",
@@ -529,34 +528,32 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 "Forest Green", "Graphite", "Iron Ore", "Black",
                 "Chesapeake Gray", "Majestic Brick", "Rockport Brown",
                 "Smoked Timber", "Meadow Fern", "Marine Dusk", "Hudson Slate",
-            ],
-            "Vinyl Trim and Accessories": [
-                "Almond", "Amber", "Canyon Clay", "Chesapeake Gray",
-                "Coastal Blue", "Dark Drift", "Dover Gray", "Espresso",
-                "Hudson Slate", "Iron Ore", "Juniper Grove", "Linen", "Maize",
+            # ],
+            # "Vinyl Trim and Accessories": [
+                "Canyon Clay", "Chesapeake Gray",
+                "Coastal Blue", "Dark Drift", "Espresso",
+                "Hudson Slate", "Iron Ore", "Juniper Grove",
                 "Majestic Brick", "Marine Dusk", "Meadow Fern", "Midnight Surf",
-                "Monteray Sand", "Moonlit Moss", "Pearl", "Pebble",
-                "Rockport Brown", "Rockwell Blue", "Sage", "Sandstone",
-                "Smoked Timber", "Snow White", "Storm", "Wicker",
+                "Moonlit Moss", "Pearl", "Pebble",
+                "Rockport Brown", "Rockwell Blue", "Sage",
+                "Smoked Timber", "Storm", "Wicker",
                 "Windswept Smoke", "BarnBoard Grey", "Honey Super Matte",
                 "Super Matte Modern Walnut", "Sun Bleached Oak",
                 "Cinnamon Walnut", "Barrel Oak", "Toffee", "Charred Black",
                 "Atlantic White", "Chai Cedar", "Brushed Metallic", "Pure White",
-            ],
-            "Gentek Performance G8 Piece": [
-                "Ice White", "Bright White", "Pebble", "Commercial Brown",
+            # ],
+            # "Gentek Performance G8 Piece": [
+                "Pebble", "Commercial Brown",
                 "Slate", "Iron Ore", "Black",
-            ],
-        }
-    },
+            # ],
+        # }
+    ],
 
     # 6) WINDOW AND DOOR TRIM
-    "Window and Door Trim": {
-        "categories": {  # if your FE expects a different label, adjust this key only
-            "Aluminum Trim and Accessories": [
-                "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
-                "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
-                "Brownstone", "Dover Gray", "Metallic Gray", "Sage",
+    "Window and Door Trim": [
+        # "categories": {  # if your FE expects a different label, adjust this key only
+        #     "Aluminum Trim and Accessories": [
+                "Pebble","Metallic Gray", "Sage",
                 "Juniper Grove", "Storm", "Sable", "Windswept Smoke",
                 "Midnight Surf", "Wedgewood Blue", "Rockwell Blue",
                 "Coastal Blue", "Ivy Green", "Slate", "Dark Drift",
@@ -565,26 +562,26 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 "Forest Green", "Graphite", "Iron Ore", "Black",
                 "Chesapeake Gray", "Majestic Brick", "Rockport Brown",
                 "Smoked Timber", "Meadow Fern", "Marine Dusk", "Hudson Slate",
-            ],
-            "Vinyl Trim and Accessories": [
-                "Almond", "Amber", "Canyon Clay", "Chesapeake Gray",
-                "Coastal Blue", "Dark Drift", "Dover Gray", "Espresso",
-                "Hudson Slate", "Iron Ore", "Juniper Grove", "Linen", "Maize",
+            # ],
+            # "Vinyl Trim and Accessories": [
+                "Canyon Clay", "Chesapeake Gray",
+                "Coastal Blue", "Dark Drift", "Espresso",
+                "Hudson Slate", "Iron Ore", "Juniper Grove",
                 "Majestic Brick", "Marine Dusk", "Meadow Fern", "Midnight Surf",
-                "Monteray Sand", "Moonlit Moss", "Pearl", "Pebble",
-                "Rockport Brown", "Rockwell Blue", "Sage", "Sandstone",
-                "Smoked Timber", "Snow White", "Storm", "Wicker",
+                "Moonlit Moss", "Pearl", "Pebble",
+                "Rockport Brown", "Rockwell Blue", "Sage",
+                "Smoked Timber", "Storm", "Wicker",
                 "Windswept Smoke", "BarnBoard Grey", "Honey Super Matte",
                 "Super Matte Modern Walnut", "Sun Bleached Oak",
                 "Cinnamon Walnut", "Barrel Oak", "Toffee", "Charred Black",
-                "Atlantic White", "Chai Cedar", "Brushed Metallic", "Pure White",
-            ],
-            "Gentek Performance G8 Piece": [
-                "Ice White", "Bright White", "Pebble", "Commercial Brown",
+                "Atlantic White", "Chai Cedar", "Brushed Metallic",
+            # ],
+            # "Gentek Performance G8 Piece": [
+                "Pebble", "Commercial Brown",
                 "Slate", "Iron Ore", "Black",
-            ],
-        }
-    },
+            # ],
+        # }
+    ],
 
     # 7) WINDOWS
 #     "Window": {
