@@ -413,6 +413,7 @@ async def model_segment_image(
     image_id: Optional[str] = None,
     db: Optional[AsyncSession] = None,
     response_mode: str = "base64",
+    session_id: Optional[str] = None,
 ):
     """
     When image_id is provided:
@@ -667,7 +668,7 @@ async def model_segment_image(
 
             if db is not None:
                 await HistoryService(db).record_event(
-                    session_id=None,  # pass session header if you capture it here
+                    session_id=session_id,  # pass session header if you capture it here
                     user_id=None,  # or user id if available
                     base_image_id=base_img_id,
                     base_image_url=base_img_url,
