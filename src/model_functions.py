@@ -574,6 +574,7 @@ async def model_segment_image(
     cv2.imwrite(annotated_path, annotated_image)
     print(f"Annotated Image Successfully Saved:")
     # ---------- Build house elements (unchanged) ----------
+    house_elements_start_time = time.time()
     house_elements = []
     for i, pred in enumerate(result["predictions"]):
         points = []
@@ -599,10 +600,14 @@ async def model_segment_image(
             "originalColor": get_color_for_class(pred["class"]),
         }
         house_elements.append(element)
+    house_elements_end_time = time.time()
+    logger.info(f"House elements extraction completed in {house_elements_end_time - house_elements_start_time:.2f} seconds")
+    print(f"House elements extraction completed in {house_elements_end_time - house_elements_start_time :.2f} seconds")
 
     mode = (response_mode or "base64").lower()
 
     # ---------- URL mode: upload to Cloudinary (same pattern you already use) ----------
+    mode_uploading_start_time = time.time()
     if mode == "url":
         # Only upload the original if it *didn’t* come from gallery DB (avoid duplicate uploads)
         original_url: Optional[str] = None
@@ -680,12 +685,16 @@ async def model_segment_image(
         except Exception:
             # never fail the API because history logging failed
             pass
-
+        mode_uploading_end_time = time.time()
+        logger.info(f"Post-processing for URL mode completed in {mode_uploading_end_time - mode_uploading_start_time:.2f} seconds")
+        print(f"Post-processing for URL mode completed in {mode_uploading_end_time - mode_uploading_start_time:.2f} seconds")
+         # Clean up temp files
         if used_gallery and source_info:
             resp["source_image"] = source_info
         return resp
 
 
+    start_time_3 = time.time()
     # ---------- Default (unchanged): base64 payloads ----------
     original_base64 = image_to_base64(file_path)
     annotated_base64 = image_to_base64(annotated_path)
@@ -704,6 +713,9 @@ async def model_segment_image(
         "raw_predictions": result["predictions"],
         "processing_time": f"{end_time - start_time:.2f}s",
     }
+    end_time_3 = time.time()
+    logger.info(f"Post-processing for base-64 completed in {end_time_3 - start_time_3:.2f} seconds")
+    print(f"Post-processing for base-64 completed in {end_time_3 - start_time_3:.2f} seconds")
     if used_gallery and source_info:
         resp["source_image"] = source_info
     return resp
