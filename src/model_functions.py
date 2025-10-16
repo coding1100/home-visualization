@@ -381,6 +381,8 @@ def model_advanced_replace_material(
     angle_bias_deg: float = 90.0,
     color_match: str = None,
     preserve_shading: int = 1,
+    orientation_mode: str = "auto",
+    fixed_angle: float = 0.0,
     response_mode: str = "base64"
 ):
     """
@@ -401,6 +403,8 @@ def model_advanced_replace_material(
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
             preserve_shading=preserve_shading,
+            orientation_mode=orientation_mode,
+            fixed_angle=fixed_angle,
             response_mode=response_mode,
 
         )
