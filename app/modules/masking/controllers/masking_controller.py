@@ -68,6 +68,9 @@ async def advanced_replace_material(
     angle_bias_deg: float = Form(90.0),
     color_match: str = Form(None),
     preserve_shading: int = Form(1),
+    # NEW: orientation control parameters
+    orientation_mode: str = Form("auto"),
+    fixed_angle: float = Form(0.0),
     # NEW: keeps current default behavior
     response_mode: str = Form("base64"),
     db: AsyncSession =Depends(get_db),
@@ -89,6 +92,8 @@ async def advanced_replace_material(
     - angle_bias_deg: Angle bias for texture orientation (default: 90.0)
     - color_match: Color matching method ("reinhard" or None)
     - preserve_shading: Whether to preserve original shading (1=True, 0=False)
+    - orientation_mode: Texture orientation mode ("auto" or "fixed", default: "auto")
+    - fixed_angle: Fixed angle for texture when orientation_mode="fixed" (default: 0.0)
     
     Note: material_id will download the material image from the product catalog.
     Available material IDs include Wall, Accent, and Masonry categories with various materials.
@@ -111,6 +116,8 @@ async def advanced_replace_material(
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
             preserve_shading=preserve_shading,
+            orientation_mode=orientation_mode,
+            fixed_angle=fixed_angle,
             response_mode=response_mode,
 
         )

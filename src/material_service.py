@@ -386,7 +386,7 @@ def apply_texture_cv_poisson(
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, color_match=None, preserve_shading=True, material_prominence=0.8):
+                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=True, material_prominence=0.8):
     """Clone per connected wall (stable angles, avoids cross-bleed)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -394,8 +394,13 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
         sub = np.zeros_like(union_mask); cv2.drawContours(sub, [c], -1, 255, -1)
         # Reapply original mask to preserve interior holes (windows, doors, etc.)
         sub = cv2.bitwise_and(sub, union_mask)
-        a = _auto_angle_from_cnt(c) if angle_mode=="auto" else float(angle_mode)
-        a = float(a) + float(angle_bias_deg)
+        
+        # Calculate final angle based on orientation mode
+        if angle_mode == "fixed":
+            a = float(fixed_angle)
+        else:  # angle_mode == "auto"
+            a = _auto_angle_from_cnt(c) + float(angle_bias_deg)
+        
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
                                        color_match=color_match, preserve_shading=preserve_shading,
                                        material_prominence=material_prominence)
@@ -445,6 +450,8 @@ def advanced_material_replacement(
     color_match: Optional[str] = None,
     preserve_shading: int = 0,
     material_prominence: float = MATERIAL_PROMINENCE,
+    orientation_mode: str = "auto",
+    fixed_angle: float = 0.0,
     response_mode: str = "base64",
 
 ):
@@ -464,6 +471,8 @@ def advanced_material_replacement(
         color_match: Color matching method ("reinhard" or None)
         preserve_shading: Whether to preserve original shading (1=True, 0=False)
         material_prominence: Material overlay prominence (0.0-1.0, default 0.7 for 70% visibility)
+        orientation_mode: Texture orientation mode ("auto" or "fixed")
+        fixed_angle: Fixed angle for texture when orientation_mode="fixed"
     
     Returns:
         dict: Result with replaced image and metadata
@@ -617,8 +626,9 @@ def advanced_material_replacement(
                 union_mask=refined_mask,
                 texture=texture_cv,
                 scale=texture_scale,
-                angle_mode="auto",
+                angle_mode=orientation_mode,
                 angle_bias_deg=float(angle_bias_deg),
+                fixed_angle=float(fixed_angle),
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 preserve_shading=bool(int(preserve_shading)),
                 material_prominence=float(material_prominence),
