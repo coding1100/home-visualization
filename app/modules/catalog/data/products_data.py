@@ -272,7 +272,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
         #         },
         #     },
         #         "Premium Composite Siding": {
-                      "Board and batten": [
+                      "Board and Batten": [
                         "Artic Blue",
                         "Bourbon",
                         "Brickstone Red",
@@ -290,21 +290,22 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Smoke Grey"
                       ],
                       "Lap Siding": [
+                        "Artic Blue",
                         "Bourbon",
+                        "Brickstone Red",
+                        "Cashmere",
                         "Charcoal",
+                        "Forest",
                         "Khaki",
                         "Midnight",
                         "Ocean Mist",
                         "Polar White",
                         "Saddle Brown",
+                        "Sage",
                         "Sand Dune",
                         "Sea Moss",
-                        "Smoke Grey",
-                        "Artic Blue",
-                        "Brickstone Red",
-                        "Cashmere",
-                        "Forest",
-                        "Sage"
+                        "Smoke Grey"
+
                       ]
                 # }
         # }
