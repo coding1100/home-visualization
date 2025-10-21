@@ -138,7 +138,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                     "Saddle Brown",
                     "Sage",
                     "Sand Dune",
-                    "Sea Moss",
+                    # "Sea Moss",
                     "Smoke Grey"
                   ],
                   "Lap Siding": [
@@ -154,7 +154,7 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                     "Smoke Grey",
                     "Artic Blue",
                     "Brickstone Red",
-                    "Cashmere",
+                    # "Cashmere",
                     "Forest",
                     "Sage"
                   ]
@@ -286,14 +286,14 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                         "Saddle Brown",
                         "Sage",
                         "Sand Dune",
-                        "Sea Moss",
+                        # "Sea Moss",
                         "Smoke Grey"
                       ],
                       "Lap Siding": [
                         "Artic Blue",
                         "Bourbon",
                         "Brickstone Red",
-                        "Cashmere",
+                        # "Cashmere",
                         "Charcoal",
                         "Forest",
                         "Khaki",
