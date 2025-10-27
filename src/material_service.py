@@ -18,7 +18,7 @@ from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same pl
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
-    return max(0, int(round(min(H, W) * 0.000)))  # ~0.6% of shorter side
+    return max(0, int(round(min(H, W) * 0.000)))  # ~0.6% of short
 
 def _calc_erosion_px(H: int, W: int) -> int:
     """Derive an erosion size that scales with image resolution."""
@@ -297,10 +297,10 @@ def _auto_angle_from_cnt(cnt):
 def apply_texture_cv_poisson(
     original_bgr, mask, texture_bgr,
     scale=1.0, angle_deg=0.0,
-    color_match=None, preserve_shading=True,
+    color_match=None, preserve_shading=False,
     material_prominence=0.8, pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
 ):
-    """Apply texture using OpenCV Poisson blending."""
+    """Apply texture using full replacement (no opacity blending)."""
     H, W = original_bgr.shape[:2]
     mask_bin = (mask > 0).astype(np.uint8)
     if np.count_nonzero(mask_bin) == 0:
@@ -336,21 +336,6 @@ def apply_texture_cv_poisson(
         # Fallback to simple resize if affine fails
         src_warp = cv2.resize(tiled, (W, H), interpolation=cv2.INTER_CUBIC)
 
-    if preserve_shading:
-        lab_o = cv2.cvtColor(original_bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
-        lab_s = cv2.cvtColor(src_warp,     cv2.COLOR_BGR2LAB).astype(np.float32)
-        L_orig = lab_o[..., 0]
-        L_tex  = lab_s[..., 0]
-        a_s, b_s = lab_s[...,1], lab_s[...,2]
-
-        mask_f = (mask_bin.astype(np.float32) / 255.0)
-        # Calculate shading_keep based on material_prominence (0.8 = 80% material, 20% original)
-        shading_keep = 1.0 - material_prominence  # material_prominence=0.8 -> shading_keep=0.2
-        L_mix = L_tex * (1.0 - shading_keep) + L_orig * shading_keep
-        L = L_orig * (1.0 - mask_f) + L_mix * mask_f
-
-        src_warp = cv2.cvtColor(np.dstack([L, a_s, b_s]).astype(np.uint8), cv2.COLOR_LAB2BGR)
-
     # crop ROI + safe center
     x,y,w,h = cv2.boundingRect(np.column_stack([xs,ys]).astype(np.int32))
     x0,y0 = max(0,x-pad), max(0,y-pad)
@@ -365,29 +350,19 @@ def apply_texture_cv_poisson(
         k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2*erosion_px+1, 2*erosion_px+1))
         roi_mask_u8 = cv2.erode(roi_mask_u8, k, 1)
 
-    M = cv2.moments(roi_mask_u8, True)
-    if M["m00"]>0:
-        cx, cy = int(M["m10"]/M["m00"]), int(M["m01"]/M["m00"])
-    else:
-        cx, cy = roi_dst.shape[1]//2, roi_dst.shape[0]//2
-    cx = int(np.clip(cx, 0, roi_dst.shape[1]-1)); cy = int(np.clip(cy, 0, roi_dst.shape[0]-1))
-
-    # Use controlled alpha blending for more even results
+    # FULL REPLACEMENT: Use raw alpha (100% replacement, no opacity blending)
     alpha = (roi_mask_u8.astype(np.float32)/255.0)[...,None]
     
-    # Apply material prominence to the alpha channel for more control
-    alpha_adjusted = alpha * material_prominence
-    
-    # Smooth blending with controlled opacity
-    blended_roi = (roi_src * alpha_adjusted + roi_dst * (1.0 - alpha_adjusted)).astype(np.uint8)
+    # Direct replacement without material_prominence opacity adjustment
+    blended_roi = (roi_src * alpha + roi_dst * (1.0 - alpha)).astype(np.uint8)
 
     out = original_bgr.copy()
     out[y0:y1, x0:x1] = blended_roi
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=True, material_prominence=0.8):
-    """Clone per connected wall (stable angles, avoids cross-bleed)."""
+                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=False, material_prominence=0.8):
+    """Clone per connected wall with full replacement (no opacity blending)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     for c in cnts:
@@ -401,8 +376,9 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
         else:  # angle_mode == "auto"
             a = _auto_angle_from_cnt(c) + float(angle_bias_deg)
         
+        # Force preserve_shading=False for full replacement
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
-                                       color_match=color_match, preserve_shading=preserve_shading,
+                                       color_match=color_match, preserve_shading=False,
                                        material_prominence=material_prominence)
     return out
 
@@ -448,7 +424,6 @@ def advanced_material_replacement(
     scale: float = 1.0,
     angle_bias_deg: float = 90.0,
     color_match: Optional[str] = None,
-    preserve_shading: int = 0,
     material_prominence: float = MATERIAL_PROMINENCE,
     orientation_mode: str = "auto",
     fixed_angle: float = 0.0,
@@ -469,7 +444,6 @@ def advanced_material_replacement(
         scale: Scale factor for texture
         angle_bias_deg: Angle bias for texture orientation
         color_match: Color matching method ("reinhard" or None)
-        preserve_shading: Whether to preserve original shading (1=True, 0=False)
         material_prominence: Material overlay prominence (0.0-1.0, default 0.7 for 70% visibility)
         orientation_mode: Texture orientation mode ("auto" or "fixed")
         fixed_angle: Fixed angle for texture when orientation_mode="fixed"
@@ -630,7 +604,6 @@ def advanced_material_replacement(
                 angle_bias_deg=float(angle_bias_deg),
                 fixed_angle=float(fixed_angle),
                 color_match=(color_match if color_match in ["reinhard"] else None),
-                preserve_shading=bool(int(preserve_shading)),
                 material_prominence=float(material_prominence),
             )
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
