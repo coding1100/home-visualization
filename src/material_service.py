@@ -18,7 +18,7 @@ from app.modules.catalog.data.product_images import PRODUCT_IMAGE_MAP  # same pl
 
 def _calc_edge_margin_px(H: int, W: int) -> int:
     """Derive a dilation size that scales with image resolution."""
-    return max(1, int(round(min(H, W) * 0.001)))  # ~0.3% of shorter side (reduced from 0.6%)
+    return max(0, int(round(min(H, W) * 0.000)))  # ~0.6% of short
 
 def _calc_erosion_px(H: int, W: int) -> int:
     """Derive an erosion size that scales with image resolution."""
@@ -73,11 +73,11 @@ def _union_mask_except(elements, target_ids, target_types, H, W):
 
 def _elements_to_mask(elements, H, W, include_ids=None, include_types=None):
     """Build union mask for elements matching provided ids/types."""
-    id_set = {str(i) for i in (include_ids or []) if i is not None}
-    type_set = {t for t in (include_types or []) if t}
+    id_set = {str(i).lower() for i in (include_ids or []) if i is not None}
+    type_set = {t.lower() for t in (include_types or []) if t}
     m = np.zeros((H, W), np.uint8)
     for e in elements or []:
-        eid = e.get("id")
+        eid = e.get("id").lower()
         etype = (e.get("type") or e.get("class") or "").lower().strip()
         if id_set and str(eid) not in id_set:
             continue
@@ -386,7 +386,7 @@ def apply_texture_cv_poisson(
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, color_match=None, preserve_shading=True, material_prominence=0.8):
+                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=True, material_prominence=0.8):
     """Clone per connected wall (stable angles, avoids cross-bleed)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -394,8 +394,13 @@ def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mod
         sub = np.zeros_like(union_mask); cv2.drawContours(sub, [c], -1, 255, -1)
         # Reapply original mask to preserve interior holes (windows, doors, etc.)
         sub = cv2.bitwise_and(sub, union_mask)
-        a = _auto_angle_from_cnt(c) if angle_mode=="auto" else float(angle_mode)
-        a = float(a) + float(angle_bias_deg)
+        
+        # Calculate final angle based on orientation mode
+        if angle_mode == "fixed":
+            a = float(fixed_angle)
+        else:  # angle_mode == "auto"
+            a = _auto_angle_from_cnt(c) + float(angle_bias_deg)
+        
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
                                        color_match=color_match, preserve_shading=preserve_shading,
                                        material_prominence=material_prominence)
@@ -445,6 +450,8 @@ def advanced_material_replacement(
     color_match: Optional[str] = None,
     preserve_shading: int = 0,
     material_prominence: float = MATERIAL_PROMINENCE,
+    orientation_mode: str = "auto",
+    fixed_angle: float = 0.0,
     response_mode: str = "base64",
 
 ):
@@ -464,6 +471,8 @@ def advanced_material_replacement(
         color_match: Color matching method ("reinhard" or None)
         preserve_shading: Whether to preserve original shading (1=True, 0=False)
         material_prominence: Material overlay prominence (0.0-1.0, default 0.7 for 70% visibility)
+        orientation_mode: Texture orientation mode ("auto" or "fixed")
+        fixed_angle: Fixed angle for texture when orientation_mode="fixed"
     
     Returns:
         dict: Result with replaced image and metadata
@@ -530,14 +539,13 @@ def advanced_material_replacement(
 
             edge_margin = _calc_edge_margin_px(H, W)
             erosion = _calc_erosion_px(H, W)
-
             refined_mask = build_selection_mask(
                 elements,
                 H,
                 W,
                 include_ids=include_ids,
                 include_types=include_types,
-                exclude_types=DEFAULT_EXCLUDE_TYPES,
+                exclude_types=(DEFAULT_EXCLUDE_TYPES - include_types),
                 edge_margin_px=edge_margin,
                 erosion_px=erosion,
                 remove_other_geometry=True,
@@ -618,8 +626,9 @@ def advanced_material_replacement(
                 union_mask=refined_mask,
                 texture=texture_cv,
                 scale=texture_scale,
-                angle_mode="auto",
+                angle_mode=orientation_mode,
                 angle_bias_deg=float(angle_bias_deg),
+                fixed_angle=float(fixed_angle),
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 preserve_shading=bool(int(preserve_shading)),
                 material_prominence=float(material_prominence),
@@ -656,34 +665,7 @@ def advanced_material_replacement(
                         "replaced_image_url": replaced_image_url,
                         "public_id": public_id,
                     }
-                    # ensure_cloudinary_config()
-                    # try:
-                    #     # Convert base64 to binary for direct upload
-                    #     output_binary = base64.b64decode(out_b64)
-                    #
-                    #     # Upload to Cloudinary (folder naming is dynamic but predictable; no hard-coded URLs)
-                    #     res = upload_image_to_cloudinary(output_binary, element_type)
-                    #     # capture Cloudinary data (dynamic; nothing hard-coded)
-                    #     replaced_image_url = res.get("secure_url")
-                    #     public_id = res.get("public_id")
-                    #     width = res.get("width", out_w)
-                    #     height = res.get("height", out_h)
-                    #     bytes_on_cloud = res.get("bytes")  # might be present
 
-
-                    # return {
-                    #     "success": True,
-                    #     "method": method,
-                    #     "element_type": element_type,
-                    #     "material_id": material_id,
-                    #     "processing_time": f"{time.time() - t0:.2f}s",
-                    #     "output_image_mb": round((bytes_on_cloud or (out_size_mb * 1024 * 1024)) / (1024 * 1024),
-                    #                              3) if bytes_on_cloud else round(out_size_mb, 3),
-                    #     "output_image_dimensions": {"width": int(width), "height": int(height)},
-                    #     "output_image_downscaled": out_downscaled,
-                    #     "replaced_image_url": replaced_image_url,
-                    #     "public_id": public_id,
-                    # }
                 except Exception as e:
                     logger.error(f"Error uploading to Cloudinary: {str(e)}")
                     raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
@@ -704,9 +686,9 @@ def advanced_material_replacement(
             raise HTTPException(status_code=400, detail="Only 'cv_poisson' method is supported in this service")
 
     except HTTPException as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        logger.error(f"1st exception Error in advanced_material_replacement: {str(e)}")
         raise e
     except Exception as e:
-        logger.error(f"Error in advanced_material_replacement: {str(e)}")
+        logger.error(f"2nd exception Error in advanced_material_replacement: {str(e)}")
         raise e
 

@@ -9,7 +9,7 @@ Node = Union[List[str], Dict[str, "Node"]]
 PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     # 1) WALL
     "Wall": {
-        "categories": {
+        # "categories": {
             # --- Brick
             # "Brick": [
             #     "Red",
@@ -123,155 +123,196 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
             #         ],
             #     },
             # },
-"Premium Composite Siding": {
-      "Board and batten": [
-        "Artic Blue",
-        "Bourbon",
-        "Brickstone Red",
-        "Cashmere",
-        "Charcoal",
-        "Forest",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sage",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey"
-      ],
-      "Lap": [
-        "Bourbon",
-        "Charcoal",
-        "Khaki",
-        "Midnight",
-        "Ocean Mist",
-        "Polar White",
-        "Saddle Brown",
-        "Sand Dune",
-        "Sea Moss",
-        "Smoke Grey",
-        "Artic Blue",
-        "Brickstone Red",
-        "Cashmere",
-        "Forest",
-        "Sage"
-      ]
-    }
-        }
+            # "Premium Composite Siding": {
+                  "Board and Batten": [
+                    "Artic Blue",
+                    "Bourbon",
+                    "Brickstone Red",
+                    # "Cashmere",
+                    "Charcoal",
+                    "Forest",
+                    "Khaki",
+                    "Midnight",
+                    "Ocean Mist",
+                    "Polar White",
+                    "Saddle Brown",
+                    "Sage",
+                    "Linen",
+                    "Sand Dune",
+                    # "Sea Moss",
+                    "Smoke Grey"
+                  ],
+                  "Lap Siding": [
+                    "Bourbon",
+                    "Charcoal",
+                    "Khaki",
+                    "Linen",
+                    "Midnight",
+                    "Ocean Mist",
+                    "Polar White",
+                    "Saddle Brown",
+                    "Sand Dune",
+                    "Sea Moss",
+                    "Smoke Grey",
+                    "Artic Blue",
+                    "Brickstone Red",
+                    # "Cashmere",
+                    "Forest",
+                    "Sage"
+                  ]
+            # }
+        # }
     },
 
     # 2) ACCENT (placeholder for now)
     "Accent": {
-        "categories": {
-            # --- Brick
-            "Brick": [
-                "Red",
-                "Sand",
-                "Deep Red Handmould",
-                "Sand Rumbled",
-                "Cream Rockface",
-                "Dutch Molde",
-                "Charcoal",
-                "Cerise 1/3 Bond",
-                "Durham Rumbled",
-                "Silver",
-                "Firerock King 1/3",
-                "Mute Red",
-                "Crimson",
-            ],
-
-            # --- Siding (with sub-families)
-            "Siding": {
-                "Align": [
-                    "Align 7\" Plank",
-                    "Align 12\" Board and Batten Matte",
-                    "Align 12\" Board and Batten Woodgrain",
-                ],
-                "Aluminum": [
-                    "Vertical V Woodgrain 2000 Aluminum",
-                    "8\" Smooth - Deluxe Aluminum Siding",
-                    "8\" Woodgrain - 2000 Aluminum Siding",
-                    "D4 Clapboard - Woodgrain 2000 Aluminum",
-                    "Longboard 4\" V Groove",
-                    "Longboard 6\" V Groove",
-                    "8\" Board and Batten Smooth - Deluxe",
-                    "D4 Clapboard - Smooth Deluxe Aluminum",
-                    "Vertical V Smooth - Deluxe Aluminum",
-                ],
-                "Steel": [
-                    "Distinction Siding",
-                    "Sierra Steel 8\" Clapboard",
-                    "Sierra Steel D4 Clapboard",
-                    "Sierra Steel D5 Clapboard",
-                    "Sierra Steel S12 Vertical Board and Batten",
-                    "Steel Side D4 Clapboard",
-                    "Steel Side D5 Clapboard",
-                ],
-                "Vinyl": [
-                    "Board and Batten",
-                    "Concord D4 Clapboard",
-                    "Concord D4 Dutch Lap",
-                    "Concord D5 Dutch Lap",
-                    "Driftwood II D4.5 Dutch Lap",
-                    "Driftwood II D4 Clapboard",
-                    "Fairhaven Sound Single Select Scallops",
-                    "Fairhaven Sound Single Select Shakes",
-                    "Fairweather Vertical",
-                    "Foundry FPX",
-                    "Perfection Shingle",
-                    "Rounds",
-                    "Split Shake",
-                    "Staggered Shake 10\"",
-                    "Staggered Shake 7\"",
-                    "Oxford Premium",
-                    "Sequoia Select D4.5 Dutch Lap",
-                    "Sequoia Select D4 Clapboard",
-                    "Sequoia Select D5 Clapboard",
-                    "Sequoia Select Enfusion D5 Dutch Lap",
-                    "Sequoia Select Enfusion D6 Clapboard",
-                    "Single Select Scallops",
-                    "Single Select Shakes",
-                ],
-                "Specialty Siding": [
-                    "ChamClad",
-                    "ChamClad Vertical",
-                ],
-            },
-
-            # --- Stone (with brands and series)
-            "Stone": {
-                "Foundry": [
-                    "Cottonwood",
-                    "Desert Canyon",
-                    "Mesa",
-                    "Red Rock",
-                ],
-                "Gentek Canada": {
-                    "Carved Block": [
+        # "categories": {
+        #     # --- Brick
+        #     "Brick": [
+        #         "Red",
+        #         "Sand",
+        #         "Deep Red Handmould",
+        #         "Sand Rumbled",
+        #         "Cream Rockface",
+        #         "Dutch Molde",
+        #         "Charcoal",
+        #         "Cerise 1/3 Bond",
+        #         "Durham Rumbled",
+        #         "Silver",
+        #         "Firerock King 1/3",
+        #         "Mute Red",
+        #         "Crimson",
+        #     ],
+        #
+        #     # --- Siding (with sub-families)
+        #     "Siding": {
+        #         "Align": [
+        #             "Align 7\" Plank",
+        #             "Align 12\" Board and Batten Matte",
+        #             "Align 12\" Board and Batten Woodgrain",
+        #         ],
+        #         "Aluminum": [
+        #             "Vertical V Woodgrain 2000 Aluminum",
+        #             "8\" Smooth - Deluxe Aluminum Siding",
+        #             "8\" Woodgrain - 2000 Aluminum Siding",
+        #             "D4 Clapboard - Woodgrain 2000 Aluminum",
+        #             "Longboard 4\" V Groove",
+        #             "Longboard 6\" V Groove",
+        #             "8\" Board and Batten Smooth - Deluxe",
+        #             "D4 Clapboard - Smooth Deluxe Aluminum",
+        #             "Vertical V Smooth - Deluxe Aluminum",
+        #         ],
+        #         "Steel": [
+        #             "Distinction Siding",
+        #             "Sierra Steel 8\" Clapboard",
+        #             "Sierra Steel D4 Clapboard",
+        #             "Sierra Steel D5 Clapboard",
+        #             "Sierra Steel S12 Vertical Board and Batten",
+        #             "Steel Side D4 Clapboard",
+        #             "Steel Side D5 Clapboard",
+        #         ],
+        #         "Vinyl": [
+        #             "Board and Batten",
+        #             "Concord D4 Clapboard",
+        #             "Concord D4 Dutch Lap",
+        #             "Concord D5 Dutch Lap",
+        #             "Driftwood II D4.5 Dutch Lap",
+        #             "Driftwood II D4 Clapboard",
+        #             "Fairhaven Sound Single Select Scallops",
+        #             "Fairhaven Sound Single Select Shakes",
+        #             "Fairweather Vertical",
+        #             "Foundry FPX",
+        #             "Perfection Shingle",
+        #             "Rounds",
+        #             "Split Shake",
+        #             "Staggered Shake 10\"",
+        #             "Staggered Shake 7\"",
+        #             "Oxford Premium",
+        #             "Sequoia Select D4.5 Dutch Lap",
+        #             "Sequoia Select D4 Clapboard",
+        #             "Sequoia Select D5 Clapboard",
+        #             "Sequoia Select Enfusion D5 Dutch Lap",
+        #             "Sequoia Select Enfusion D6 Clapboard",
+        #             "Single Select Scallops",
+        #             "Single Select Shakes",
+        #         ],
+        #         "Specialty Siding": [
+        #             "ChamClad",
+        #             "ChamClad Vertical",
+        #         ],
+        #     },
+        #
+        #     # --- Stone (with brands and series)
+        #     "Stone": {
+        #         "Foundry": [
+        #             "Cottonwood",
+        #             "Desert Canyon",
+        #             "Mesa",
+        #             "Red Rock",
+        #         ],
+        #         "Gentek Canada": {
+        #             "Carved Block": [
+        #                 "Midnight",
+        #                 "Sea Salt",
+        #             ],
+        #             "Ledgestone": [
+        #                 "Mission Point",
+        #                 "Plum Creek",
+        #                 "Sterling",
+        #                 "Terra Rosa",
+        #                 "Sand",
+        #                 "Northern Ash",
+        #             ],
+        #             "Tight Cut": [
+        #                 "Mission Point",
+        #                 "Plum Creek",
+        #                 "Sterling",
+        #                 "Terra Rosa",
+        #                 "Sand",
+        #                 "Northern Ash",
+        #             ],
+        #         },
+        #     },
+        #         "Premium Composite Siding": {
+                      "Board and Batten": [
+                        "Artic Blue",
+                        "Bourbon",
+                        "Brickstone Red",
+                        # "Cashmere",
+                        "Charcoal",
+                        "Forest",
+                        "Khaki",
                         "Midnight",
-                        "Sea Salt",
-                    ],
-                    "Ledgestone": [
-                        "Mission Point",
-                        "Plum Creek",
-                        "Sterling",
-                        "Terra Rosa",
-                        "Sand",
-                        "Northern Ash",
-                    ],
-                    "Tight Cut": [
-                        "Mission Point",
-                        "Plum Creek",
-                        "Sterling",
-                        "Terra Rosa",
-                        "Sand",
-                        "Northern Ash",
-                    ],
-                },
-            },
-        }
+                        "Ocean Mist",
+                        "Linen",
+                        "Polar White",
+                        "Saddle Brown",
+                        "Sage",
+                        "Sand Dune",
+                        # "Sea Moss",
+                        "Smoke Grey"
+                      ],
+                      "Lap Siding": [
+                        "Artic Blue",
+                        "Bourbon",
+                        "Brickstone Red",
+                        # "Cashmere",
+                        "Charcoal",
+                        "Forest",
+                        "Khaki",
+                        "Linen",
+                        "Midnight",
+                        "Ocean Mist",
+                        "Polar White",
+                        "Saddle Brown",
+                        "Sage",
+                        "Sand Dune",
+                        "Sea Moss",
+                        "Smoke Grey"
+
+                      ]
+                # }
+        # }
     },
 
     # 3) MASONRY
@@ -479,12 +520,11 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
     # },
 
     # 5) TRIM
-    "Trim": {
-        "categories": {  # if your FE expects a different label, adjust this key only
-            "Aluminum Trim and Accessories": [
-                "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
-                "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
-                "Brownstone", "Dover Gray", "Metallic Gray", "Sage",
+    "Trim": [
+        # "categories": {  # if your FE expects a different label, adjust this key only
+        #     "Aluminum Trim and Accessories": [
+                "Canyon Clay", "Wicker", "Pebble",
+                "Metallic Gray", "Sage",
                 "Juniper Grove", "Storm", "Sable", "Windswept Smoke",
                 "Midnight Surf", "Wedgewood Blue", "Rockwell Blue",
                 "Coastal Blue", "Ivy Green", "Slate", "Dark Drift",
@@ -493,34 +533,32 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 "Forest Green", "Graphite", "Iron Ore", "Black",
                 "Chesapeake Gray", "Majestic Brick", "Rockport Brown",
                 "Smoked Timber", "Meadow Fern", "Marine Dusk", "Hudson Slate",
-            ],
-            "Vinyl Trim and Accessories": [
-                "Almond", "Amber", "Canyon Clay", "Chesapeake Gray",
-                "Coastal Blue", "Dark Drift", "Dover Gray", "Espresso",
-                "Hudson Slate", "Iron Ore", "Juniper Grove", "Linen", "Maize",
+            # ],
+            # "Vinyl Trim and Accessories": [
+                "Canyon Clay", "Chesapeake Gray",
+                "Coastal Blue", "Dark Drift", "Espresso",
+                "Hudson Slate", "Iron Ore", "Juniper Grove",
                 "Majestic Brick", "Marine Dusk", "Meadow Fern", "Midnight Surf",
-                "Monteray Sand", "Moonlit Moss", "Pearl", "Pebble",
-                "Rockport Brown", "Rockwell Blue", "Sage", "Sandstone",
-                "Smoked Timber", "Snow White", "Storm", "Wicker",
+                "Moonlit Moss", "Pearl", "Pebble",
+                "Rockport Brown", "Rockwell Blue", "Sage",
+                "Smoked Timber", "Storm", "Wicker",
                 "Windswept Smoke", "BarnBoard Grey", "Honey Super Matte",
                 "Super Matte Modern Walnut", "Sun Bleached Oak",
                 "Cinnamon Walnut", "Barrel Oak", "Toffee", "Charred Black",
                 "Atlantic White", "Chai Cedar", "Brushed Metallic", "Pure White",
-            ],
-            "Gentek Performance G8 Piece": [
-                "Ice White", "Bright White", "Pebble", "Commercial Brown",
+            # ],
+            # "Gentek Performance G8 Piece": [
+                "Pebble", "Commercial Brown",
                 "Slate", "Iron Ore", "Black",
-            ],
-        }
-    },
+            # ],
+        # }
+    ],
 
     # 6) WINDOW AND DOOR TRIM
-    "Window and Door Trim": {
-        "categories": {  # if your FE expects a different label, adjust this key only
-            "Aluminum Trim and Accessories": [
-                "Bright White", "Sandstone", "Cashmere", "Almond", "Maize",
-                "Monterey Sand", "Cream", "Canyon Clay", "Wicker", "Pebble",
-                "Brownstone", "Dover Gray", "Metallic Gray", "Sage",
+    "Window and Door Trim": [
+        # "categories": {  # if your FE expects a different label, adjust this key only
+        #     "Aluminum Trim and Accessories": [
+                "Pebble","Metallic Gray", "Sage",
                 "Juniper Grove", "Storm", "Sable", "Windswept Smoke",
                 "Midnight Surf", "Wedgewood Blue", "Rockwell Blue",
                 "Coastal Blue", "Ivy Green", "Slate", "Dark Drift",
@@ -529,26 +567,26 @@ PRODUCTS_DATA: Dict[str, Dict[str, Node]] = {
                 "Forest Green", "Graphite", "Iron Ore", "Black",
                 "Chesapeake Gray", "Majestic Brick", "Rockport Brown",
                 "Smoked Timber", "Meadow Fern", "Marine Dusk", "Hudson Slate",
-            ],
-            "Vinyl Trim and Accessories": [
-                "Almond", "Amber", "Canyon Clay", "Chesapeake Gray",
-                "Coastal Blue", "Dark Drift", "Dover Gray", "Espresso",
-                "Hudson Slate", "Iron Ore", "Juniper Grove", "Linen", "Maize",
+            # ],
+            # "Vinyl Trim and Accessories": [
+                "Canyon Clay", "Chesapeake Gray",
+                "Coastal Blue", "Dark Drift", "Espresso",
+                "Hudson Slate", "Iron Ore", "Juniper Grove",
                 "Majestic Brick", "Marine Dusk", "Meadow Fern", "Midnight Surf",
-                "Monteray Sand", "Moonlit Moss", "Pearl", "Pebble",
-                "Rockport Brown", "Rockwell Blue", "Sage", "Sandstone",
-                "Smoked Timber", "Snow White", "Storm", "Wicker",
+                "Moonlit Moss", "Pearl", "Pebble",
+                "Rockport Brown", "Rockwell Blue", "Sage",
+                "Smoked Timber", "Storm", "Wicker",
                 "Windswept Smoke", "BarnBoard Grey", "Honey Super Matte",
                 "Super Matte Modern Walnut", "Sun Bleached Oak",
                 "Cinnamon Walnut", "Barrel Oak", "Toffee", "Charred Black",
-                "Atlantic White", "Chai Cedar", "Brushed Metallic", "Pure White",
-            ],
-            "Gentek Performance G8 Piece": [
-                "Ice White", "Bright White", "Pebble", "Commercial Brown",
+                "Atlantic White", "Chai Cedar", "Brushed Metallic",
+            # ],
+            # "Gentek Performance G8 Piece": [
+                "Pebble", "Commercial Brown",
                 "Slate", "Iron Ore", "Black",
-            ],
-        }
-    },
+            # ],
+        # }
+    ],
 
     # 7) WINDOWS
 #     "Window": {

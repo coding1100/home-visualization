@@ -276,6 +276,8 @@ def model_advanced_replace_material(
     angle_bias_deg: float = 90.0,
     color_match: str = None,
     preserve_shading: int = 1,
+    orientation_mode: str = "auto",
+    fixed_angle: float = 0.0,
     response_mode: str = "base64"
 ):
     """
@@ -296,11 +298,13 @@ def model_advanced_replace_material(
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
             preserve_shading=preserve_shading,
+            orientation_mode=orientation_mode,
+            fixed_angle=fixed_angle,
             response_mode=response_mode,
 
         )
     except Exception as e:
-        logger.error(f"Error in advanced material replacement: {str(e)}")
+        logger.error(f"model func Error in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 async def model_segment_image(
@@ -308,6 +312,7 @@ async def model_segment_image(
     image_id: Optional[str] = None,
     db: Optional[AsyncSession] = None,
     response_mode: str = "base64",
+    session_id: Optional[str] = None,
 ):
     """
     When image_id is provided:
@@ -468,6 +473,7 @@ async def model_segment_image(
     cv2.imwrite(annotated_path, annotated_image)
     print(f"Annotated Image Successfully Saved:")
     # ---------- Build house elements (unchanged) ----------
+    house_elements_start_time = time.time()
     house_elements = []
     for i, pred in enumerate(result["predictions"]):
         points = []
@@ -493,10 +499,14 @@ async def model_segment_image(
             "originalColor": get_color_for_class(pred["class"]),
         }
         house_elements.append(element)
+    house_elements_end_time = time.time()
+    logger.info(f"House elements extraction completed in {house_elements_end_time - house_elements_start_time:.2f} seconds")
+    print(f"House elements extraction completed in {house_elements_end_time - house_elements_start_time :.2f} seconds")
 
     mode = (response_mode or "base64").lower()
 
     # ---------- URL mode: upload to Cloudinary (same pattern you already use) ----------
+    mode_uploading_start_time = time.time()
     if mode == "url":
         # Only upload the original if it *didn’t* come from gallery DB (avoid duplicate uploads)
         original_url: Optional[str] = None
@@ -562,7 +572,7 @@ async def model_segment_image(
 
             if db is not None:
                 await HistoryService(db).record_event(
-                    session_id=None,  # pass session header if you capture it here
+                    session_id=session_id,  # pass session header if you capture it here
                     user_id=None,  # or user id if available
                     base_image_id=base_img_id,
                     base_image_url=base_img_url,
@@ -574,12 +584,16 @@ async def model_segment_image(
         except Exception:
             # never fail the API because history logging failed
             pass
-
+        mode_uploading_end_time = time.time()
+        logger.info(f"Post-processing for URL mode completed in {mode_uploading_end_time - mode_uploading_start_time:.2f} seconds")
+        print(f"Post-processing for URL mode completed in {mode_uploading_end_time - mode_uploading_start_time:.2f} seconds")
+         # Clean up temp files
         if used_gallery and source_info:
             resp["source_image"] = source_info
         return resp
 
 
+    start_time_3 = time.time()
     # ---------- Default (unchanged): base64 payloads ----------
     original_base64 = image_to_base64(file_path)
     annotated_base64 = image_to_base64(annotated_path)
@@ -598,6 +612,9 @@ async def model_segment_image(
         "raw_predictions": result["predictions"],
         "processing_time": f"{end_time - start_time:.2f}s",
     }
+    end_time_3 = time.time()
+    logger.info(f"Post-processing for base-64 completed in {end_time_3 - start_time_3:.2f} seconds")
+    print(f"Post-processing for base-64 completed in {end_time_3 - start_time_3:.2f} seconds")
     if used_gallery and source_info:
         resp["source_image"] = source_info
     return resp

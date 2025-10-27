@@ -1,7 +1,9 @@
+from typing import Optional
+
 from app.modules.history.services.history_service import HistoryService
 from src.model_functions import model_generate_mask, model_replace_material, model_segment_image, model_advanced_replace_material
 from src.logger import logger
-from fastapi import UploadFile, File, HTTPException, Form, APIRouter, Depends
+from fastapi import UploadFile, File, HTTPException, Form, APIRouter, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.deps import get_db
 masking_router = APIRouter(prefix="/masking", tags=["masking"])
@@ -11,10 +13,11 @@ masking_router = APIRouter(prefix="/masking", tags=["masking"])
 async def segment_image(file: UploadFile = File(None),
     image_id: str = Form(None),                   # <- NEW (optional)
     db: AsyncSession = Depends(get_db),
+    session_id: Optional[str] = Header(default=None, alias="X-Session-Id"),
     response_mode: str = Form("base64")  # NEW (optional)
 ):
     try:
-        return await model_segment_image(file=file, image_id=image_id, db=db, response_mode=response_mode,)
+        return await model_segment_image(file=file, image_id=image_id, db=db, response_mode=response_mode,session_id=session_id, )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -65,9 +68,13 @@ async def advanced_replace_material(
     angle_bias_deg: float = Form(90.0),
     color_match: str = Form(None),
     preserve_shading: int = Form(1),
+    # NEW: orientation control parameters
+    orientation_mode: str = Form("auto"),
+    fixed_angle: float = Form(0.0),
     # NEW: keeps current default behavior
     response_mode: str = Form("base64"),
     db: AsyncSession =Depends(get_db),
+    session_id: Optional[str] = Header(default=None, alias="X-Session-Id"),
 ):
     """
     Advanced material replacement with cv_poisson method.
@@ -85,15 +92,14 @@ async def advanced_replace_material(
     - angle_bias_deg: Angle bias for texture orientation (default: 90.0)
     - color_match: Color matching method ("reinhard" or None)
     - preserve_shading: Whether to preserve original shading (1=True, 0=False)
+    - orientation_mode: Texture orientation mode ("auto" or "fixed", default: "auto")
+    - fixed_angle: Fixed angle for texture when orientation_mode="fixed" (default: 0.0)
     
     Note: material_id will download the material image from the product catalog.
     Available material IDs include Wall, Accent, and Masonry categories with various materials.
     """
     try:
         # Validate that either material_image or material_id is provided, but not both
-        if material_image is not None and material_id is not None:
-            raise HTTPException(status_code=400, detail="Provide either material_image or material_id, not both")
-        
         if material_image is None and material_id is None:
             raise HTTPException(status_code=400, detail="Provide either material_image or material_id")
         
@@ -110,6 +116,8 @@ async def advanced_replace_material(
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
             preserve_shading=preserve_shading,
+            orientation_mode=orientation_mode,
+            fixed_angle=fixed_angle,
             response_mode=response_mode,
 
         )
@@ -123,7 +131,7 @@ async def advanced_replace_material(
             if replaced_image_url:
                 try:
                     await HistoryService(db).record_event(
-                        session_id=None,  # pass session id if you have it
+                        session_id=session_id,  # pass session id if you have it
                         user_id=None,  # pass user id if you have it
                         base_image_id=None,  # if you know the gallery image id, set it; else None
                         base_image_url=original_image,  # controller receives the original image URL
@@ -147,5 +155,5 @@ async def advanced_replace_material(
 
         return res
     except Exception as e:
-        logger.error(f"Error in advanced material replacement: {str(e)}")
+        logger.error(f"ControllerError in advanced material replacement: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

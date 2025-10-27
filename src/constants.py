@@ -22,7 +22,7 @@ _MB_DIVISOR = 1024 * 1024
 DEFAULT_EXCLUDE_TYPES = {
     "window",
     "window frame",
-    "window trim",
+    "window-door-trim",
     "glass",
     "door",
     "garage",
