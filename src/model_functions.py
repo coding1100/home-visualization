@@ -71,111 +71,6 @@ def _compress_to_target_jpeg(src_path: str, dst_path: str, target_bytes: int, mi
         f.write(best_bytes)
     return best_len
 
-def _prepare_for_cloudinary_upload(path: str, max_bytes: int = CLOUDINARY_MAX_IMAGE_BYTES) -> tuple[str, bool]:
-
-    """
-
-    Ensure 'path' is under Cloudinary image size cap.
-
-    Returns (upload_path, temp_created). If temp_created is True, caller should delete it.
-
-    """
-
-    try:
-
-        if os.path.getsize(path) <= max_bytes:
-
-            return path, False
-
-
-
-        img = cv2.imread(path)
-
-        if img is None:
-
-            return path, False
-
-
-
-        h, w = img.shape[:2]
-
-        scale = 1.0
-
-        quality = 90
-
-        tmp_out = None
-
-        buf = None
-
-
-
-        # Reduce JPEG quality first, then downscale if still too big
-
-        for _ in range(8):
-
-            resized = img if scale >= 0.999 else cv2.resize(img, (max(1, int(w * scale)), max(1, int(h * scale))), interpolation=cv2.INTER_AREA)
-
-            ok, buf = cv2.imencode(".jpg", resized, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
-
-            if not ok:
-
-                break
-
-            if len(buf) <= max_bytes:
-
-                tmp_out = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_cld.jpg")
-
-                with open(tmp_out, "wb") as f:
-
-                    f.write(buf.tobytes())
-
-                return tmp_out, True
-
-            # tighten knobs
-
-            if quality > 65:
-
-                quality -= 10
-
-            else:
-
-                scale *= 0.85
-
-
-
-        # Final attempt with whatever we have
-
-        if buf is not None:
-
-            tmp_out = os.path.join(UPLOAD_DIR, f"{uuid.uuid4()}_cld.jpg")
-
-            with open(tmp_out, "wb") as f:
-
-                f.write(buf.tobytes())
-
-            return tmp_out, True
-
-
-
-        return path, False
-
-    except Exception:
-
-        # If anything fails, fall back to original path (Cloudinary may still reject it)
-
-        return path, False
-
-def _ensure_cloudinary_config():
-    cfg = cloudinary.config()
-    # If this module was imported before your app-wide config ran, fill it here.
-    if not cfg.api_key or not cfg.api_secret or not cfg.cloud_name:
-        cloudinary.config(
-            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-            api_key=settings.CLOUDINARY_API_KEY,
-            api_secret=settings.CLOUDINARY_API_SECRET,
-            secure=True,
-        )
-
 
 def model_generate_mask(
     original_image: str ,
@@ -380,7 +275,6 @@ def model_advanced_replace_material(
     scale: float = 1.0,
     angle_bias_deg: float = 90.0,
     color_match: str = None,
-    preserve_shading: int = 1,
     orientation_mode: str = "auto",
     fixed_angle: float = 0.0,
     response_mode: str = "base64"
@@ -402,7 +296,6 @@ def model_advanced_replace_material(
             scale=scale,
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
-            preserve_shading=preserve_shading,
             orientation_mode=orientation_mode,
             fixed_angle=fixed_angle,
             response_mode=response_mode,

@@ -67,7 +67,6 @@ async def advanced_replace_material(
     scale: float = Form(1.0),
     angle_bias_deg: float = Form(90.0),
     color_match: str = Form(None),
-    preserve_shading: int = Form(1),
     # NEW: orientation control parameters
     orientation_mode: str = Form("auto"),
     fixed_angle: float = Form(0.0),
@@ -91,7 +90,6 @@ async def advanced_replace_material(
     - scale: Scale factor for texture (default: 1.0)
     - angle_bias_deg: Angle bias for texture orientation (default: 90.0)
     - color_match: Color matching method ("reinhard" or None)
-    - preserve_shading: Whether to preserve original shading (1=True, 0=False)
     - orientation_mode: Texture orientation mode ("auto" or "fixed", default: "auto")
     - fixed_angle: Fixed angle for texture when orientation_mode="fixed" (default: 0.0)
     
@@ -115,7 +113,6 @@ async def advanced_replace_material(
             scale=scale,
             angle_bias_deg=angle_bias_deg,
             color_match=color_match,
-            preserve_shading=preserve_shading,
             orientation_mode=orientation_mode,
             fixed_angle=fixed_angle,
             response_mode=response_mode,
@@ -145,7 +142,6 @@ async def advanced_replace_material(
                             "scale": scale,
                             "angle_bias_deg": angle_bias_deg,
                             "color_match": color_match,
-                            "preserve_shading": bool(int(preserve_shading)),
                             "method": method,
                         },
                     )
