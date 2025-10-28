@@ -1,12 +1,7 @@
 # app/modules/catalog/data/product_images.py
 
 PRODUCT_IMAGE_MAP: dict[str, str] = {
-    # === Wall → Categories (you already tested these) ===
-    # "Wall/categories/Brick":  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2Flogo.png",
-    # "Wall/categories/Siding": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
-    # "Wall/categories/Stone":  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2Flogo.png",
 
-    # "Wall/categories/Premium Composite Siding":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
     "Wall/Board and Batten":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-120118_4b6cb781-3a34-4197-b560-1f6a5ef6305f_1d3c6ecc-fa2c-4390-ae90-85f1d7a9cf89_Midnight.png",
     "Wall/Lap Siding":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-125915_d6fd5729-476e-4898-beb9-cdac54005c09_9be263e5-b257-4a4d-8e2c-511857194eaf_Midnight.png",
 
@@ -48,229 +43,6 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
 
 
 
-
-
-    #
-    # # === Wall → Brick (leaf items, mapped by order) ===
-    # "Wall/categories/Brick/Red":                   "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch0-400.jpg",
-    # "Wall/categories/Brick/Sand":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch1-400.jpg",
-    # "Wall/categories/Brick/Deep Red Handmould":    "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch2-400.jpg",
-    # "Wall/categories/Brick/Sand Rumbled":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch3-400.jpg",
-    # "Wall/categories/Brick/Cream Rockface":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch4-400.jpg",
-    # "Wall/categories/Brick/Dutch Molde":           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch5-400.jpg",
-    # "Wall/categories/Brick/Charcoal":              "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch6-400.jpg",
-    # "Wall/categories/Brick/Cerise 1/3 Bond":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch7-400.jpg",
-    # "Wall/categories/Brick/Durham Rumbled":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch8-400.jpg",
-    # "Wall/categories/Brick/Silver":                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch9-400.jpg",
-    # "Wall/categories/Brick/Firerock King 1/3":     "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch10-400.jpg",
-    # "Wall/categories/Brick/Mute Red":              "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch11-400.jpg",
-    # "Wall/categories/Brick/Crimson":               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch12-400.jpg",
-    #
-    # # === Wall → Siding (sub-category logos) ===
-    # "Wall/categories/Siding/Align":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2Flogo.png",
-    # "Wall/categories/Siding/Aluminum":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2Flogo.png",
-    # "Wall/categories/Siding/Steel":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2Flogo.png",
-    # "Wall/categories/Siding/Vinyl":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2Flogo.png",
-    # "Wall/categories/Siding/Specialty Siding": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2Flogo.png",
-    #
-    # # --- Siding → Align (leaf items, by order) ---
-    # 'Wall/categories/Siding/Align/Align 7" Plank':                         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Align/Align 12" Board and Batten Matte':       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%20BB%20Matte%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Align/Align 12" Board and Batten Woodgrain':   "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%20BB%20Woodgrain%2F~swatch0-400.jpg",
-    #
-    # # --- Siding → Aluminum (9 items, by order) ---
-    # "Wall/categories/Siding/Aluminum/Vertical V Woodgrain 2000 Aluminum":  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Aluminum2000Woodgrain_Vertical_V_Woodgrain%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Aluminum/8" Smooth - Deluxe Aluminum Siding':  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Aluminum2000_Smooth_8%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Aluminum/8" Woodgrain - 2000 Aluminum Siding': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~AluminumWoodgrain2000_8%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Aluminum/D4 Clapboard - Woodgrain 2000 Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~AluminumWoodgrain2000_D4_Clapboard%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Aluminum/Longboard 4" V Groove':               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Longboard_4_VGroove%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Aluminum/Longboard 6" V Groove':               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Longboard_6_VGroove%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Aluminum/8" Board and Batten Smooth - Deluxe': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~SmoothDeluxeAluminum_8_BoardandBatten%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Aluminum/D4 Clapboard - Smooth Deluxe Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~SmoothDeluxeAluminum_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Aluminum/Vertical V Smooth - Deluxe Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Vertical_VSmooth_DeluxeAluminum%2F~swatch0-400.jpg",
-    #
-    # # --- Siding → Steel (7 items, by order) ---
-    # "Wall/categories/Siding/Steel/Distinction Siding":                       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~DistinctionSiding%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Steel/Sierra Steel 8" Clapboard':                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_8_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Steel/Sierra Steel D4 Clapboard":                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Steel/Sierra Steel D5 Clapboard":                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_D5_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Steel/Sierra Steel S12 Vertical Board and Batten": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_S12_Vertical_BnB%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Steel/Steel Side D4 Clapboard":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SteelSide_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Steel/Steel Side D5 Clapboard":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SteelSide_D5_Clapboard%2F~swatch0-400.jpg",
-    #
-    # # --- Siding → Vinyl (23 items, by order) ---
-    # "Wall/categories/Siding/Vinyl/Board and Batten":                           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~BoardandBatten%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Concord D4 Clapboard":                       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Concord D4 Dutch Lap":                       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D4_DutchLap%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Concord D5 Dutch Lap":                       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D5_DutchLap%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Driftwood II D4.5 Dutch Lap":                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Driftwood_II_D45_DutchLap%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Driftwood II D4 Clapboard":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Driftwood_II_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Fairhaven Sound Single Select Scallops":     "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FairhavenSound_Scallops%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Fairhaven Sound Single Select Shakes":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FairhavenSound_Shakes%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Fairweather Vertical":                        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Fairweather_Vertical%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Foundry FPX":                                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryFPX%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Perfection Shingle":                          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryPerfectionShingle%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Rounds":                                      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryRounds%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Split Shake":                                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundrySplitShake%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Vinyl/Staggered Shake 10"':                         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryStaggeredShake_10in%2F~swatch0-400.jpg",
-    # 'Wall/categories/Siding/Vinyl/Staggered Shake 7"':                          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryStaggeredShake_7in%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Oxford Premium":                              "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~OxfordPremium%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Sequoia Select D4.5 Dutch Lap":               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D45_DutchLap_Grain%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Sequoia Select D4 Clapboard":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Sequoia Select D5 Clapboard":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D5_Clapboard%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Sequoia Select Enfusion D5 Dutch Lap":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_Enfusion_D5_DutchLap%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Sequoia Select Enfusion D6 Clapboard":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_Enfusion_D6%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Single Select Scallops":                      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Single_Select_Scallops%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Vinyl/Single Select Shakes":                        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Single_Select_Shakes%2F~swatch0-400.jpg",
-    #
-    # # --- Siding → Specialty Siding (2 items, by order) ---
-    # "Wall/categories/Siding/Specialty Siding/ChamClad":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2F~ChamClad%2F~swatch0-400.jpg",
-    # "Wall/categories/Siding/Specialty Siding/ChamClad Vertical": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2F~ChamClad_Vertical%2F~swatch0-400.jpg",
-    #
-    # # === Wall → Stone (brand logos) ===
-    # "Wall/categories/Stone/Foundry":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2Flogo.png",
-    # "Wall/categories/Stone/Gentek Canada": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2Flogo.png",
-    #
-    # # --- Stone → Foundry (4 items, by order) ---
-    # "Wall/categories/Stone/Foundry/Cottonwood":   "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Foundry/Desert Canyon":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch1-400.jpg",
-    # "Wall/categories/Stone/Foundry/Mesa":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch2-400.jpg",
-    # "Wall/categories/Stone/Foundry/Red Rock":     "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch3-400.jpg",
-    #
-    # # --- Stone → Gentek Canada (series-level images; colors below will stay null unless provided) ---
-    # "Wall/categories/Stone/Gentek Canada/Carved Block": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone":   "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_Ledgestone%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut":    "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Mission Point":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Plum Creek":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch1-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Sterling":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch2-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Terra Rosa":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch3-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Sand":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch4-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Tight Cut/Northern Ash":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch5-400.jpg",
-    #
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Mission Point":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Plum Creek":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch1-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Sterling":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch2-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Terra Rosa":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch3-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Sand":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch4-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Ledgestone/Northern Ash":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch5-400.jpg",
-    #
-    # "Wall/categories/Stone/Gentek Canada/Carved Block/Midnight":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch0-400.jpg",
-    # "Wall/categories/Stone/Gentek Canada/Carved Block/Sea Salt":"https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch1-400.jpg",
-    #
-
-    # === Accent → Categories (you already tested these) ===
-    # "Accent/categories/Brick": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2Flogo.png",
-    # "Accent/categories/Siding": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
-    # "Accent/categories/Stone": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2Flogo.png",
-    #
-    # # === Accent → Brick (leaf items, mapped by order) ===
-    # "Accent/categories/Brick/Red": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch0-400.jpg",
-    # "Accent/categories/Brick/Sand": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch1-400.jpg",
-    # "Accent/categories/Brick/Deep Red Handmould": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch2-400.jpg",
-    # "Accent/categories/Brick/Sand Rumbled": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch3-400.jpg",
-    # "Accent/categories/Brick/Cream Rockface": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch4-400.jpg",
-    # "Accent/categories/Brick/Dutch Molde": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch5-400.jpg",
-    # "Accent/categories/Brick/Charcoal": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch6-400.jpg",
-    # "Accent/categories/Brick/Cerise 1/3 Bond": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch7-400.jpg",
-    # "Accent/categories/Brick/Durham Rumbled": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch8-400.jpg",
-    # "Accent/categories/Brick/Silver": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch9-400.jpg",
-    # "Accent/categories/Brick/Firerock King 1/3": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch10-400.jpg",
-    # "Accent/categories/Brick/Mute Red": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch11-400.jpg",
-    # "Accent/categories/Brick/Crimson": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FBrick%2F~generic_brick%2F~swatch12-400.jpg",
-    #
-    # # === Accent → Siding (sub-category logos) ===
-    # "Accent/categories/Siding/Align": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2Flogo.png",
-    # "Accent/categories/Siding/Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2Flogo.png",
-    # "Accent/categories/Siding/Steel": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2Flogo.png",
-    # "Accent/categories/Siding/Vinyl": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2Flogo.png",
-    # "Accent/categories/Siding/Specialty Siding": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2Flogo.png",
-    #
-    # # --- Accent → Align (leaf items, by order) ---
-    # 'Accent/categories/Siding/Align/Align 7" Plank': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Align/Align 12" Board and Batten Matte': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%20BB%20Matte%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Align/Align 12" Board and Batten Woodgrain': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAlign%2F~GentekCAN_Align%20BB%20Woodgrain%2F~swatch0-400.jpg",
-    #
-    # # --- Accent → Aluminum (9 items, by order) ---
-    # "Accent/categories/Siding/Aluminum/Vertical V Woodgrain 2000 Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Aluminum2000Woodgrain_Vertical_V_Woodgrain%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Aluminum/8" Smooth - Deluxe Aluminum Siding': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Aluminum2000_Smooth_8%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Aluminum/8" Woodgrain - 2000 Aluminum Siding': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~AluminumWoodgrain2000_8%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Aluminum/D4 Clapboard - Woodgrain 2000 Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~AluminumWoodgrain2000_D4_Clapboard%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Aluminum/Longboard 4" V Groove': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Longboard_4_VGroove%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Aluminum/Longboard 6" V Groove': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Longboard_6_VGroove%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Aluminum/8" Board and Batten Smooth - Deluxe': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~SmoothDeluxeAluminum_8_BoardandBatten%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Aluminum/D4 Clapboard - Smooth Deluxe Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~SmoothDeluxeAluminum_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Aluminum/Vertical V Smooth - Deluxe Aluminum": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FAluminum%2F~Vertical_VSmooth_DeluxeAluminum%2F~swatch0-400.jpg",
-    #
-    # # --- Accent → Steel (7 items, by order) ---
-    # "Accent/categories/Siding/Steel/Distinction Siding": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~DistinctionSiding%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Steel/Sierra Steel 8" Clapboard': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_8_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Steel/Sierra Steel D4 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Steel/Sierra Steel D5 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_D5_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Steel/Sierra Steel S12 Vertical Board and Batten": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SierraSteel_S12_Vertical_BnB%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Steel/Steel Side D4 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SteelSide_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Steel/Steel Side D5 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSteel%2F~SteelSide_D5_Clapboard%2F~swatch0-400.jpg",
-    #
-    # # --- Accent → Vinyl (23 items, by order) ---
-    # "Accent/categories/Siding/Vinyl/Board and Batten": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~BoardandBatten%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Concord D4 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Concord D4 Dutch Lap": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D4_DutchLap%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Concord D5 Dutch Lap": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Concord_D5_DutchLap%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Driftwood II D4.5 Dutch Lap": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Driftwood_II_D45_DutchLap%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Driftwood II D4 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Driftwood_II_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Fairhaven Sound Single Select Scallops": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FairhavenSound_Scallops%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Fairhaven Sound Single Select Shakes": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FairhavenSound_Shakes%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Fairweather Vertical": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Fairweather_Vertical%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Foundry FPX": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryFPX%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Perfection Shingle": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryPerfectionShingle%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Rounds": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryRounds%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Split Shake": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundrySplitShake%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Vinyl/Staggered Shake 10"': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryStaggeredShake_10in%2F~swatch0-400.jpg",
-    # 'Accent/categories/Siding/Vinyl/Staggered Shake 7"': "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~FoundryStaggeredShake_7in%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Oxford Premium": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~OxfordPremium%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Sequoia Select D4.5 Dutch Lap": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D45_DutchLap_Grain%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Sequoia Select D4 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D4_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Sequoia Select D5 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_D5_Clapboard%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Sequoia Select Enfusion D5 Dutch Lap": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_Enfusion_D5_DutchLap%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Sequoia Select Enfusion D6 Clapboard": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~SequoiaSelect_Enfusion_D6%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Single Select Scallops": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Single_Select_Scallops%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Vinyl/Single Select Shakes": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FVinyl%2F~Single_Select_Shakes%2F~swatch0-400.jpg",
-    #
-    # # --- Accent → Specialty Siding (2 items, by order) ---
-    # "Accent/categories/Siding/Specialty Siding/ChamClad": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2F~ChamClad%2F~swatch0-400.jpg",
-    # "Accent/categories/Siding/Specialty Siding/ChamClad Vertical": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2FSpecialty%20Siding%2F~ChamClad_Vertical%2F~swatch0-400.jpg",
-    #
-    # # === Accent → Stone (brand logos) ===
-    # "Accent/categories/Stone/Foundry": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2Flogo.png",
-    # "Accent/categories/Stone/Gentek Canada": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2Flogo.png",
-    #
-    # # --- Accent → Foundry (4 items, by order) ---
-    # "Accent/categories/Stone/Foundry/Cottonwood": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Foundry/Desert Canyon": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch1-400.jpg",
-    # "Accent/categories/Stone/Foundry/Mesa": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch2-400.jpg",
-    # "Accent/categories/Stone/Foundry/Red Rock": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FFoundry%2F~FoundryLimestone%2F~swatch3-400.jpg",
-    #
-    # # --- Accent → Gentek Canada (series-level images; colors below will stay null unless provided) ---
-    # "Accent/categories/Stone/Gentek Canada/Carved Block": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_Ledgestone%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    #
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Mission Point": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Plum Creek": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch1-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Sterling": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch2-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Terra Rosa": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch3-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Sand": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch4-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Tight Cut/Northern Ash": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch5-400.jpg",
-    #
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Mission Point": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Plum Creek": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch1-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Sterling": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch2-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Terra Rosa": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch3-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Sand": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch4-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Ledgestone/Northern Ash": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_Stone_TightCut%2F~swatch5-400.jpg",
-    #
-    # "Accent/categories/Stone/Gentek Canada/Carved Block/Midnight": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch0-400.jpg",
-    # "Accent/categories/Stone/Gentek Canada/Carved Block/Sea Salt": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch1-400.jpg",
 
     "Accent": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
     "Accent/Board and Batten": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-120118_4b6cb781-3a34-4197-b560-1f6a5ef6305f_1d3c6ecc-fa2c-4390-ae90-85f1d7a9cf89_Midnight.png",
@@ -424,117 +196,40 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
     # "Masonry/categories/Stone/Gentek Canada/Carved Block/Midnight": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch0-400.jpg",
     # "Masonry/categories/Stone/Gentek Canada/Carved Block/Sea Salt": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FStone%2FGentek%20Canada%2FVersetta%20Stone%2F~Boral_Versetta_CarvedBlock%2F~swatch1-400.jpg",
 
-    # Aluminum Trim & Accessories (logo)
-    # "Trim/categories/Aluminum Trim and Accessories": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
-    # "Trim/categories/Vinyl Trim and Accessories": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
-    # "Trim/categories/Gentek Performance G8 Piece": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
 
 
-    # Aluminum Trim & Accessories
-    "Trim/Metallic Gray":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch12-400.jpg",
-    "Trim/Sable":               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch16-400.jpg",
-    "Trim/Wedgewood Blue":      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch19-400.jpg",
-    "Trim/Ivy Green":           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch22-400.jpg",
-    "Trim/Chestnut Brown":      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch27-400.jpg",
-    "Trim/Nutmeg":              "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch29-400.jpg",
-    "Trim/Antique Brown":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch30-400.jpg",
-    "Trim/Forest Green":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch31-400.jpg",
-    "Trim/Graphite":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch32-400.jpg",
-    # Vinyl Trim & Accessories
-    "Trim/Canyon Clay":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch2-400.jpg",
-    "Trim/Chesapeake Gray":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch3-400.jpg",
-    "Trim/Coastal Blue":           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch4-400.jpg",
-    "Trim/Dark Drift":             "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch5-400.jpg",
-    "Trim/Espresso":               "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch7-400.jpg",
-    "Trim/Hudson Slate":           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch8-400.jpg",
-    "Trim/Juniper Grove":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch10-400.jpg",
-    "Trim/Majestic Brick":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch13-400.jpg",
-    "Trim/Marine Dusk":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch14-400.jpg",
-    "Trim/Meadow Fern":            "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch15-400.jpg",
-    "Trim/Midnight Surf":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch16-400.jpg",
-    "Trim/Moonlit Moss":           "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch18-400.jpg",
-    "Trim/Pearl":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch19-400.jpg",
-    "Trim/Rockport Brown":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch21-400.jpg",
-    "Trim/Rockwell Blue":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch22-400.jpg",
-    "Trim/Sage":                   "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch23-400.jpg",
-    "Trim/Smoked Timber":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch25-400.jpg",
-    "Trim/Storm":                  "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch27-400.jpg",
-    "Trim/Wicker":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch28-400.jpg",
-    "Trim/Windswept Smoke":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch29-400.jpg",
-    "Trim/BarnBoard Grey":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch30-400.jpg",
-    "Trim/Honey Super Matte":      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch31-400.jpg",
-    "Trim/Super Matte Modern Walnut": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch32-400.jpg",
-    "Trim/Sun Bleached Oak":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch33-400.jpg",
-    "Trim/Cinnamon Walnut":        "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch34-400.jpg",
-    "Trim/Barrel Oak":             "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch35-400.jpg",
-    "Trim/Toffee":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch36-400.jpg",
-    "Trim/Charred Black":          "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch37-400.jpg",
-    "Trim/Atlantic White":         "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch38-400.jpg",
-    "Trim/Chai Cedar":             "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch39-400.jpg",
-    "Trim/Brushed Metallic":       "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch40-400.jpg",
-
-    # Gentek Performance G8 Piece
-    "Trim/Pebble":                "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch2-400.jpg",
-    "Trim/Commercial Brown":      "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch3-400.jpg",
-    "Trim/Slate":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch4-400.jpg",
-    "Trim/Iron Ore":              "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch5-400.jpg",
-    "Trim/Black":                 "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch6-400.jpg",
-
-    # "Window and Door Trim/categories/Aluminum Trim and Accessories": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
-    # "Window and Door Trim/categories/Vinyl Trim and Accessories": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
-    # "Window and Door Trim/categories/Gentek Performance G8 Piece": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251001-074914_ac181a2f-dd11-4756-aeeb-7ae24de2d24a_50896c6f-6290-4d07-94a9-aeed227ec760_logo.png",
+    "Trim/Artic Blue":       "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-082942_a5c1cc8b-2616-41fb-8b5a-fc2038771fec_58526b97-b082-490a-a3b9-508c770c09f3_Arctic%20Blue.png",
+    "Trim/Bourbon":               "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083017_35af35e6-2608-4cee-842c-c0e0edf15ff5_36388121-3484-449a-bcdb-4bfad1838b47_Bourbon.png",
+    "Trim/Brickstone Red":      "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083054_74a83802-bed5-4a27-a977-49c951eecf6e_2a376477-7798-430d-99c0-8bb963e05a25_Brickstone%20Red.png",
+    "Trim/Cashmere":           "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083130_b5083d6f-1c35-4f8d-a3a8-db3a4fe97d5d_f2ae2a15-214b-400a-8333-6f13574d8c9f_Cashmere.png",
+    "Trim/Charcoal":      "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083205_57187d00-bd02-4f9d-8057-7f651d68a793_7680e60e-bd55-4240-9638-8f7d746f1e8e_Charcoal.png",
+    "Trim/Forest":              "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083248_8fd3317f-d08d-4eeb-bdbf-d677296fc467_ec73923a-1534-4b5e-a71e-9318335387e9_Forest.png",
+    "Trim/Khaki":       "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083902_9f56afea-65f0-41ea-9cd9-3a4078fd76ef_86f9276a-0982-4832-ad18-a18cf9218ec8_Khaki.png",
+    "Trim/Midnight":        "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083944_d7e3ce86-6e4c-41bb-a22e-36b15453a343_d7922102-b10a-4867-bb60-0e712718b014_Midnight.png",
+    "Trim/Ocean Mist":            "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084056_92fe5182-c0a7-4afc-bc8c-2738268bf635_6d60f991-b838-45d1-8572-cadce8509bb7_Ocean%20Mist.png",
+    "Trim/Polar White":            "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084146_64f2247c-2811-4c19-a8fc-484ae5103628_803904e0-73d4-4b78-98b5-d7b2f798529a_Polar%20White.png",
+    "Trim/Saddle Brown":        "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084216_70f78d77-383a-4961-b5e8-6e7564c37757_d8db9381-2d78-4bed-874b-f9ad4c557563_Saddle%20Brown.png",
+    "Trim/Sage":           "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084247_e6dbea21-2772-45b8-a7ff-70a7796b8cd9_4cafcfa1-3c3f-4aa7-9603-f40175b80e1c_Sage.png",
+    "Trim/Sand Dune":             "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084329_650e01b2-a935-4a8a-9e15-96ac52c62443_7c46df63-ba82-4b40-b012-5ce0558ebe37_Sand%20Dune.png",
+    "Trim/Smoke Grey":               "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084409_4991e4dc-85f5-4c55-8b00-3f148e08a5c7_0644487f-22f6-424d-a133-52467308f284_Smoke%20Grey.png",
+    "Trim/Sea Moss":           "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084500_5f0a5d48-9ffe-4952-8b6b-a4ded1f0216f_70d0bc81-cb38-4a38-9d26-1009eeffb242_Sea%20Moss.png",
 
 
-    # Aluminum Trim & Accessories (logo)
-    "Window and Door Trim/Metallic Gray": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch12-400.jpg",
-    "Window and Door Trim/Sage": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch13-400.jpg",
-    "Window and Door Trim/Juniper Grove": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch14-400.jpg",
-    "Window and Door Trim/Storm": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch15-400.jpg",
-    "Window and Door Trim/Sable": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch16-400.jpg",
-    "Window and Door Trim/Windswept Smoke": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch17-400.jpg",
-    "Window and Door Trim/Midnight Surf": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch18-400.jpg",
-    "Window and Door Trim/Wedgewood Blue": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch19-400.jpg",
-    "Window and Door Trim/Rockwell Blue": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch20-400.jpg",
-    "Window and Door Trim/Coastal Blue": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch21-400.jpg",
-    "Window and Door Trim/Ivy Green": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch22-400.jpg",
-    "Window and Door Trim/Dark Drift": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch24-400.jpg",
-    "Window and Door Trim/Espresso": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch25-400.jpg",
-    "Window and Door Trim/Moonlit Moss": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch26-400.jpg",
-    "Window and Door Trim/Chestnut Brown": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch27-400.jpg",
-    "Window and Door Trim/Nutmeg": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch29-400.jpg",
-    "Window and Door Trim/Antique Brown": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch30-400.jpg",
-    "Window and Door Trim/Forest Green": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch31-400.jpg",
-    "Window and Door Trim/Graphite": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch32-400.jpg",
-    "Window and Door Trim/Chesapeake Gray": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch35-400.jpg",
-    "Window and Door Trim/Majestic Brick": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch36-400.jpg",
-    "Window and Door Trim/Rockport Brown": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch37-400.jpg",
-    "Window and Door Trim/Smoked Timber": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch38-400.jpg",
-    "Window and Door Trim/Meadow Fern": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch39-400.jpg",
-    "Window and Door Trim/Marine Dusk": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch40-400.jpg",
-    "Window and Door Trim/Hudson Slate": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Alum%20Trim%20and%20Access%2F~swatch41-400.jpg",
-
-    # Vinyl Trim & Accessories
-    "Window and Door Trim/Canyon Clay": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch2-400.jpg",
-    "Window and Door Trim/Iron Ore": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch9-400.jpg",
-    "Window and Door Trim/Pearl": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch19-400.jpg",
-    "Window and Door Trim/Pebble": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch20-400.jpg",
-    "Window and Door Trim/Wicker": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch28-400.jpg",
-    "Window and Door Trim/BarnBoard Grey": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch30-400.jpg",
-    "Window and Door Trim/Honey Super Matte": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch31-400.jpg",
-    "Window and Door Trim/Super Matte Modern Walnut": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch32-400.jpg",
-    "Window and Door Trim/Sun Bleached Oak": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch33-400.jpg",
-    "Window and Door Trim/Cinnamon Walnut": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch34-400.jpg",
-    "Window and Door Trim/Barrel Oak": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch35-400.jpg",
-    "Window and Door Trim/Toffee": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch36-400.jpg",
-    "Window and Door Trim/Charred Black": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch37-400.jpg",
-    "Window and Door Trim/Atlantic White": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch38-400.jpg",
-    "Window and Door Trim/Chai Cedar": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch39-400.jpg",
-    "Window and Door Trim/Brushed Metallic": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Vinyl%20Trim%20and%20Access%2F~swatch40-400.jpg",
-
-    # Gentek Performance G8 Piece
-    "Window and Door Trim/Commercial Brown": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch3-400.jpg",
-    "Window and Door Trim/Slate": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch4-400.jpg",
-    "Window and Door Trim/Black": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FPaint%20and%20Trim%2F~Gentek%20001%20Performance%20G8%20Piece%2F~swatch6-400.jpg",
+    "Window and Door Trim/Artic Blue": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-082942_a5c1cc8b-2616-41fb-8b5a-fc2038771fec_58526b97-b082-490a-a3b9-508c770c09f3_Arctic%20Blue.png",
+    "Window and Door Trim/Bourbon": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083017_35af35e6-2608-4cee-842c-c0e0edf15ff5_36388121-3484-449a-bcdb-4bfad1838b47_Bourbon.png",
+    "Window and Door Trim/Brickstone Red": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083054_74a83802-bed5-4a27-a977-49c951eecf6e_2a376477-7798-430d-99c0-8bb963e05a25_Brickstone%20Red.png",
+    "Window and Door Trim/Cashmere": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083130_b5083d6f-1c35-4f8d-a3a8-db3a4fe97d5d_f2ae2a15-214b-400a-8333-6f13574d8c9f_Cashmere.png",
+    "Window and Door Trim/Charcoal": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083205_57187d00-bd02-4f9d-8057-7f651d68a793_7680e60e-bd55-4240-9638-8f7d746f1e8e_Charcoal.png",
+    "Window and Door Trim/Forest": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083248_8fd3317f-d08d-4eeb-bdbf-d677296fc467_ec73923a-1534-4b5e-a71e-9318335387e9_Forest.png",
+    "Window and Door Trim/Khaki": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083902_9f56afea-65f0-41ea-9cd9-3a4078fd76ef_86f9276a-0982-4832-ad18-a18cf9218ec8_Khaki.png",
+    "Window and Door Trim/Midnight": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-083944_d7e3ce86-6e4c-41bb-a22e-36b15453a343_d7922102-b10a-4867-bb60-0e712718b014_Midnight.png",
+    "Window and Door Trim/Ocean Mist": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084056_92fe5182-c0a7-4afc-bc8c-2738268bf635_6d60f991-b838-45d1-8572-cadce8509bb7_Ocean%20Mist.png",
+    "Window and Door Trim/Polar White": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084146_64f2247c-2811-4c19-a8fc-484ae5103628_803904e0-73d4-4b78-98b5-d7b2f798529a_Polar%20White.png",
+    "Window and Door Trim/Saddle Brown": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084216_70f78d77-383a-4961-b5e8-6e7564c37757_d8db9381-2d78-4bed-874b-f9ad4c557563_Saddle%20Brown.png",
+    "Window and Door Trim/Sage": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084247_e6dbea21-2772-45b8-a7ff-70a7796b8cd9_4cafcfa1-3c3f-4aa7-9603-f40175b80e1c_Sage.png",
+    "Window and Door Trim/Sand Dune": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084329_650e01b2-a935-4a8a-9e15-96ac52c62443_7c46df63-ba82-4b40-b012-5ce0558ebe37_Sand%20Dune.png",
+    "Window and Door Trim/Smoke Grey": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084409_4991e4dc-85f5-4c55-8b00-3f148e08a5c7_0644487f-22f6-424d-a133-52467308f284_Smoke%20Grey.png",
+    "Window and Door Trim/Sea Moss": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251028-084500_5f0a5d48-9ffe-4952-8b6b-a4ded1f0216f_70d0bc81-cb38-4a38-9d26-1009eeffb242_Sea%20Moss.png",
 
     # # -------------------- ROOFING / GAF --------------------
     #
