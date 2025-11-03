@@ -70,6 +70,8 @@ async def advanced_replace_material(
     # NEW: orientation control parameters
     orientation_mode: str = Form("auto"),
     fixed_angle: float = Form(0.0),
+    # NEW: use average tile size across objects for even look
+    avg_size: bool = Form(False),
     # NEW: keeps current default behavior
     response_mode: str = Form("base64"),
     db: AsyncSession =Depends(get_db),
@@ -115,6 +117,7 @@ async def advanced_replace_material(
             color_match=color_match,
             orientation_mode=orientation_mode,
             fixed_angle=fixed_angle,
+            avg_size=avg_size,
             response_mode=response_mode,
 
         )
