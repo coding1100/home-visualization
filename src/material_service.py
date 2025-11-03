@@ -298,7 +298,8 @@ def apply_texture_cv_poisson(
     original_bgr, mask, texture_bgr,
     scale=1.0, angle_deg=0.0,
     color_match=None, preserve_shading=False,
-    material_prominence=0.8, pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE
+    material_prominence=0.8, pad=16, erosion_px=1, clone_mode=cv2.MIXED_CLONE,
+    global_tiling: bool = False,
 ):
     """Apply texture using full replacement (no opacity blending)."""
     H, W = original_bgr.shape[:2]
@@ -311,30 +312,29 @@ def apply_texture_cv_poisson(
         region = original_bgr.copy(); region[mask_bin==0] = 0
         texture_bgr = reinhard_match(texture_bgr, region, mask=mask_bin)
 
-    # Create even texture coverage across the entire mask area
-    canvas_size = (max(H,W), max(H,W))
+    # Create even texture coverage across the entire image area
+    canvas_size = (max(H, W), max(H, W))
     tiled = tile_texture(texture_bgr, canvas_size, scale=scale, angle_deg=angle_deg)
-    
-    # Use simpler, more even transformation for consistent coverage
-    ys, xs = np.where(mask_bin>0)
+
+    ys, xs = np.where(mask_bin > 0)
     if len(xs) == 0:
         return original_bgr
-        
-    # Get bounding box of mask for more even coverage
-    x_min, x_max = np.min(xs), np.max(xs)
-    y_min, y_max = np.min(ys), np.max(ys)
-    
-    # Create a more uniform texture mapping
-    # Use affine transformation instead of perspective for more even distribution
-    src_points = np.float32([[0, 0], [canvas_size[1]-1, 0], [canvas_size[1]-1, canvas_size[0]-1]])
-    dst_points = np.float32([[x_min, y_min], [x_max, y_min], [x_max, y_max]])
-    
-    try:
-        Hmat = cv2.getAffineTransform(src_points, dst_points)
-        src_warp = cv2.warpAffine(tiled, Hmat, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
-    except cv2.error:
-        # Fallback to simple resize if affine fails
+
+    if global_tiling:
+        # Use global tiling without per-region warp to keep uniform tile density
         src_warp = cv2.resize(tiled, (W, H), interpolation=cv2.INTER_CUBIC)
+    else:
+        # Region-dependent affine mapping (can vary perceived tile size)
+        x_min, x_max = np.min(xs), np.max(xs)
+        y_min, y_max = np.min(ys), np.max(ys)
+        src_points = np.float32([[0, 0], [canvas_size[1]-1, 0], [canvas_size[1]-1, canvas_size[0]-1]])
+        dst_points = np.float32([[x_min, y_min], [x_max, y_min], [x_max, y_max]])
+        try:
+            Hmat = cv2.getAffineTransform(src_points, dst_points)
+            src_warp = cv2.warpAffine(tiled, Hmat, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+        except cv2.error:
+            # Fallback to simple resize if affine fails
+            src_warp = cv2.resize(tiled, (W, H), interpolation=cv2.INTER_CUBIC)
 
     # crop ROI + safe center
     x,y,w,h = cv2.boundingRect(np.column_stack([xs,ys]).astype(np.int32))
@@ -361,25 +361,43 @@ def apply_texture_cv_poisson(
     return out
 
 def apply_texture_per_region(original, union_mask, texture, scale=1.0, angle_mode="auto",
-                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=False, material_prominence=0.8):
+                             angle_bias_deg=90.0, fixed_angle=0.0, color_match=None, preserve_shading=False, material_prominence=0.8,
+                             global_tiling: bool = False):
     """Clone per connected wall with full replacement (no opacity blending)."""
     out = original.copy()
     cnts, _ = cv2.findContours(union_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Establish a single global angle when requested to keep uniform tiling
+    global_angle = None
+    if global_tiling:
+        if angle_mode == "fixed":
+            global_angle = float(fixed_angle)
+        else:
+            if len(cnts) > 0:
+                largest = max(cnts, key=cv2.contourArea)
+                global_angle = _auto_angle_from_cnt(largest) + float(angle_bias_deg)
+            else:
+                global_angle = float(angle_bias_deg)
+
     for c in cnts:
         sub = np.zeros_like(union_mask); cv2.drawContours(sub, [c], -1, 255, -1)
         # Reapply original mask to preserve interior holes (windows, doors, etc.)
         sub = cv2.bitwise_and(sub, union_mask)
         
         # Calculate final angle based on orientation mode
-        if angle_mode == "fixed":
-            a = float(fixed_angle)
-        else:  # angle_mode == "auto"
-            a = _auto_angle_from_cnt(c) + float(angle_bias_deg)
+        if global_angle is not None:
+            a = global_angle
+        else:
+            if angle_mode == "fixed":
+                a = float(fixed_angle)
+            else:  # angle_mode == "auto"
+                a = _auto_angle_from_cnt(c) + float(angle_bias_deg)
         
         # Force preserve_shading=False for full replacement
         out = apply_texture_cv_poisson(out, sub, texture, scale=scale, angle_deg=a,
                                        color_match=color_match, preserve_shading=False,
-                                       material_prominence=material_prominence)
+                                       material_prominence=material_prominence,
+                                       global_tiling=global_tiling)
     return out
 
 def download_material_image_binary(material_id: str) -> bytes:
@@ -427,6 +445,7 @@ def advanced_material_replacement(
     material_prominence: float = MATERIAL_PROMINENCE,
     orientation_mode: str = "auto",
     fixed_angle: float = 0.0,
+    avg_size: bool = False,
     response_mode: str = "base64",
 
 ):
@@ -575,10 +594,70 @@ def advanced_material_replacement(
 
         # --- apply cv_poisson method ---
         if method == "cv_poisson":
-            # Use element-specific scale for element_id, otherwise use provided scale
+            # Determine texture_scale
             texture_scale = float(scale)
-            if element_id and elements_json:
-                # Calculate element-specific scale based on target element dimensions
+
+            # If averaging is requested and elements are available, compute an average scale
+            if avg_size and elements_json:
+                try:
+                    elements = json.loads(elements_json) or []
+                    target_type = None
+                    if element_id:
+                        for e in elements:
+                            if str(e.get("id")).lower() == str(element_id).lower():
+                                target_type = (e.get("type") or e.get("class") or "").lower().strip()
+                                break
+                    elif element_type:
+                        target_type = str(element_type).lower().strip()
+
+                    # If no target_type is resolved, average across ALL elements; else restrict to target_type
+                    if target_type:
+                        candidate_elems = [
+                            e for e in elements
+                            if (e.get("type") or e.get("class") or "").lower().strip() == target_type
+                        ]
+                    else:
+                        candidate_elems = list(elements)
+
+                    # Further restrict to only those elements that overlap the refined_mask (selected set)
+                    elems_to_avg: list[dict] = []
+                    for e in candidate_elems:
+                        coords = e.get("coordinates") or e.get("polygon")
+                        if not coords:
+                            continue
+                        try:
+                            emask = _poly_to_mask(coords, H, W)
+                            if np.count_nonzero(cv2.bitwise_and(emask, refined_mask)) > 0:
+                                elems_to_avg.append(e)
+                        except Exception:
+                            continue
+
+                    scales: list[float] = []
+                    for e in elems_to_avg:
+                        try:
+                            s = _calculate_element_specific_scale(e, H, W)
+                            if s and s > 0:
+                                scales.append(float(s))
+                        except Exception:
+                            continue
+
+                    if scales:
+                        avg_computed = float(sum(scales) / len(scales))
+                        # allow user to fine-tune: multiply average by provided scale
+                        try:
+                            user_scale = float(scale)
+                        except Exception:
+                            user_scale = 1.0
+                        texture_scale = max(0.1, min(3.0, avg_computed * user_scale))
+                        logger.info(
+                            f"Using averaged texture scale for type '{target_type}' across {len(scales)} element(s): "
+                            f"avg={avg_computed:.2f} * user_scale={user_scale:.2f} -> texture_scale={texture_scale:.2f}"
+                        )
+                except Exception as e:
+                    logger.warning(f"Error computing average scale, falling back to default/element-specific: {e}")
+
+            # If not averaging, optionally compute element-specific scale for single selection
+            if not avg_size and element_id and elements_json:
                 try:
                     elements = json.loads(elements_json)
                     target_elem = None
@@ -586,12 +665,9 @@ def advanced_material_replacement(
                         if str(e.get("id")).lower() == str(element_id).lower():
                             target_elem = e
                             break
-                    
                     if target_elem:
                         texture_scale = _calculate_element_specific_scale(target_elem, H, W)
                         logger.info(f"Using element-specific scale: {texture_scale:.2f} for element_id: {element_id}")
-                    else:
-                        logger.warning(f"Could not find element {element_id} for scale calculation, using default scale: {texture_scale}")
                 except Exception as e:
                     logger.warning(f"Error calculating element-specific scale: {e}, using default scale: {texture_scale}")
             
@@ -605,6 +681,7 @@ def advanced_material_replacement(
                 fixed_angle=float(fixed_angle),
                 color_match=(color_match if color_match in ["reinhard"] else None),
                 material_prominence=float(material_prominence),
+                global_tiling=bool(avg_size),
             )
             out_b64, out_size_mb, (out_w, out_h), out_downscaled = _encode_output_image(out)
 
