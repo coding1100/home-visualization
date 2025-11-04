@@ -2,8 +2,8 @@
 
 PRODUCT_IMAGE_MAP: dict[str, str] = {
 
-    "Wall/Board and Batten":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-120118_4b6cb781-3a34-4197-b560-1f6a5ef6305f_1d3c6ecc-fa2c-4390-ae90-85f1d7a9cf89_Midnight.png",
-    "Wall/Lap Siding":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-125915_d6fd5729-476e-4898-beb9-cdac54005c09_9be263e5-b257-4a4d-8e2c-511857194eaf_Midnight.png",
+    "Wall/Board and Batten":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-111253_51288d15-3ca2-427c-a683-e1bec60a0334_9099c9db-f930-428d-b816-6802c20a6f13_BoardandBatten-720-01BrickstoneRed.jpg",
+    "Wall/Lap Siding":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-112655_92c1f7d4-1ae6-453e-b6b1-ffc27fd210e7_a635a585-ec83-4f6e-bbad-3a6495369276_LapSiding-720-06Charcoal.jpg",
 
 
     "Wall/Lap Siding/Bourbon": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-113057_e36d0da4-89a5-4e8a-bf26-b2cef60b408f_a430a491-db5b-4494-84af-e6d7c069a8bc_LapSiding-720-02Bourbon.jpg",
@@ -45,8 +45,8 @@ PRODUCT_IMAGE_MAP: dict[str, str] = {
 
 
     "Accent": "https://rw-product-bucket.renoworks.com/gentekcanada/70876%2FExterior%2FSiding%2Flogo.png",
-    "Accent/Board and Batten": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-120118_4b6cb781-3a34-4197-b560-1f6a5ef6305f_1d3c6ecc-fa2c-4390-ae90-85f1d7a9cf89_Midnight.png",
-    "Accent/Lap Siding": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251021-125915_d6fd5729-476e-4898-beb9-cdac54005c09_9be263e5-b257-4a4d-8e2c-511857194eaf_Midnight.png",
+    "Accent/Board and Batten":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-111253_51288d15-3ca2-427c-a683-e1bec60a0334_9099c9db-f930-428d-b816-6802c20a6f13_BoardandBatten-720-01BrickstoneRed.jpg",
+    "Accent/Lap Siding":"https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-112655_92c1f7d4-1ae6-453e-b6b1-ffc27fd210e7_a635a585-ec83-4f6e-bbad-3a6495369276_LapSiding-720-06Charcoal.jpg",
 
     "Accent/Lap Siding/Bourbon": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-113057_e36d0da4-89a5-4e8a-bf26-b2cef60b408f_a430a491-db5b-4494-84af-e6d7c069a8bc_LapSiding-720-02Bourbon.jpg",
     "Accent/Lap Siding/Charcoal": "https://sammy-home-visualiser.s3.eu-north-1.amazonaws.com/users/73c57bbd-3437-4cf0-bc35-66a04ec850c9/20251024-112655_92c1f7d4-1ae6-453e-b6b1-ffc27fd210e7_a635a585-ec83-4f6e-bbad-3a6495369276_LapSiding-720-06Charcoal.jpg",
